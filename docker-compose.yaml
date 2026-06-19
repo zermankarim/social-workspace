@@ -1,0 +1,61 @@
+services:
+
+  db:
+    image: postgres:17-alpine
+
+    container_name: todo-db
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: todo
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+
+  backend-dev:
+    container_name: todo-backend-dev
+
+    build:
+      context: ./backend
+      target: dev
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+    depends_on:
+      - db
+
+    env_file:
+      - ./backend/.env.docker
+
+
+  pgadmin:
+    image: dpage/pgadmin4
+
+    container_name: todo-pgadmin
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+
+    ports:
+      - "5050:80"
+    
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+    depends_on:
+      - db
+
+volumes:
+  db-data:
+  pgadmin-data:
