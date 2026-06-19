@@ -1,14 +1,14 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuthDto } from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { JWT_SECRET } from '../utils/constants';
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
+import { UserMapper } from '../users/user.mapper';
+import { SignupResponseDto } from './dto/signup-response.dto copy';
+import { SigninResponseDto } from './dto/signin-response.dto';
+import { SignoutResponseDto } from './dto/signout-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +17,7 @@ export class AuthService {
     private jwt: JwtService,
   ) {}
 
-  async signup(dto: AuthDto) {
+  async signup(dto: AuthDto): Promise<SignupResponseDto> {
     const { email, password } = dto;
 
     const foundUser = await this.prisma.user.findUnique({ where: { email } });
@@ -28,7 +28,7 @@ export class AuthService {
 
     const hashedPassword = await this.hashPassword(password);
 
-    await this.prisma.user.create({
+    const newUser = await this.prisma.user.create({
       data: {
         email,
         passwordHash: hashedPassword,
@@ -37,10 +37,10 @@ export class AuthService {
     });
 
     return {
-      message: 'signup was successfull',
+      user: UserMapper.fromPrismaToResponse(newUser),
     };
   }
-  async signin(dto: AuthDto, req: Request, res: Response) {
+  async signin(dto: AuthDto, res: Response): Promise<SigninResponseDto> {
     const { email, password } = dto;
 
     const credentialsErrorText = 'Wrong credentials';
@@ -66,17 +66,16 @@ export class AuthService {
       email: foundUser.email,
     });
 
-    if (!token) {
-      throw new ForbiddenException();
-    }
-
     res.cookie('token', token);
 
-    return res.send({ message: 'Logged in successfully' });
+    return {
+      message: 'Logged in successfully',
+      user: UserMapper.fromPrismaToResponse(foundUser),
+    };
   }
-  signout(req: Request, res: Response) {
+  signout(res: Response): SignoutResponseDto {
     res.clearCookie('token');
-    return res.send({ message: 'Logged out successfully' });
+    return { message: 'Logged out successfully' };
   }
 
   // Helpers
