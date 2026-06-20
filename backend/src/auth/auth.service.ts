@@ -1,97 +1,114 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { AuthDto } from './dto/auth.dto';
-import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { JWT_SECRET } from '../utils/constants';
-import type { Response } from 'express';
+import * as bcrypt from 'bcrypt';
+import { Response } from 'express';
+
+import jwtConfig from './config/jwt.config';
+import refreshJwtConfig from './config/refresh-jwt.config';
+
+import type { ConfigType } from '@nestjs/config';
 import { UserMapper } from '../users/user.mapper';
-import { SignupResponseDto } from './dto/signup-response.dto copy';
-import { SigninResponseDto } from './dto/signin-response.dto';
-import { SignoutResponseDto } from './dto/signout-response.dto';
+import { clearAuthCookies, setAuthCookies } from './utils/cookie';
+import { JwtPayload } from './types/jwt-payload';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private jwt: JwtService,
+    private jwtService: JwtService,
+
+    @Inject(jwtConfig.KEY)
+    private accessConfig: ConfigType<typeof jwtConfig>,
+
+    @Inject(refreshJwtConfig.KEY)
+    private refreshConfig: ConfigType<typeof refreshJwtConfig>,
   ) {}
 
-  async signup(dto: AuthDto): Promise<SignupResponseDto> {
-    const { email, password } = dto;
+  async signup(dto: { email: string; password: string }) {
+    const exists = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
 
-    const foundUser = await this.prisma.user.findUnique({ where: { email } });
+    if (exists) throw new BadRequestException('Email already exists');
 
-    if (foundUser) {
-      throw new BadRequestException('Emain already exists');
-    }
+    const hash = await bcrypt.hash(dto.password, 10);
 
-    const hashedPassword = await this.hashPassword(password);
-
-    const newUser = await this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data: {
-        email,
-        passwordHash: hashedPassword,
+        email: dto.email,
+        passwordHash: hash,
         role: 'USER',
       },
     });
 
-    return {
-      user: UserMapper.fromPrismaToResponse(newUser),
-    };
+    return { user: UserMapper.fromPrismaToResponse(user) };
   }
-  async signin(dto: AuthDto, res: Response): Promise<SigninResponseDto> {
-    const { email, password } = dto;
 
-    const credentialsErrorText = 'Wrong credentials';
-
-    const foundUser = await this.prisma.user.findUnique({ where: { email } });
-
-    if (!foundUser) {
-      throw new BadRequestException(credentialsErrorText);
-    }
-
-    const isMatch = await this.isMatchPassword({
-      password,
-      hashedPassoword: foundUser.passwordHash,
+  async signin(dto: { email: string; password: string }, res: Response) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
     });
 
-    if (!isMatch) {
-      throw new BadRequestException(credentialsErrorText);
-    }
+    if (!user) throw new BadRequestException('Wrong credentials');
 
-    // Sign jwt and return to the user
-    const token = this.signToken({
-      userId: foundUser.id,
-      email: foundUser.email,
+    const ok = await bcrypt.compare(dto.password, user.passwordHash);
+    if (!ok) throw new BadRequestException('Wrong credentials');
+
+    const { accessToken, refreshToken } = this.issueTokens({
+      id: user.id,
+      email: user.email,
     });
-
-    res.cookie('token', token);
+    setAuthCookies(res, accessToken, refreshToken);
 
     return {
-      message: 'Logged in successfully',
-      user: UserMapper.fromPrismaToResponse(foundUser),
+      message: 'Logged in',
+      user: UserMapper.fromPrismaToResponse(user),
     };
   }
-  signout(res: Response): SignoutResponseDto {
-    res.clearCookie('token');
-    return { message: 'Logged out successfully' };
+
+  signout(res: Response) {
+    clearAuthCookies(res);
+    return { message: 'Logged out' };
   }
 
-  // Helpers
-  async hashPassword(password: string) {
-    const saltOrRounds = 10;
+  private issueTokens(user: { id: string; email: string }) {
+    const payload = { userId: user.id, email: user.email };
 
-    return await bcrypt.hash(password, saltOrRounds);
+    const accessToken = this.jwtService.sign(
+      payload,
+      this.accessConfig.signOptions,
+    );
+
+    const refreshToken = this.jwtService.sign(payload, this.refreshConfig);
+
+    return { accessToken, refreshToken };
   }
 
-  async isMatchPassword(args: { password: string; hashedPassoword: string }) {
-    return await bcrypt.compare(args.password, args.hashedPassoword);
-  }
+  async refresh(payload: JwtPayload, res: Response) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.userId },
+    });
 
-  signToken(args: { userId: string; email: string }) {
-    const payload = args;
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
 
-    return this.jwt.sign(payload, { secret: JWT_SECRET });
+    const { accessToken, refreshToken } = this.issueTokens({
+      id: user.id,
+      email: user.email,
+    });
+
+    setAuthCookies(res, accessToken, refreshToken);
+
+    return {
+      message: 'Tokens refreshed',
+      user: UserMapper.fromPrismaToResponse(user),
+    };
   }
 }
