@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 export const setAuthCookies = (
   res: Response,
@@ -23,6 +23,23 @@ export const setAuthCookies = (
 };
 
 export const clearAuthCookies = (res: Response) => {
-  res.clearCookie('access_token');
-  res.clearCookie('refresh_token');
+  const isProd = process.env.NODE_ENV === 'production';
+
+  const authCookieOptions = {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax',
+  } as const;
+
+  res.clearCookie('access_token', authCookieOptions);
+  res.clearCookie('refresh_token', authCookieOptions);
+};
+
+export const getCookie = (
+  req: Request,
+  name: 'refresh_token',
+): string | undefined => {
+  const value: unknown = req.cookies?.[name];
+
+  return typeof value === 'string' ? value : undefined;
 };

@@ -3,6 +3,9 @@ import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { UserResponseDto } from './dto/user.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { ProfileRole } from '@prisma/client';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @Controller('users')
 export class UsersController {
@@ -16,7 +19,8 @@ export class UsersController {
     example: 'cuid123abc',
   })
   @ApiResponse({ type: UserResponseDto })
-  @UseGuards(JwtAuthGuard)
+  @Roles(ProfileRole.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get(':id')
   getUserById(@Param() params: { id: string }) {
     return this.usersService.getUserById(params.id);

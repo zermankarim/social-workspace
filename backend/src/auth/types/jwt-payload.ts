@@ -1,4 +1,8 @@
+import { User } from '@prisma/client';
+
 export interface JwtPayload {
-  userId: string;
-  email: string;
+  userId: User['id'];
+  email: User['email'];
+  role: User['role'];
+  sessionId: string;
 }

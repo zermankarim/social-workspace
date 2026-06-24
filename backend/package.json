@@ -22,7 +22,12 @@
     "db:generate": "prisma generate",
     "db:deploy": "prisma migrate deploy",
     "db:reset": "prisma migrate reset",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "docker:migrate": "docker compose exec backend-dev npx prisma migrate dev",
+    "docker:deploy": "docker compose exec backend-dev npx prisma migrate deploy",
+    "docker:reset": "docker compose exec backend-dev npx prisma migrate reset",
+    "docker:generate": "docker compose exec backend-dev npx prisma generate",
+    "docker:status": "docker compose exec backend-dev npx prisma migrate status"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

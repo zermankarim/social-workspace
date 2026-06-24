@@ -1,31 +1,26 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
+import { AuthService } from './services/auth.service';
+import { AuthController } from './controllers/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { ConfigModule } from '@nestjs/config';
-import jwtConfig from './config/jwt.config';
-import refreshJwtConfig from './config/refresh-jwt.config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt.guard';
-import { RefreshJwtStrategy } from './strategies/refresh-jwt.strategy';
-import { RefreshJwtAuthGuard } from './guards/refresh-jwt.guard';
+import { SessionService } from './services/session.service';
+import { RolesGuard } from './guards/roles.guard';
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.registerAsync(jwtConfig.asProvider()),
-    ConfigModule.forFeature(jwtConfig),
-    ConfigModule.forFeature(refreshJwtConfig),
+    JwtModule.register({}),
   ],
   controllers: [AuthController],
   providers: [
     AuthService,
     JwtStrategy,
-    RefreshJwtStrategy,
     JwtAuthGuard,
-    RefreshJwtAuthGuard,
+    SessionService,
+    RolesGuard,
   ],
-  exports: [JwtModule, JwtAuthGuard],
+  exports: [JwtAuthGuard, RolesGuard],
 })
 export class AuthModule {}
