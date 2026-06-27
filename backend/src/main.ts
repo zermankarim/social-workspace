@@ -3,11 +3,13 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AppConfigService } from './infrastructure/config/services/config.service';
+import { CorsCallback, CorsOrigin } from './shared/validation/types/cors.types';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const config = new DocumentBuilder()
+  const swaggerConfig = new DocumentBuilder()
     .setTitle('TODO-List fullstack')
     .setDescription(
       'This is a pet fullstack project using Next,Nest, PostgreSQL and Prisma',
@@ -15,13 +17,35 @@ async function bootstrap() {
     .setVersion('1.0')
     .build();
 
-  const swaggerDocument = SwaggerModule.createDocument(app, config);
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
 
   SwaggerModule.setup('api', app, swaggerDocument);
 
+  const appConfig = app.get(AppConfigService);
+
+  const allowedOrigins = (appConfig.app.cors ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
   app.enableCors({
-    origin: 'http://localhost:3000',
-    credentials: true,
+    origin: (origin: CorsOrigin, callback: CorsCallback): void => {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      const normalized = origin.trim();
+
+      if (allowedOrigins.includes(normalized)) {
+        callback(null, normalized);
+        return;
+      }
+
+      callback(new Error('Not allowed by CORS'), false);
+    },
+    credentials: Boolean(appConfig.app.credentials),
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   });
 
   app.useGlobalPipes(
@@ -33,6 +57,6 @@ async function bootstrap() {
   );
   app.use(cookieParser());
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(appConfig.app.port ?? 3000);
 }
 void bootstrap();

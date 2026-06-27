@@ -1,38 +1,45 @@
 import { Request, Response } from 'express';
+import { AppConfigService } from '../../infrastructure/config/services/config.service';
 
 export const setAuthCookies = (
   res: Response,
   accessToken: string,
   refreshToken: string,
+  cookiesConfig: AppConfigService['cookies'],
 ) => {
-  const isProd = process.env.NODE_ENV === 'production';
-
   res.cookie('access_token', accessToken, {
     httpOnly: true,
-    secure: isProd,
-    sameSite: isProd ? 'none' : 'lax',
-    maxAge: 15 * 60 * 1000,
+    secure: cookiesConfig.access.secure,
+    sameSite: cookiesConfig.access.sameSite,
+    maxAge: cookiesConfig.access.maxAgeMs,
   });
 
   res.cookie('refresh_token', refreshToken, {
     httpOnly: true,
-    secure: isProd,
-    sameSite: isProd ? 'none' : 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
+    secure: cookiesConfig.refresh.secure,
+    sameSite: cookiesConfig.refresh.sameSite,
+    maxAge: cookiesConfig.refresh.maxAgeMs,
   });
 };
 
-export const clearAuthCookies = (res: Response) => {
-  const isProd = process.env.NODE_ENV === 'production';
-
-  const authCookieOptions = {
+export const clearAuthCookies = (
+  res: Response,
+  cookiesConfig: AppConfigService['cookies'],
+) => {
+  const accessCookieOptions = {
     httpOnly: true,
-    secure: isProd,
-    sameSite: isProd ? 'none' : 'lax',
-  } as const;
+    secure: cookiesConfig.access.secure,
+    sameSite: cookiesConfig.access.sameSite,
+  };
 
-  res.clearCookie('access_token', authCookieOptions);
-  res.clearCookie('refresh_token', authCookieOptions);
+  const refreshCookieOptions = {
+    httpOnly: true,
+    secure: cookiesConfig.refresh.secure,
+    sameSite: cookiesConfig.refresh.sameSite,
+  };
+
+  res.clearCookie('access_token', accessCookieOptions);
+  res.clearCookie('refresh_token', refreshCookieOptions);
 };
 
 export const getCookie = (

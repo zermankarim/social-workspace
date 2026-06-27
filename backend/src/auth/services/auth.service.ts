@@ -13,7 +13,7 @@ import { clearAuthCookies, setAuthCookies } from '../utils/cookie';
 import { JwtPayload } from '../types/jwt-payload';
 import { SessionService, hashToken } from './session.service';
 import { randomUUID } from 'crypto';
-import { ConfigService } from '@nestjs/config';
+import { AppConfigService } from '../../infrastructure/config/services/config.service';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +21,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly sessionService: SessionService,
-    private readonly configService: ConfigService,
+    private readonly envConfig: AppConfigService,
   ) {}
 
   async signup(dto: { email: string; password: string }) {
@@ -77,7 +77,7 @@ export class AuthService {
       refreshTokenExpiresAt,
     });
 
-    setAuthCookies(res, accessToken, refreshToken);
+    setAuthCookies(res, accessToken, refreshToken, this.envConfig.cookies);
 
     return {
       message: 'Logged in',
@@ -95,7 +95,7 @@ export class AuthService {
       }
     }
 
-    clearAuthCookies(res);
+    clearAuthCookies(res, this.envConfig.cookies);
     return { message: 'Logged out' };
   }
 
@@ -167,7 +167,12 @@ export class AuthService {
       refreshTokenExpiresAt,
     });
 
-    setAuthCookies(res, tokens.accessToken, tokens.refreshToken);
+    setAuthCookies(
+      res,
+      tokens.accessToken,
+      tokens.refreshToken,
+      this.envConfig.cookies,
+    );
 
     return {
       message: 'Tokens refreshed',
@@ -192,22 +197,18 @@ export class AuthService {
   }
 
   private get accessSecret(): string {
-    return this.configService.getOrThrow<string>('JWT_SECRET');
+    return this.envConfig.auth.jwtSecret;
   }
 
   private get refreshSecret(): string {
-    return this.configService.getOrThrow<string>('REFRESH_JWT_SECRET');
+    return this.envConfig.auth.refreshJwtSecret;
   }
 
   private get accessTokenTtlSeconds(): number {
-    return Number(
-      this.configService.getOrThrow<string>('JWT_EXPIRE_IN_SECONDS'),
-    );
+    return Number(this.envConfig.auth.accessTokenExpiresInSec);
   }
 
   private get refreshTokenTtlSeconds(): number {
-    return Number(
-      this.configService.getOrThrow<string>('REFRESH_JWT_EXPIRE_IN_SECONDS'),
-    );
+    return Number(this.envConfig.auth.refreshTokenExpiresInSec);
   }
 }

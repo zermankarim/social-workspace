@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { createHash } from 'crypto';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { AppConfigService } from '../../infrastructure/config/services/config.service';
 
 export function hashToken(token: string): string {
   return createHash('sha256').update(token).digest('hex');
@@ -21,9 +22,25 @@ type RotateSessionTokensInput = {
 
 @Injectable()
 export class SessionService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly envConfig: AppConfigService,
+  ) {}
 
-  createSession(input: CreateSessionInput) {
+  async createSession(input: CreateSessionInput) {
+    const maxSessions = this.envConfig.auth.maxSessions;
+
+    const sessions = await this.prisma.session.count({
+      where: {
+        userId: input.userId,
+        revokedAt: null,
+        refreshTokenExpiresAt: { gt: new Date() },
+      },
+    });
+
+    if (sessions >= maxSessions) {
+      throw new BadRequestException('Max sessions reached');
+    }
     return this.prisma.session.create({
       data: input,
     });
