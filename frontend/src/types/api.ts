@@ -49,3 +49,36 @@ export class ApiError extends Error {
     this.name = "ApiError";
   }
 }
+
+export interface Attachment {
+  id: string;
+  url: string;
+  fileName: string;
+  mimeType: string | null;
+  sizeBytes: number | null;
+  createdAt: string;
+}
+
+export interface Todo {
+  id: string;
+  text: string;
+  completed: boolean;
+  attachments: Attachment[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateTodoPayload {
+  text: string;
+  attachments?: {
+    url: string;
+    fileName: string;
+    mimeType?: string;
+    sizeBytes?: number;
+  }[];
+}
+
+export interface UpdateTodoPayload {
+  text?: string;
+  completed?: boolean;
+}

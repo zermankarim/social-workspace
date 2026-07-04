@@ -8,6 +8,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ---- User ----
+enum ProfileRole {
+  ADMIN
+  USER
+}
+
 model User {
   id           String      @id @default(uuid())
   email        String      @unique
@@ -16,7 +22,10 @@ model User {
   sessions     Session[]
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
+  todos        Todo[]
 }
+
+// ---- Session -----
 
 model Session {
   id String @id @default(uuid())
@@ -36,7 +45,28 @@ model Session {
   @@index([refreshTokenHash])
 }
 
-enum ProfileRole {
-  ADMIN
-  USER
+model Todo {
+  id          String       @id @default(uuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  text        String
+  completed   Boolean      @default(false)
+  attachments Attachment[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([userId])
+}
+
+model Attachment {
+  id        String   @id @default(uuid())
+  todoId    String
+  todo      Todo     @relation(fields: [todoId], references: [id], onDelete: Cascade)
+  url       String
+  fileName  String
+  mimeType  String?
+  sizeBytes Int?
+  createdAt DateTime @default(now())
+
+  @@index([todoId])
 }

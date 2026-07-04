@@ -25,4 +25,8 @@ export class AppConfigService {
   get url(): AppEnv['url'] {
     return this.config.getOrThrow<AppEnv['url']>('env.url');
   }
+
+  get upload(): AppEnv['upload'] {
+    return this.config.getOrThrow<AppEnv['upload']>('env.upload');
+  }
 }

@@ -21,4 +21,9 @@ export type AppEnv = {
       sameSite: 'strict' | 'lax' | 'none';
     };
   };
+  upload: {
+    dir: string;
+    publicUrl: string;
+    maxFileSizeBytes: number;
+  };
 };
