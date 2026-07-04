@@ -1,0 +1,16 @@
+import { RegisterForm } from "@/components/auth/register-form";
+
+export const metadata = {
+  title: "Create account — Todo List",
+};
+
+export default function RegisterPage() {
+  return (
+    <div>
+      <h2 className="mb-6 text-lg font-semibold text-zinc-900">
+        Create account
+      </h2>
+      <RegisterForm />
+    </div>
+  );
+}

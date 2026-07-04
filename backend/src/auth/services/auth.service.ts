@@ -118,12 +118,15 @@ export class AuthService {
       throw new UnauthorizedException('No refresh token');
     }
 
-    const payload = await this.jwtService.verifyAsync<JwtPayload>(
-      refreshToken,
-      {
+    let payload: JwtPayload;
+    try {
+      payload = await this.jwtService.verifyAsync<JwtPayload>(refreshToken, {
         secret: this.refreshSecret,
-      },
-    );
+      });
+    } catch {
+      clearAuthCookies(res, this.envConfig.cookies);
+      throw new UnauthorizedException('Refresh token expired or invalid');
+    }
 
     const session =
       await this.sessionService.findActiveByRefreshToken(refreshToken);

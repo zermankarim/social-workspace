@@ -27,6 +27,7 @@ async function bootstrap() {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
+  console.log({ allowedOrigins });
 
   app.enableCors({
     origin: (origin: CorsOrigin, callback: CorsCallback): void => {
