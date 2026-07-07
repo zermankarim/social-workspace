@@ -10,17 +10,35 @@ import { CreateTodoAttachmentDto } from "@/core/application/dtos/create-todo-att
 import { CreateTodoDto } from "@/core/application/dtos/create-todo.dto";
 import { TodoQueryDto } from "@/core/application/dtos/todo-query.dto";
 import { UpdateTodoDto } from "@/core/application/dtos/update-todo.dto";
+import type { TodoOrderBy } from "@/core/domain/enums/todo-order-by.enum";
+import type { TodoSortBy } from "@/core/domain/enums/todo-sort-by.enum";
 import { appContainer } from "@/modules/app.container";
 
 export const todosQueryKey = ["todos"] as const;
 
 export const DEFAULT_TODO_PAGE_SIZE = 20;
 
-export function useTodos(page: number, limit = DEFAULT_TODO_PAGE_SIZE) {
+export type TodoListParams = {
+  page: number;
+  limit?: number;
+  sortBy: TodoSortBy;
+  orderBy: TodoOrderBy;
+  search?: string;
+};
+
+export function useTodos({
+  page,
+  limit = DEFAULT_TODO_PAGE_SIZE,
+  sortBy,
+  orderBy,
+  search,
+}: TodoListParams) {
   return useQuery({
-    queryKey: [...todosQueryKey, page, limit],
+    queryKey: [...todosQueryKey, page, limit, sortBy, orderBy, search ?? ""],
     queryFn: () =>
-      appContainer.todoService.getPaginated(new TodoQueryDto(page, limit)),
+      appContainer.todoService.getPaginated(
+        new TodoQueryDto(page, limit, sortBy, orderBy, search),
+      ),
     placeholderData: keepPreviousData,
   });
 }

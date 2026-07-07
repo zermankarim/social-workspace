@@ -25,6 +25,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { CreateTodoDto, TodoResponseDto, UpdateTodoDto } from './dto/todo.dto';
+import { PaginatedTodosResponseDto } from './dto/pagination.dto';
 import { Request } from 'express';
 import { JwtPayload } from '../auth/types/jwt-payload';
 import { TodoQueryDto } from './dto/todo-query.dto';
@@ -50,18 +51,25 @@ export class TodosController {
   constructor(private readonly todosService: TodosService) {}
 
   @ApiOperation({
-    summary: 'List todos',
+    summary: 'List todos (paginated)',
     description:
-      'Returns all todos belonging to the authenticated user. Results are sorted by creation date (newest first).',
+      'Returns a paginated list of todos for the authenticated user. ' +
+      'Supports `page`, `limit`, `sortBy` (`createdAt`, `updatedAt`) and `orderBy` (`asc`, `desc`). ' +
+      'Defaults: page=1, limit=20, sortBy=createdAt, orderBy=desc.',
   })
   @ApiResponse({
     status: 200,
-    description: 'List of todos',
-    type: TodoResponseDto,
-    isArray: true,
+    description: 'Paginated list of todos',
+    type: PaginatedTodosResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid query parameters (page, limit, sortBy, orderBy)',
   })
   @Get()
-  findAll(@Req() req: RequestWithJwtPayload, @Query() query: TodoQueryDto) {
+  findPaginated(
+    @Req() req: RequestWithJwtPayload,
+    @Query() query: TodoQueryDto,
+  ) {
     return this.todosService.findPaginated(req.user.userId, query);
   }
 

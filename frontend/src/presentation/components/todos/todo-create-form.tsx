@@ -18,7 +18,7 @@ interface TodoCreateFormProps {
 }
 
 const fieldClassName =
-  "h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:text-zinc-400";
+  "h-10 w-full rounded-lg border border-emerald-200/90 bg-white/90 px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-200/80 disabled:cursor-not-allowed disabled:bg-white/60 disabled:text-zinc-400";
 
 export function TodoCreateForm({ onCreated }: TodoCreateFormProps) {
   const createTodo = useCreateTodo();
@@ -92,7 +92,7 @@ export function TodoCreateForm({ onCreated }: TodoCreateFormProps) {
       <div className="space-y-2">
         <label
           htmlFor="new-task-text"
-          className="block text-sm font-medium text-zinc-700"
+          className="block text-sm font-medium text-emerald-900/80"
         >
           New task
         </label>
@@ -127,10 +127,10 @@ export function TodoCreateForm({ onCreated }: TodoCreateFormProps) {
         </div>
       </div>
 
-      <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-3">
+      <div className="rounded-lg border border-emerald-200/70 bg-white/60 px-3 py-3">
         <label
           htmlFor="todo-files"
-          className="block text-sm font-medium text-zinc-700"
+          className="block text-sm font-medium text-emerald-900/80"
         >
           Attach images
           <span className="ml-1 font-normal text-zinc-400">(optional)</span>

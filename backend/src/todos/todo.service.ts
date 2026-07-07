@@ -2,8 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateTodoDto, TodoResponseDto, UpdateTodoDto } from './dto/todo.dto';
 import { TodoMapper } from './todo.mapper';
-import { TodoQueryDto } from './dto/todo-query.dto';
+import { OrderBy, SortBy, TodoQueryDto } from './dto/todo-query.dto';
 import { PaginatedTodosResponseDto } from './dto/pagination.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class TodosService {
@@ -23,18 +24,26 @@ export class TodosService {
     const page = query.page ?? 1;
     const limit = query.limit ?? 20;
     const skip = (page - 1) * limit;
+    const sortBy = query.sortBy ?? SortBy.CREATED_AT;
+    const orderBy = query.orderBy ?? OrderBy.DESC;
+    const search = query.search ?? '';
 
-    const where = { userId };
+    const where: Prisma.TodoWhereInput = {
+      userId,
+      text: { contains: search, mode: 'insensitive' },
+    };
 
     const [todos, total] = await Promise.all([
       this.prisma.todo.findMany({
         where,
         include: this.todoInclude,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { [sortBy]: orderBy },
         skip,
         take: limit,
       }),
-      this.prisma.todo.count({ where }),
+      this.prisma.todo.count({
+        where,
+      }),
     ]);
 
     const totalPages = Math.ceil(total / limit) || 1;

@@ -23,7 +23,13 @@ export class TodoApiRepository extends TodoRepository {
     const params = new URLSearchParams({
       page: String(query.page),
       limit: String(query.limit),
+      sortBy: query.sortBy,
+      orderBy: query.orderBy,
     });
+
+    if (query.search) {
+      params.set("search", query.search);
+    }
 
     const response = await this.httpClient.request<PaginatedTodosResponseDto>(
       `/todos?${params.toString()}`,
