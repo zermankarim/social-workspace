@@ -23,11 +23,13 @@
     "db:deploy": "prisma migrate deploy",
     "db:reset": "prisma migrate reset",
     "db:studio": "prisma studio",
+    "db:seed": "prisma db seed",
     "docker:migrate": "docker compose exec backend-dev npx prisma migrate dev",
     "docker:deploy": "docker compose exec backend-dev npx prisma migrate deploy",
     "docker:reset": "docker compose exec backend-dev npx prisma migrate reset",
     "docker:generate": "docker compose exec backend-dev npx prisma generate",
-    "docker:status": "docker compose exec backend-dev npx prisma migrate status"
+    "docker:status": "docker compose exec backend-dev npx prisma migrate status",
+    "docker:seed": "docker compose exec backend-dev npx prisma db seed"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -96,5 +98,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "prisma": {
+    "seed": "npx tsx prisma/seed.ts"
   }
 }
