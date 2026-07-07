@@ -1,5 +1,6 @@
 "use client";
 
+import { Users } from "lucide-react";
 import { useState } from "react";
 import { ApiError } from "@/core/application/errors/api.error";
 import { RequireAdmin } from "@/presentation/components/auth/auth-guards";
@@ -14,20 +15,21 @@ function UsersAdminContent() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
+        <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+          <Users className="h-7 w-7" aria-hidden />
           Users
         </h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           Admin-only view backed by{" "}
-          <code className="rounded bg-zinc-100 px-1">GET /users</code> and{" "}
-          <code className="rounded bg-zinc-100 px-1">GET /users/:id</code>.
+          <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">GET /users</code> and{" "}
+          <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">GET /users/:id</code>.
         </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
-        <section className="rounded-2xl border border-zinc-200 bg-white shadow-sm lg:col-span-3">
-          <div className="border-b border-zinc-100 px-5 py-4">
-            <h2 className="text-sm font-medium text-zinc-900">All users</h2>
+        <section className="rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900 lg:col-span-3">
+          <div className="border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
+            <h2 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">All users</h2>
           </div>
 
           {isLoading ? (
@@ -37,17 +39,17 @@ function UsersAdminContent() {
               {error instanceof ApiError ? error.message : "Failed to load users"}
             </p>
           ) : (
-            <ul className="divide-y divide-zinc-100">
+            <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">
               {users?.map((user) => (
                 <li key={user.id}>
                   <button
                     type="button"
                     onClick={() => setSelectedId(user.id)}
-                    className={`flex w-full items-center justify-between px-5 py-3 text-left transition-colors hover:bg-zinc-50 ${
-                      selectedId === user.id ? "bg-zinc-50" : ""
+                    className={`flex w-full items-center justify-between px-5 py-3 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800 ${
+                      selectedId === user.id ? "bg-zinc-50 dark:bg-zinc-800" : ""
                     }`}
                   >
-                    <span className="text-sm font-medium text-zinc-900">
+                    <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
                       {user.email}
                     </span>
                     <RoleBadge role={user.role} />
@@ -58,9 +60,9 @@ function UsersAdminContent() {
           )}
         </section>
 
-        <section className="rounded-2xl border border-zinc-200 bg-white shadow-sm lg:col-span-2">
-          <div className="border-b border-zinc-100 px-5 py-4">
-            <h2 className="text-sm font-medium text-zinc-900">User details</h2>
+        <section className="rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900 lg:col-span-2">
+          <div className="border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
+            <h2 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">User details</h2>
           </div>
 
           {!selectedId ? (
@@ -79,13 +81,13 @@ function UsersAdminContent() {
             <dl className="space-y-4 px-5 py-5">
               <div>
                 <dt className="text-xs text-zinc-500">ID</dt>
-                <dd className="mt-1 break-all font-mono text-xs text-zinc-800">
+                <dd className="mt-1 break-all font-mono text-xs text-zinc-800 dark:text-zinc-200">
                   {selectedUser.data.id}
                 </dd>
               </div>
               <div>
                 <dt className="text-xs text-zinc-500">Email</dt>
-                <dd className="mt-1 text-sm text-zinc-900">
+                <dd className="mt-1 text-sm text-zinc-900 dark:text-zinc-100">
                   {selectedUser.data.email}
                 </dd>
               </div>
@@ -97,7 +99,7 @@ function UsersAdminContent() {
               </div>
               <div>
                 <dt className="text-xs text-zinc-500">Created</dt>
-                <dd className="mt-1 text-sm text-zinc-900">
+                <dd className="mt-1 text-sm text-zinc-900 dark:text-zinc-100">
                   {selectedUser.data.createdAt.toLocaleString()}
                 </dd>
               </div>

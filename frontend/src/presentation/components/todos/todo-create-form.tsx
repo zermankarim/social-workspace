@@ -1,5 +1,6 @@
 "use client";
 
+import { ImagePlus, Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +19,7 @@ interface TodoCreateFormProps {
 }
 
 const fieldClassName =
-  "h-10 w-full rounded-lg border border-emerald-200/90 bg-white/90 px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-200/80 disabled:cursor-not-allowed disabled:bg-white/60 disabled:text-zinc-400";
+  "h-10 w-full rounded-lg border border-emerald-200/90 bg-white/90 px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-200/80 disabled:cursor-not-allowed disabled:bg-white/60 disabled:text-zinc-400 dark:border-emerald-800/80 dark:bg-zinc-900/80 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-emerald-600 dark:focus:ring-emerald-900/50 dark:disabled:bg-zinc-900/60";
 
 export function TodoCreateForm({ onCreated }: TodoCreateFormProps) {
   const createTodo = useCreateTodo();
@@ -92,7 +93,7 @@ export function TodoCreateForm({ onCreated }: TodoCreateFormProps) {
       <div className="space-y-2">
         <label
           htmlFor="new-task-text"
-          className="block text-sm font-medium text-emerald-900/80"
+          className="block text-sm font-medium text-emerald-900/80 dark:text-emerald-300/80"
         >
           New task
         </label>
@@ -116,8 +117,13 @@ export function TodoCreateForm({ onCreated }: TodoCreateFormProps) {
           <Button
             type="submit"
             disabled={isBusy}
-            className="h-10 w-full shrink-0 sm:w-auto sm:min-w-[7.5rem]"
+            className="h-10 w-full shrink-0 gap-1.5 sm:w-auto sm:min-w-[7.5rem]"
           >
+            {isBusy ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+            ) : (
+              <Plus className="h-4 w-4" aria-hidden />
+            )}
             {isUploading
               ? "Uploading…"
               : createTodo.isPending
@@ -127,11 +133,12 @@ export function TodoCreateForm({ onCreated }: TodoCreateFormProps) {
         </div>
       </div>
 
-      <div className="rounded-lg border border-emerald-200/70 bg-white/60 px-3 py-3">
+      <div className="rounded-lg border border-emerald-200/70 bg-white/60 px-3 py-3 dark:border-emerald-800/60 dark:bg-zinc-900/60">
         <label
           htmlFor="todo-files"
-          className="block text-sm font-medium text-emerald-900/80"
+          className="flex items-center gap-1.5 text-sm font-medium text-emerald-900/80 dark:text-emerald-300/80"
         >
+          <ImagePlus className="h-4 w-4" aria-hidden />
           Attach images
           <span className="ml-1 font-normal text-zinc-400">(optional)</span>
         </label>
@@ -145,7 +152,7 @@ export function TodoCreateForm({ onCreated }: TodoCreateFormProps) {
             setUploadError(null);
             setFiles(Array.from(event.target.files ?? []));
           }}
-          className="mt-2 block w-full text-sm text-zinc-600 file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-white file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-zinc-700 hover:file:bg-zinc-100"
+          className="mt-2 block w-full text-sm text-zinc-600 file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-white file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-zinc-700 hover:file:bg-zinc-100 dark:text-zinc-400 dark:file:bg-zinc-800 dark:file:text-zinc-200 dark:hover:file:bg-zinc-700"
         />
         {files.length > 0 ? (
           <p className="mt-2 text-xs text-zinc-500">
@@ -155,7 +162,7 @@ export function TodoCreateForm({ onCreated }: TodoCreateFormProps) {
       </div>
 
       {errorMessage ? (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300">
           {errorMessage}
         </p>
       ) : null}

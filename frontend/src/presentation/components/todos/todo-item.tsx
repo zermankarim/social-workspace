@@ -1,5 +1,6 @@
 "use client";
 
+import { Calendar, Check, FileText, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -57,14 +58,14 @@ export function TodoItem({ todo }: TodoItemProps) {
   const isPending = updateTodo.isPending || deleteTodo.isPending;
 
   return (
-    <li className="rounded-lg border border-zinc-100 bg-zinc-50/50 p-3 transition-colors hover:bg-zinc-50">
+    <li className="rounded-lg border border-zinc-100 bg-zinc-50/50 p-3 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-800/50 dark:hover:bg-zinc-800">
       <div className="flex items-start gap-3">
         <input
           type="checkbox"
           checked={todo.completed}
           onChange={toggleCompleted}
           disabled={isPending}
-          className="mt-1 h-4 w-4 cursor-pointer rounded border-zinc-300 text-zinc-900 focus:ring-zinc-400"
+          className="mt-1 h-4 w-4 cursor-pointer rounded border-zinc-300 text-zinc-900 focus:ring-zinc-400 dark:border-zinc-600 dark:bg-zinc-800"
           aria-label={todo.completed ? "Mark as incomplete" : "Mark as complete"}
         />
 
@@ -72,7 +73,7 @@ export function TodoItem({ todo }: TodoItemProps) {
           {isEditing ? (
             <form onSubmit={saveEdit} className="space-y-2">
               <input
-                className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+                className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:focus:border-zinc-500 dark:focus:ring-zinc-700"
                 autoFocus
                 disabled={isPending}
                 {...register("text")}
@@ -81,7 +82,8 @@ export function TodoItem({ todo }: TodoItemProps) {
                 <p className="text-xs text-red-600">{errors.text.message}</p>
               ) : null}
               <div className="flex gap-2">
-                <Button type="submit" disabled={isPending}>
+                <Button type="submit" disabled={isPending} className="gap-1.5">
+                  <Check className="h-4 w-4" aria-hidden />
                   Save
                 </Button>
                 <Button
@@ -89,7 +91,9 @@ export function TodoItem({ todo }: TodoItemProps) {
                   variant="secondary"
                   onClick={cancelEditing}
                   disabled={isPending}
+                  className="gap-1.5"
                 >
+                  <X className="h-4 w-4" aria-hidden />
                   Cancel
                 </Button>
               </div>
@@ -101,8 +105,8 @@ export function TodoItem({ todo }: TodoItemProps) {
               disabled={isPending}
               className={`w-full text-left text-sm ${
                 todo.completed
-                  ? "text-zinc-400 line-through"
-                  : "text-zinc-900"
+                  ? "text-zinc-400 line-through dark:text-zinc-500"
+                  : "text-zinc-900 dark:text-zinc-100"
               }`}
             >
               {todo.text}
@@ -118,7 +122,7 @@ export function TodoItem({ todo }: TodoItemProps) {
                       href={attachment.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block overflow-hidden rounded-md border border-zinc-200"
+                      className="block overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-700"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -132,8 +136,9 @@ export function TodoItem({ todo }: TodoItemProps) {
                       href={attachment.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center rounded-md bg-zinc-100 px-2 py-1 text-xs text-zinc-700 hover:bg-zinc-200"
+                      className="inline-flex items-center gap-1 rounded-md bg-zinc-100 px-2 py-1 text-xs text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600"
                     >
+                      <FileText className="h-3 w-3 shrink-0" aria-hidden />
                       {attachment.fileName}
                     </a>
                   )}
@@ -142,7 +147,8 @@ export function TodoItem({ todo }: TodoItemProps) {
             </ul>
           ) : null}
 
-          <p className="mt-2 text-xs text-zinc-400">
+          <p className="mt-2 flex items-center gap-1 text-xs text-zinc-400">
+            <Calendar className="h-3 w-3 shrink-0" aria-hidden />
             {new Date(todo.createdAt).toLocaleString()}
           </p>
         </div>
@@ -153,8 +159,9 @@ export function TodoItem({ todo }: TodoItemProps) {
             variant="ghost"
             onClick={() => deleteTodo.mutate(todo.id)}
             disabled={isPending}
-            className="shrink-0 text-red-600 hover:bg-red-50 hover:text-red-700"
+            className="shrink-0 gap-1.5 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/50 dark:hover:text-red-300"
           >
+            <Trash2 className="h-4 w-4" aria-hidden />
             Delete
           </Button>
         ) : null}

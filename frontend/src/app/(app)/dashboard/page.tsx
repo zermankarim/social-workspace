@@ -1,5 +1,6 @@
 "use client";
 
+import { LayoutDashboard } from "lucide-react";
 import { AdminNotice } from "@/presentation/components/dashboard/admin-notice";
 import { ProfileCard } from "@/presentation/components/dashboard/profile-card";
 import { TodoList } from "@/presentation/components/todos/todo-list";
@@ -14,10 +15,11 @@ export default function DashboardPage() {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-6">
       <div className="shrink-0">
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
+        <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <LayoutDashboard className="h-7 w-7" aria-hidden />
           Dashboard
         </h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           Manage your tasks and account settings.
         </p>
       </div>

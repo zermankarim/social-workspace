@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader2, LogIn } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,18 +48,26 @@ export function LoginForm() {
       />
 
       {errorMessage ? (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300">
           {errorMessage}
         </p>
       ) : null}
 
-      <Button type="submit" disabled={signin.isPending} className="mt-2 w-full">
+      <Button type="submit" disabled={signin.isPending} className="mt-2 w-full gap-2">
+        {signin.isPending ? (
+          <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+        ) : (
+          <LogIn className="h-4 w-4" aria-hidden />
+        )}
         {signin.isPending ? "Signing in…" : "Sign in"}
       </Button>
 
-      <p className="text-center text-sm text-zinc-500">
+      <p className="text-center text-sm text-zinc-500 dark:text-zinc-400">
         No account?{" "}
-        <Link href="/register" className="font-medium text-zinc-900 hover:underline">
+        <Link
+          href="/register"
+          className="font-medium text-zinc-900 hover:underline dark:text-zinc-100"
+        >
           Create one
         </Link>
       </p>

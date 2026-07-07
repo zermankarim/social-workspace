@@ -1,5 +1,6 @@
 "use client";
 
+import { AlertCircle, ClipboardList, ListTodo, Loader2, SearchX } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ApiError } from "@/core/application/errors/api.error";
 import { TodoOrderBy } from "@/core/domain/enums/todo-order-by.enum";
@@ -39,11 +40,14 @@ export function TodoList() {
   }, [debouncedSearch, sortBy, orderBy]);
 
   return (
-    <section className="flex min-h-0 flex-1 flex-col rounded-2xl border border-zinc-200 bg-white shadow-sm">
-      <div className="space-y-3 border-b border-zinc-100 px-5 py-4 sm:px-6">
+    <section className="flex min-h-0 flex-1 flex-col rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="space-y-3 border-b border-zinc-100 px-5 py-4 sm:px-6 dark:border-zinc-800">
         <div>
-          <h2 className="text-lg font-semibold text-zinc-900">Tasks</h2>
-          <p className="mt-0.5 text-sm text-zinc-500">
+          <h2 className="flex items-center gap-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+            <ListTodo className="h-5 w-5" aria-hidden />
+            Tasks
+          </h2>
+          <p className="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">
             {meta
               ? isSearching
                 ? `${meta.total} match${meta.total === 1 ? "" : "es"} for "${debouncedSearch}"`
@@ -80,10 +84,14 @@ export function TodoList() {
         <div className="min-h-0 flex-1 overflow-y-auto">
           {isLoading ? (
             <div className="flex justify-center py-16">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-violet-200 border-t-violet-700" />
+              <Loader2
+                className="h-8 w-8 animate-spin text-violet-700 dark:text-violet-400"
+                aria-hidden
+              />
             </div>
           ) : error ? (
-            <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+            <p className="flex items-center gap-2 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300">
+              <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
               {error instanceof ApiError ? error.message : "Failed to load todos"}
             </p>
           ) : todos.length > 0 ? (
@@ -93,11 +101,22 @@ export function TodoList() {
               ))}
             </ul>
           ) : (
-            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-violet-200/80 bg-white/50 px-6 py-16 text-center">
-              <p className="text-sm font-medium text-zinc-700">
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-violet-200/80 bg-white/50 px-6 py-16 text-center dark:border-violet-800/60 dark:bg-zinc-900/50">
+              {isSearching ? (
+                <SearchX
+                  className="mb-3 h-10 w-10 text-violet-400 dark:text-violet-500"
+                  aria-hidden
+                />
+              ) : (
+                <ClipboardList
+                  className="mb-3 h-10 w-10 text-violet-400 dark:text-violet-500"
+                  aria-hidden
+                />
+              )}
+              <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 {isSearching ? "No matching tasks" : "No tasks yet"}
               </p>
-              <p className="mt-1 text-sm text-zinc-500">
+              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
                 {isSearching
                   ? "Try a different search term or clear the filter."
                   : "Add your first task above."}
