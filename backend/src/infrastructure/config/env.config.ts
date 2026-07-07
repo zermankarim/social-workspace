@@ -47,6 +47,11 @@ export const envConfig = registerAs(
       },
     },
 
+    api: {
+      prefix: process.env.API_PREFIX as string,
+      version: process.env.API_VERSION as string,
+    },
+
     upload: {
       dir: process.env.UPLOAD_DIR ?? 'uploads',
       publicUrl: process.env.PUBLIC_URL as string,

@@ -9,6 +9,7 @@ export type AppEnv = {
     refreshTokenExpiresInSec: string;
     maxSessions: number;
   };
+  api: { prefix: string; version: string };
   cookies: {
     access: {
       maxAgeMs: number;

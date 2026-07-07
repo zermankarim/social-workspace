@@ -7,6 +7,13 @@ import { UploadModule } from './upload/upload.module';
 import { AppConfigModule } from './infrastructure/config/config.module';
 
 @Module({
-  imports: [AuthModule, PrismaModule, UsersModule, TodosModule, UploadModule, AppConfigModule],
+  imports: [
+    AuthModule,
+    PrismaModule,
+    UsersModule,
+    TodosModule,
+    UploadModule,
+    AppConfigModule,
+  ],
 })
 export class AppModule {}

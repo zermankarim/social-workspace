@@ -18,6 +18,10 @@ export class AppConfigService {
     return this.config.getOrThrow<AppEnv['auth']>('env.auth');
   }
 
+  get api(): AppEnv['api'] {
+    return this.config.getOrThrow<AppEnv['api']>('env.api');
+  }
+
   get cookies(): AppEnv['cookies'] {
     return this.config.getOrThrow<AppEnv['cookies']>('env.cookies');
   }

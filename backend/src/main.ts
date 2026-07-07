@@ -20,11 +20,12 @@ async function bootstrap() {
     .addCookieAuth('access_token')
     .build();
 
-  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
-
-  SwaggerModule.setup('api', app, swaggerDocument);
-
   const appConfig = app.get(AppConfigService);
+  const apiPrefix = `${appConfig.api.prefix}/${appConfig.api.version}`;
+  app.setGlobalPrefix(apiPrefix);
+
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup(`${apiPrefix}/docs`, app, swaggerDocument);
 
   app.useStaticAssets(join(process.cwd(), appConfig.upload.dir), {
     prefix: '/files',
