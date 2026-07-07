@@ -1,4 +1,4 @@
-import { RequireGuest } from "@/components/auth/auth-guards";
+import { RequireGuest } from "@/presentation/components/auth/auth-guards";
 
 export default function AuthLayout({
   children,

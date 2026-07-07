@@ -1,8 +1,9 @@
 "use client";
 
-import { RoleBadge } from "@/components/ui/role-badge";
-import { TodoList } from "@/components/todos/todo-list";
-import { useAuthStore } from "@/stores/auth-store";
+import { AdminNotice } from "@/presentation/components/dashboard/admin-notice";
+import { ProfileCard } from "@/presentation/components/dashboard/profile-card";
+import { TodoList } from "@/presentation/components/todos/todo-list";
+import { useAuthStore } from "@/presentation/stores/auth.store";
 
 export default function DashboardPage() {
   const user = useAuthStore((s) => s.user);
@@ -11,50 +12,24 @@ export default function DashboardPage() {
   if (!user) return null;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
           Dashboard
         </h1>
         <p className="mt-1 text-sm text-zinc-500">
-          Welcome back, {user.email}.
+          Manage your tasks and account settings.
         </p>
       </div>
 
-      <TodoList />
+      <div className="grid items-start gap-6 lg:grid-cols-[17.5rem_1fr] xl:grid-cols-[18rem_1fr]">
+        <aside className="space-y-4 lg:sticky lg:top-8">
+          <ProfileCard user={user} />
+          {isAdmin ? <AdminNotice /> : null}
+        </aside>
 
-      <section className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-        <h2 className="text-sm font-medium uppercase tracking-wide text-zinc-500">
-          Profile
-        </h2>
-        <dl className="mt-4 grid gap-4 sm:grid-cols-3">
-          <div>
-            <dt className="text-xs text-zinc-500">Email</dt>
-            <dd className="mt-1 text-sm font-medium text-zinc-900">{user.email}</dd>
-          </div>
-          <div>
-            <dt className="text-xs text-zinc-500">Role</dt>
-            <dd className="mt-1">
-              <RoleBadge role={user.role} />
-            </dd>
-          </div>
-          <div>
-            <dt className="text-xs text-zinc-500">Member since</dt>
-            <dd className="mt-1 text-sm text-zinc-900">
-              {new Date(user.createdAt).toLocaleDateString()}
-            </dd>
-          </div>
-        </dl>
-      </section>
-
-      {isAdmin ? (
-        <section className="rounded-2xl border border-violet-200 bg-violet-50 p-6">
-          <h2 className="text-sm font-semibold text-violet-900">Admin area</h2>
-          <p className="mt-2 text-sm text-violet-800">
-            You have administrator access. Use the Users tab to manage accounts.
-          </p>
-        </section>
-      ) : null}
+        <TodoList />
+      </div>
     </div>
   );
 }

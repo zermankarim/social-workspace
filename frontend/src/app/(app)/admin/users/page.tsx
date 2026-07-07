@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { RequireAdmin } from "@/components/auth/auth-guards";
-import { RoleBadge } from "@/components/ui/role-badge";
-import { useUserById, useUsers } from "@/hooks/use-users";
-import { ApiError } from "@/types/api";
+import { ApiError } from "@/core/application/errors/api.error";
+import { RequireAdmin } from "@/presentation/components/auth/auth-guards";
+import { RoleBadge } from "@/presentation/components/ui/role-badge";
+import { useUserById, useUsers } from "@/presentation/hooks/use-users";
 
 function UsersAdminContent() {
   const { data: users, isLoading, error } = useUsers();
@@ -80,25 +80,25 @@ function UsersAdminContent() {
               <div>
                 <dt className="text-xs text-zinc-500">ID</dt>
                 <dd className="mt-1 break-all font-mono text-xs text-zinc-800">
-                  {selectedUser.data.user.id}
+                  {selectedUser.data.id}
                 </dd>
               </div>
               <div>
                 <dt className="text-xs text-zinc-500">Email</dt>
                 <dd className="mt-1 text-sm text-zinc-900">
-                  {selectedUser.data.user.email}
+                  {selectedUser.data.email}
                 </dd>
               </div>
               <div>
                 <dt className="text-xs text-zinc-500">Role</dt>
                 <dd className="mt-1">
-                  <RoleBadge role={selectedUser.data.user.role} />
+                  <RoleBadge role={selectedUser.data.role} />
                 </dd>
               </div>
               <div>
                 <dt className="text-xs text-zinc-500">Created</dt>
                 <dd className="mt-1 text-sm text-zinc-900">
-                  {new Date(selectedUser.data.user.createdAt).toLocaleString()}
+                  {selectedUser.data.createdAt.toLocaleString()}
                 </dd>
               </div>
             </dl>

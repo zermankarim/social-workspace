@@ -1,4 +1,4 @@
-import { RegisterForm } from "@/components/auth/register-form";
+import { RegisterForm } from "@/presentation/components/auth/register-form";
 
 export const metadata = {
   title: "Create account — Todo List",
