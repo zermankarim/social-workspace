@@ -8,9 +8,11 @@ export default function AppLayout({
 }) {
   return (
     <RequireAuth>
-      <div className="min-h-screen bg-zinc-50">
+      <div className="flex min-h-dvh flex-col bg-zinc-50">
         <AppHeader />
-        <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">{children}</main>
+        <main className="mx-auto flex w-full min-h-0 max-w-6xl flex-1 flex-col px-4 py-8 sm:px-6">
+          {children}
+        </main>
       </div>
     </RequireAuth>
   );

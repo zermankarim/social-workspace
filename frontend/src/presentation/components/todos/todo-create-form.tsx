@@ -13,10 +13,14 @@ import {
   type CreateTodoFormValues,
 } from "@/presentation/validations/todo.validation";
 
+interface TodoCreateFormProps {
+  onCreated?: () => void;
+}
+
 const fieldClassName =
   "h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:text-zinc-400";
 
-export function TodoCreateForm() {
+export function TodoCreateForm({ onCreated }: TodoCreateFormProps) {
   const createTodo = useCreateTodo();
   const [files, setFiles] = useState<File[]>([]);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -69,6 +73,7 @@ export function TodoCreateForm() {
 
       reset();
       setFiles([]);
+      onCreated?.();
     } catch (error) {
       setUploadError(
         error instanceof ApiError ? error.message : "Failed to create todo",

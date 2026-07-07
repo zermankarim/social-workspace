@@ -30,3 +30,17 @@ export interface UpdateTodoRequestDto {
   text?: string;
   completed?: boolean;
 }
+
+export interface PaginationMetaResponseDto {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+export interface PaginatedTodosResponseDto {
+  data: TodoResponseDto[];
+  meta: PaginationMetaResponseDto;
+}

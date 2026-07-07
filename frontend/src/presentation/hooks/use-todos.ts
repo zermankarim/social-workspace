@@ -1,23 +1,33 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { CreateTodoAttachmentDto } from "@/core/application/dtos/create-todo-attachment.dto";
 import { CreateTodoDto } from "@/core/application/dtos/create-todo.dto";
+import { TodoQueryDto } from "@/core/application/dtos/todo-query.dto";
 import { UpdateTodoDto } from "@/core/application/dtos/update-todo.dto";
 import { appContainer } from "@/modules/app.container";
 
 export const todosQueryKey = ["todos"] as const;
 
-export function useTodos() {
+export const DEFAULT_TODO_PAGE_SIZE = 20;
+
+export function useTodos(page: number, limit = DEFAULT_TODO_PAGE_SIZE) {
   return useQuery({
-    queryKey: todosQueryKey,
-    queryFn: () => appContainer.todoService.getAll(),
+    queryKey: [...todosQueryKey, page, limit],
+    queryFn: () =>
+      appContainer.todoService.getPaginated(new TodoQueryDto(page, limit)),
+    placeholderData: keepPreviousData,
   });
 }
 
 export function useTodo(id: string | null) {
   return useQuery({
-    queryKey: [...todosQueryKey, id],
+    queryKey: [...todosQueryKey, "detail", id],
     queryFn: () => appContainer.todoService.getById(id!),
     enabled: Boolean(id),
   });

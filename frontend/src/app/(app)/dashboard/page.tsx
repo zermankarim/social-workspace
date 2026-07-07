@@ -12,8 +12,8 @@ export default function DashboardPage() {
   if (!user) return null;
 
   return (
-    <div className="space-y-6">
-      <div>
+    <div className="flex min-h-0 flex-1 flex-col gap-6">
+      <div className="shrink-0">
         <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
           Dashboard
         </h1>
@@ -22,8 +22,8 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid items-start gap-6 lg:grid-cols-[17.5rem_1fr] xl:grid-cols-[18rem_1fr]">
-        <aside className="space-y-4 lg:sticky lg:top-8">
+      <div className="grid min-h-0 flex-1 items-start gap-6 lg:grid-cols-[17.5rem_1fr] xl:grid-cols-[18rem_1fr]">
+        <aside className="shrink-0 space-y-4 lg:sticky lg:top-8">
           <ProfileCard user={user} />
           {isAdmin ? <AdminNotice /> : null}
         </aside>

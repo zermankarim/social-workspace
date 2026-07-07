@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -26,6 +27,7 @@ import {
 import { CreateTodoDto, TodoResponseDto, UpdateTodoDto } from './dto/todo.dto';
 import { Request } from 'express';
 import { JwtPayload } from '../auth/types/jwt-payload';
+import { TodoQueryDto } from './dto/todo-query.dto';
 
 type RequestWithJwtPayload = Request & {
   user: JwtPayload;
@@ -59,8 +61,8 @@ export class TodosController {
     isArray: true,
   })
   @Get()
-  findAll(@Req() req: RequestWithJwtPayload) {
-    return this.todosService.findAll(req.user.userId);
+  findAll(@Req() req: RequestWithJwtPayload, @Query() query: TodoQueryDto) {
+    return this.todosService.findPaginated(req.user.userId, query);
   }
 
   @ApiOperation({

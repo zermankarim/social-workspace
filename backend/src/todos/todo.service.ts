@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateTodoDto, TodoResponseDto, UpdateTodoDto } from './dto/todo.dto';
 import { TodoMapper } from './todo.mapper';
+import { TodoQueryDto } from './dto/todo-query.dto';
+import { PaginatedTodosResponseDto } from './dto/pagination.dto';
 
 @Injectable()
 export class TodosService {
@@ -9,19 +11,45 @@ export class TodosService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(userId: string): Promise<TodoResponseDto[]> {
-    const todos = await this.prisma.todo.findMany({
-      where: { userId },
-      include: this.todoInclude,
-      orderBy: { createdAt: 'desc' },
-    });
-
-    return todos.map((todo) => TodoMapper.fromPrismaToResponse(todo));
-  }
-
   async findOne(userId: string, id: string): Promise<TodoResponseDto> {
     const todo = await this.findOwnedTodo(userId, id);
     return TodoMapper.fromPrismaToResponse(todo);
+  }
+
+  async findPaginated(
+    userId: string,
+    query: TodoQueryDto,
+  ): Promise<PaginatedTodosResponseDto> {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+    const skip = (page - 1) * limit;
+
+    const where = { userId };
+
+    const [todos, total] = await Promise.all([
+      this.prisma.todo.findMany({
+        where,
+        include: this.todoInclude,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.todo.count({ where }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit) || 1;
+
+    return {
+      data: todos.map((todo) => TodoMapper.fromPrismaToResponse(todo)),
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    };
   }
 
   async create(userId: string, dto: CreateTodoDto): Promise<TodoResponseDto> {

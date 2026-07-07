@@ -1,13 +1,15 @@
 import type { CreateTodoDto } from "@/core/application/dtos/create-todo.dto";
+import type { TodoQueryDto } from "@/core/application/dtos/todo-query.dto";
 import { UpdateTodoDto } from "@/core/application/dtos/update-todo.dto";
+import type { PaginatedTodos } from "@/core/domain/entities/paginated-todos.entity";
 import type { Todo } from "@/core/domain/entities/todo.entity";
 import type { TodoRepository } from "@/core/domain/repositories/todo.repository";
 
 export class TodoService {
   constructor(private readonly todoRepository: TodoRepository) {}
 
-  getAll(): Promise<Todo[]> {
-    return this.todoRepository.findAll();
+  getPaginated(query: TodoQueryDto): Promise<PaginatedTodos> {
+    return this.todoRepository.findPaginated(query);
   }
 
   getById(id: string): Promise<Todo> {

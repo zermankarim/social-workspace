@@ -1,77 +1,44 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ApiError } from "@/core/application/errors/api.error";
 import { TodoCreateForm } from "@/presentation/components/todos/todo-create-form";
 import { TodoItem } from "@/presentation/components/todos/todo-item";
-import { useTodos } from "@/presentation/hooks/use-todos";
-
-type TodoFilter = "all" | "active" | "completed";
-
-const filters: { id: TodoFilter; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: "active", label: "Active" },
-  { id: "completed", label: "Done" },
-];
+import { TodoPagination } from "@/presentation/components/todos/todo-pagination";
+import {
+  DEFAULT_TODO_PAGE_SIZE,
+  useTodos,
+} from "@/presentation/hooks/use-todos";
 
 export function TodoList() {
-  const { data: todos, isLoading, error } = useTodos();
-  const [filter, setFilter] = useState<TodoFilter>("all");
+  const [page, setPage] = useState(1);
+  const { data, isLoading, isFetching, error } = useTodos(
+    page,
+    DEFAULT_TODO_PAGE_SIZE,
+  );
 
-  const stats = useMemo(() => {
-    const total = todos?.length ?? 0;
-    const completed = todos?.filter((todo) => todo.completed).length ?? 0;
-    return {
-      total,
-      completed,
-      active: total - completed,
-    };
-  }, [todos]);
-
-  const filteredTodos = useMemo(() => {
-    if (!todos) return [];
-    switch (filter) {
-      case "active":
-        return todos.filter((todo) => !todo.completed);
-      case "completed":
-        return todos.filter((todo) => todo.completed);
-      default:
-        return todos;
-    }
-  }, [todos, filter]);
+  const todos = data?.data ?? [];
+  const meta = data?.meta;
 
   return (
-    <section className="flex max-h-[calc(100vh-9rem)] min-h-[28rem] flex-col rounded-2xl border border-zinc-200 bg-white shadow-sm">
+    <section className="flex min-h-0 flex-1 flex-col rounded-2xl border border-zinc-200 bg-white shadow-sm">
       <div className="border-b border-zinc-100 px-5 py-5 sm:px-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex items-center justify-between gap-4">
           <div>
             <h2 className="text-lg font-semibold text-zinc-900">Tasks</h2>
             <p className="mt-1 text-sm text-zinc-500">
-              {stats.total} total · {stats.active} active · {stats.completed}{" "}
-              done
+              {meta
+                ? `${meta.total} task${meta.total === 1 ? "" : "s"} total`
+                : "Loading tasks…"}
             </p>
           </div>
-
-          <div className="flex rounded-lg border border-zinc-200 bg-zinc-50 p-1">
-            {filters.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setFilter(item.id)}
-                className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                  filter === item.id
-                    ? "bg-white text-zinc-900 shadow-sm"
-                    : "text-zinc-500 hover:text-zinc-800"
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
+          {isFetching && !isLoading ? (
+            <span className="text-xs text-zinc-400">Updating…</span>
+          ) : null}
         </div>
 
         <div className="mt-5">
-          <TodoCreateForm />
+          <TodoCreateForm onCreated={() => setPage(1)} />
         </div>
       </div>
 
@@ -84,29 +51,25 @@ export function TodoList() {
           <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
             {error instanceof ApiError ? error.message : "Failed to load todos"}
           </p>
-        ) : filteredTodos.length > 0 ? (
+        ) : todos.length > 0 ? (
           <ul className="space-y-2">
-            {filteredTodos.map((todo) => (
+            {todos.map((todo) => (
               <TodoItem key={todo.id} todo={todo} />
             ))}
           </ul>
         ) : (
           <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-zinc-200 px-6 py-16 text-center">
-            <p className="text-sm font-medium text-zinc-700">
-              {filter === "all"
-                ? "No tasks yet"
-                : filter === "active"
-                  ? "No active tasks"
-                  : "No completed tasks"}
-            </p>
+            <p className="text-sm font-medium text-zinc-700">No tasks yet</p>
             <p className="mt-1 text-sm text-zinc-500">
-              {filter === "all"
-                ? "Add your first task above."
-                : "Try another filter or create a new task."}
+              Add your first task above.
             </p>
           </div>
         )}
       </div>
+
+      {meta ? (
+        <TodoPagination meta={meta} onPageChange={setPage} />
+      ) : null}
     </section>
   );
 }

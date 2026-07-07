@@ -1,13 +1,17 @@
 import type { CreateTodoDto } from "@/core/application/dtos/create-todo.dto";
+import type { TodoQueryDto } from "@/core/application/dtos/todo-query.dto";
 import type { UpdateTodoDto } from "@/core/application/dtos/update-todo.dto";
+import type { PaginatedTodos } from "@/core/domain/entities/paginated-todos.entity";
 import type { Todo } from "@/core/domain/entities/todo.entity";
 import { TodoRepository } from "@/core/domain/repositories/todo.repository";
 import type {
   CreateTodoRequestDto,
+  PaginatedTodosResponseDto,
   TodoResponseDto,
   UpdateTodoRequestDto,
 } from "@/infrastructure/api/dto/todo-response.dto";
 import type { HttpClient } from "@/infrastructure/http/http-client";
+import { PaginatedTodosMapper } from "@/infrastructure/mappers/paginated-todos.mapper";
 import { TodoMapper } from "@/infrastructure/mappers/todo.mapper";
 
 export class TodoApiRepository extends TodoRepository {
@@ -15,9 +19,17 @@ export class TodoApiRepository extends TodoRepository {
     super();
   }
 
-  async findAll(): Promise<Todo[]> {
-    const response = await this.httpClient.request<TodoResponseDto[]>("/todos");
-    return response.map((todo) => TodoMapper.fromApi(todo));
+  async findPaginated(query: TodoQueryDto): Promise<PaginatedTodos> {
+    const params = new URLSearchParams({
+      page: String(query.page),
+      limit: String(query.limit),
+    });
+
+    const response = await this.httpClient.request<PaginatedTodosResponseDto>(
+      `/todos?${params.toString()}`,
+    );
+
+    return PaginatedTodosMapper.fromApi(response);
   }
 
   async findById(id: string): Promise<Todo> {
