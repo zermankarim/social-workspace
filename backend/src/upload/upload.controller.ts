@@ -82,7 +82,7 @@ export class UploadController {
         ],
       }),
     )
-    file,
+    file: Express.Multer.File,
   ): UploadResponseDto {
     return this.uploadService.saveImage(file);
   }

@@ -7,6 +7,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { SessionService } from './services/session.service';
 import { RolesGuard } from './guards/roles.guard';
+import { SessionRepository } from './repositories/session.repository';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { RolesGuard } from './guards/roles.guard';
     JwtAuthGuard,
     SessionService,
     RolesGuard,
+    SessionRepository,
   ],
   exports: [JwtAuthGuard, RolesGuard],
 })

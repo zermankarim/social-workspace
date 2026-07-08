@@ -1,16 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
 import { CreateTodoDto, TodoResponseDto, UpdateTodoDto } from './dto/todo.dto';
 import { TodoMapper } from './todo.mapper';
 import { OrderBy, SortBy, TodoQueryDto } from './dto/todo-query.dto';
 import { PaginatedTodosResponseDto } from './dto/pagination.dto';
 import { Prisma } from '@prisma/client';
+import { TodoRepository } from './todo.repository';
 
 @Injectable()
 export class TodosService {
-  private readonly todoInclude = { attachments: true } as const;
-
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly todoRepository: TodoRepository) {}
 
   async findOne(userId: string, id: string): Promise<TodoResponseDto> {
     const todo = await this.findOwnedTodo(userId, id);
@@ -34,16 +32,8 @@ export class TodosService {
     };
 
     const [todos, total] = await Promise.all([
-      this.prisma.todo.findMany({
-        where,
-        include: this.todoInclude,
-        orderBy: { [sortBy]: orderBy },
-        skip,
-        take: limit,
-      }),
-      this.prisma.todo.count({
-        where,
-      }),
+      this.todoRepository.findMany(where, { [sortBy]: orderBy }, skip, limit),
+      this.todoRepository.count(where),
     ]);
 
     const totalPages = Math.ceil(total / limit) || 1;
@@ -62,54 +52,27 @@ export class TodosService {
   }
 
   async create(userId: string, dto: CreateTodoDto): Promise<TodoResponseDto> {
-    const todo = await this.prisma.todo.create({
-      data: {
-        userId,
-        text: dto.text,
-        attachments: dto.attachments?.length
-          ? { create: dto.attachments }
-          : undefined,
-      },
-      include: this.todoInclude,
-    });
+    const todo = await this.todoRepository.create(userId, dto);
 
     return TodoMapper.fromPrismaToResponse(todo);
   }
 
-  async update(
-    userId: string,
-    id: string,
-    dto: UpdateTodoDto,
-  ): Promise<TodoResponseDto> {
+  async update(userId: string, id: string, dto: UpdateTodoDto) {
     await this.findOwnedTodo(userId, id);
-
-    const todo = await this.prisma.todo.update({
-      where: { id },
-      data: dto,
-      include: this.todoInclude,
-    });
-
+    const todo = await this.todoRepository.update(id, dto);
     return TodoMapper.fromPrismaToResponse(todo);
   }
 
   async remove(userId: string, id: string): Promise<void> {
     await this.findOwnedTodo(userId, id);
-
-    await this.prisma.todo.delete({
-      where: { id },
-    });
+    await this.todoRepository.delete(id);
   }
 
   private async findOwnedTodo(userId: string, id: string) {
-    const todo = await this.prisma.todo.findFirst({
-      where: { id, userId },
-      include: this.todoInclude,
-    });
-
+    const todo = await this.todoRepository.findFirstByIdAndUserId(id, userId);
     if (!todo) {
       throw new NotFoundException('Todo not found');
     }
-
     return todo;
   }
 }

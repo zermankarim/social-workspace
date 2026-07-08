@@ -11,7 +11,7 @@ import { Response } from 'express';
 import { UserMapper } from '../../users/user.mapper';
 import { clearAuthCookies, setAuthCookies } from '../utils/cookie';
 import { JwtPayload } from '../types/jwt-payload';
-import { SessionService, hashToken } from './session.service';
+import { SessionService } from './session.service';
 import { randomUUID } from 'crypto';
 import { AppConfigService } from '../../infrastructure/config/services/config.service';
 
@@ -71,11 +71,14 @@ export class AuthService {
       sessionId: session.id,
     });
 
-    await this.sessionService.rotateTokens(session.id, {
-      refreshTokenHash: hashToken(refreshToken),
-      accessTokenExpiresAt,
-      refreshTokenExpiresAt,
-    });
+    await this.sessionService.rotateTokensByRefreshToken(
+      session.id,
+      refreshToken,
+      {
+        accessTokenExpiresAt,
+        refreshTokenExpiresAt,
+      },
+    );
 
     setAuthCookies(res, accessToken, refreshToken, this.envConfig.cookies);
 
@@ -164,11 +167,14 @@ export class AuthService {
       sessionId: session.id,
     });
 
-    await this.sessionService.rotateTokens(session.id, {
-      refreshTokenHash: hashToken(tokens.refreshToken),
-      accessTokenExpiresAt,
-      refreshTokenExpiresAt,
-    });
+    await this.sessionService.rotateTokensByRefreshToken(
+      session.id,
+      tokens.refreshToken,
+      {
+        accessTokenExpiresAt,
+        refreshTokenExpiresAt,
+      },
+    );
 
     setAuthCookies(
       res,
