@@ -1,63 +1,37 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { PaginationQueryDto } from '../../shared/dto/pagination-query.dto';
 
-export enum OrderBy {
+export enum TodoOrderBy {
   ASC = 'asc',
   DESC = 'desc',
 }
 
-export enum SortBy {
+export enum TodoSortBy {
   CREATED_AT = 'createdAt',
   UPDATED_AT = 'updatedAt',
 }
 
-export class TodoQueryDto {
+export class TodoQueryDto extends PaginationQueryDto {
   @ApiPropertyOptional({
-    description: 'Page number (1-based)',
-    default: 1,
-    minimum: 1,
-    example: 1,
-  })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  page?: number = 1;
-
-  @ApiPropertyOptional({
-    description: 'Number of todos per page',
-    default: 20,
-    minimum: 1,
-    maximum: 100,
-    example: 20,
-  })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(100)
-  limit?: number = 20;
-
-  @ApiPropertyOptional({
-    enum: SortBy,
+    enum: TodoSortBy,
     description: 'Field to sort by',
-    default: SortBy.CREATED_AT,
-    example: SortBy.CREATED_AT,
+    default: TodoSortBy.CREATED_AT,
+    example: TodoSortBy.CREATED_AT,
   })
   @IsOptional()
-  @IsEnum(SortBy)
-  sortBy?: SortBy = SortBy.CREATED_AT;
+  @IsEnum(TodoSortBy)
+  sortBy?: TodoSortBy = TodoSortBy.CREATED_AT;
 
   @ApiPropertyOptional({
-    enum: OrderBy,
+    enum: TodoOrderBy,
     description: 'Sort direction',
-    default: OrderBy.DESC,
-    example: OrderBy.DESC,
+    default: TodoOrderBy.DESC,
+    example: TodoOrderBy.DESC,
   })
   @IsOptional()
-  @IsEnum(OrderBy)
-  orderBy?: OrderBy = OrderBy.DESC;
+  @IsEnum(TodoOrderBy)
+  orderBy?: TodoOrderBy = TodoOrderBy.DESC;
 
   @ApiPropertyOptional({
     description: 'Search query',

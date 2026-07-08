@@ -1,10 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTodoDto, TodoResponseDto, UpdateTodoDto } from './dto/todo.dto';
 import { TodoMapper } from './todo.mapper';
-import { OrderBy, SortBy, TodoQueryDto } from './dto/todo-query.dto';
-import { PaginatedTodosResponseDto } from './dto/pagination.dto';
+import { TodoOrderBy, TodoSortBy, TodoQueryDto } from './dto/todo-query.dto';
 import { Prisma } from '@prisma/client';
 import { TodoRepository } from './todo.repository';
+import { PaginatedResponseDto } from '../shared/dto/paginated-response.dto';
+import {
+  buildPaginationMeta,
+  getPaginationParams,
+} from '../shared/utils/pagination';
 
 @Injectable()
 export class TodosService {
@@ -18,12 +22,13 @@ export class TodosService {
   async findPaginated(
     userId: string,
     query: TodoQueryDto,
-  ): Promise<PaginatedTodosResponseDto> {
-    const page = query.page ?? 1;
-    const limit = query.limit ?? 20;
-    const skip = (page - 1) * limit;
-    const sortBy = query.sortBy ?? SortBy.CREATED_AT;
-    const orderBy = query.orderBy ?? OrderBy.DESC;
+  ): Promise<PaginatedResponseDto<TodoResponseDto>> {
+    const { page, limit, skip, take } = getPaginationParams(
+      query.page,
+      query.limit,
+    );
+    const sortBy = query.sortBy ?? TodoSortBy.CREATED_AT;
+    const orderBy = query.orderBy ?? TodoOrderBy.DESC;
     const search = query.search ?? '';
 
     const where: Prisma.TodoWhereInput = {
@@ -32,22 +37,13 @@ export class TodosService {
     };
 
     const [todos, total] = await Promise.all([
-      this.todoRepository.findMany(where, { [sortBy]: orderBy }, skip, limit),
+      this.todoRepository.findMany(where, { [sortBy]: orderBy }, skip, take),
       this.todoRepository.count(where),
     ]);
 
-    const totalPages = Math.ceil(total / limit) || 1;
-
     return {
       data: todos.map((todo) => TodoMapper.fromPrismaToResponse(todo)),
-      meta: {
-        page,
-        limit,
-        total,
-        totalPages,
-        hasNextPage: page < totalPages,
-        hasPrevPage: page > 1,
-      },
+      meta: buildPaginationMeta(page, limit, total),
     };
   }
 

@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TodoResponseDto } from './todo.dto';
 
 export class PaginationMetaDto {
   @ApiProperty({
@@ -15,7 +14,7 @@ export class PaginationMetaDto {
   limit: number;
 
   @ApiProperty({
-    description: 'Total number of todos for the user',
+    description: 'Total number of items',
     example: 50,
   })
   total: number;
@@ -39,16 +38,7 @@ export class PaginationMetaDto {
   hasPrevPage: boolean;
 }
 
-export class PaginatedTodosResponseDto {
-  @ApiProperty({
-    type: [TodoResponseDto],
-    description: 'Todos for the current page',
-  })
-  data: TodoResponseDto[];
-
-  @ApiProperty({
-    type: PaginationMetaDto,
-    description: 'Pagination metadata',
-  })
+export type PaginatedResponseDto<T> = {
+  data: T[];
   meta: PaginationMetaDto;
-}
+};
