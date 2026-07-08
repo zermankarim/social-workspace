@@ -53,11 +53,9 @@ export const envConfig = registerAs(
     },
 
     upload: {
-      dir: process.env.UPLOAD_DIR ?? 'uploads',
+      dir: process.env.UPLOAD_DIR as string,
       publicUrl: process.env.PUBLIC_URL as string,
-      maxFileSizeBytes: Number(
-        process.env.UPLOAD_MAX_FILE_SIZE_BYTES ?? 5 * 1024 * 1024,
-      ),
+      maxFileSizeBytes: Number(process.env.UPLOAD_MAX_FILE_SIZE_BYTES),
     },
   }),
 );
