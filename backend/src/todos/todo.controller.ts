@@ -25,14 +25,9 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { CreateTodoDto, TodoResponseDto, UpdateTodoDto } from './dto/todo.dto';
-import { Request } from 'express';
-import { JwtPayload } from '../auth/types/jwt-payload';
 import { TodoQueryDto } from './dto/todo-query.dto';
 import { PaginatedTodosResponseDto } from './dto/paginated-todos-response.dto';
-
-type RequestWithJwtPayload = Request & {
-  user: JwtPayload;
-};
+import { type RequestWithJwtPayload } from '../shared/types/request-with-jwt-payload.type';
 
 const TODO_ID_PARAM = {
   name: 'id',

@@ -1,8 +1,8 @@
-import { User } from '@prisma/client';
 import { UserResponseDto } from './dto/user.dto';
+import { UserPublic } from './user.select';
 
 export class UserMapper {
-  static fromPrismaToResponse(user: User): UserResponseDto {
+  static fromPrismaToResponse(user: UserPublic): UserResponseDto {
     return {
       id: user.id,
       email: user.email,
