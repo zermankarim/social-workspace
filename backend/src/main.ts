@@ -7,6 +7,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppConfigService } from './infrastructure/config/services/config.service';
 import { CorsCallback, CorsOrigin } from './shared/validation/types/cors.types';
 import { join } from 'path';
+import { AppExceptionFilter } from './infrastructure/transport/filters/app-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -74,6 +75,7 @@ async function bootstrap() {
       stopAtFirstError: true,
     }),
   );
+  app.useGlobalFilters(new AppExceptionFilter());
   app.use(cookieParser());
 
   await app.listen(port);
