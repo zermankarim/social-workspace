@@ -1,7 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTodoDto, TodoResponseDto, UpdateTodoDto } from './dto/todo.dto';
 import { TodoMapper } from './todo.mapper';
-import { TodoOrderBy, TodoSortBy, TodoQueryDto } from './dto/todo-query.dto';
+import { TodoQueryDto } from './dto/todo-query.dto';
+import {
+  PaginationOrderBy,
+  PaginationSortBy,
+} from '../shared/enums/pagination.enum';
 import { Prisma } from '@prisma/client';
 import { TodoRepository } from './todo.repository';
 import { PaginatedResponseDto } from '../shared/dto/paginated-response.dto';
@@ -27,13 +31,13 @@ export class TodosService {
       query.page,
       query.limit,
     );
-    const sortBy = query.sortBy ?? TodoSortBy.CREATED_AT;
-    const orderBy = query.orderBy ?? TodoOrderBy.DESC;
+    const sortBy = query.sortBy ?? PaginationSortBy.CREATED_AT;
+    const orderBy = query.orderBy ?? PaginationOrderBy.DESC;
     const search = query.search ?? '';
 
     const where: Prisma.TodoWhereInput = {
       userId,
-      text: { contains: search, mode: 'insensitive' },
+      text: search ? { contains: search, mode: 'insensitive' } : undefined,
     };
 
     const [todos, total] = await Promise.all([

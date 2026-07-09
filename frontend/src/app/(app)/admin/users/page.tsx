@@ -1,16 +1,39 @@
 "use client";
 
-import { Users } from "lucide-react";
-import { useState } from "react";
+import { AlertCircle, Loader2, Users } from "lucide-react";
+import { useEffect, useState } from "react";
 import { ApiError } from "@/core/application/errors/api.error";
-import { RequireAdmin } from "@/presentation/components/auth/auth-guards";
+import { TodoOrderBy } from "@/core/domain/enums/todo-order-by.enum";
+import { TodoSortBy } from "@/core/domain/enums/todo-sort-by.enum";
 import { RoleBadge } from "@/presentation/components/ui/role-badge";
+import { TodoFilterBar } from "@/presentation/components/todos/todo-filter-bar";
+import { TodoPagination } from "@/presentation/components/todos/todo-pagination";
+import { useDebouncedValue } from "@/presentation/hooks/use-debounced-value";
 import { useUserById, useUsers } from "@/presentation/hooks/use-users";
 
 function UsersAdminContent() {
-  const { data: users, isLoading, error } = useUsers();
+  const [page, setPage] = useState(1);
+  const [sortBy, setSortBy] = useState(TodoSortBy.CREATED_AT);
+  const [orderBy, setOrderBy] = useState(TodoOrderBy.DESC);
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearch = useDebouncedValue(searchInput.trim(), 300);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const { data, isLoading, isFetching, error } = useUsers({
+    page,
+    sortBy,
+    orderBy,
+    search: debouncedSearch || undefined,
+  });
+
   const selectedUser = useUserById(selectedId);
+  const users = data?.data ?? [];
+  const meta = data?.meta;
+  const isSearching = debouncedSearch.length > 0;
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, sortBy, orderBy]);
 
   return (
     <div className="space-y-8">
@@ -19,28 +42,53 @@ function UsersAdminContent() {
           <Users className="h-7 w-7" aria-hidden />
           Users
         </h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          Admin-only view backed by{" "}
-          <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">GET /users</code> and{" "}
-          <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">GET /users/:id</code>.
-        </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
-        <section className="rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900 lg:col-span-3">
-          <div className="border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
-            <h2 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">All users</h2>
+        <section className="flex flex-col rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900 lg:col-span-3">
+          <div className="space-y-3 border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
+            <div>
+              <h2 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                All users
+              </h2>
+              <p className="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">
+                {meta
+                  ? isSearching
+                    ? `${meta.total} match${meta.total === 1 ? "" : "es"} for "${debouncedSearch}"`
+                    : `${meta.total} user${meta.total === 1 ? "" : "s"} total`
+                  : "Loading users…"}
+                {isFetching && !isLoading ? (
+                  <span className="ml-2 text-xs text-zinc-400">Updating…</span>
+                ) : null}
+              </p>
+            </div>
+
+            <TodoFilterBar
+              search={searchInput}
+              onSearchChange={setSearchInput}
+              sortBy={sortBy}
+              orderBy={orderBy}
+              onSortByChange={setSortBy}
+              onOrderByChange={setOrderBy}
+              disabled={isLoading && !data}
+            />
           </div>
 
           {isLoading ? (
-            <p className="px-5 py-8 text-sm text-zinc-500">Loading users…</p>
+            <div className="flex justify-center py-16">
+              <Loader2
+                className="h-8 w-8 animate-spin text-violet-700 dark:text-violet-400"
+                aria-hidden
+              />
+            </div>
           ) : error ? (
-            <p className="px-5 py-8 text-sm text-red-600">
+            <p className="flex items-center gap-2 px-5 py-8 text-sm text-red-600">
+              <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
               {error instanceof ApiError ? error.message : "Failed to load users"}
             </p>
-          ) : (
+          ) : users.length > 0 ? (
             <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">
-              {users?.map((user) => (
+              {users.map((user) => (
                 <li key={user.id}>
                   <button
                     type="button"
@@ -57,22 +105,42 @@ function UsersAdminContent() {
                 </li>
               ))}
             </ul>
+          ) : (
+            <p className="px-5 py-8 text-sm text-zinc-500 dark:text-zinc-400">
+              {isSearching ? "No matching users." : "No users found."}
+            </p>
           )}
+
+          {meta ? (
+            <TodoPagination
+              meta={meta}
+              onPageChange={setPage}
+              itemLabel="user"
+            />
+          ) : null}
         </section>
 
         <section className="rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900 lg:col-span-2">
           <div className="border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
-            <h2 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">User details</h2>
+            <h2 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+              User details
+            </h2>
           </div>
 
           {!selectedId ? (
-            <p className="px-5 py-8 text-sm text-zinc-500">
+            <p className="px-5 py-8 text-sm text-zinc-500 dark:text-zinc-400">
               Select a user to load details.
             </p>
           ) : selectedUser.isLoading ? (
-            <p className="px-5 py-8 text-sm text-zinc-500">Loading…</p>
+            <div className="flex justify-center py-16">
+              <Loader2
+                className="h-6 w-6 animate-spin text-zinc-500"
+                aria-hidden
+              />
+            </div>
           ) : selectedUser.error ? (
-            <p className="px-5 py-8 text-sm text-red-600">
+            <p className="flex items-center gap-2 px-5 py-8 text-sm text-red-600">
+              <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
               {selectedUser.error instanceof ApiError
                 ? selectedUser.error.message
                 : "Failed to load user"}
@@ -112,9 +180,5 @@ function UsersAdminContent() {
 }
 
 export default function AdminUsersPage() {
-  return (
-    <RequireAdmin>
-      <UsersAdminContent />
-    </RequireAdmin>
-  );
+  return <UsersAdminContent />;
 }

@@ -1,3 +1,4 @@
+import { Type } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PaginationMetaDto {
@@ -42,3 +43,28 @@ export type PaginatedResponseDto<T> = {
   data: T[];
   meta: PaginationMetaDto;
 };
+
+export function createPaginatedResponseDto<TModel>(
+  model: Type<TModel>,
+  dataDescription = 'Items for the current page',
+) {
+  class PaginatedResponseDtoClass {
+    @ApiProperty({
+      type: [model],
+      description: dataDescription,
+    })
+    data: TModel[];
+
+    @ApiProperty({
+      type: PaginationMetaDto,
+      description: 'Pagination metadata',
+    })
+    meta: PaginationMetaDto;
+  }
+
+  Object.defineProperty(PaginatedResponseDtoClass, 'name', {
+    value: `Paginated${model.name}ResponseDto`,
+  });
+
+  return PaginatedResponseDtoClass;
+}

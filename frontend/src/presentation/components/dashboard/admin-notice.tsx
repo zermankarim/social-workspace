@@ -9,14 +9,14 @@ export function AdminNotice() {
         Administrator
       </h2>
       <p className="mt-1.5 text-sm text-violet-800 dark:text-violet-300">
-        Manage accounts in the{" "}
+        Open the{" "}
         <Link
           href="/admin/users"
           className="font-medium underline underline-offset-2 hover:text-violet-950 dark:hover:text-violet-100"
         >
-          Users
+          admin panel
         </Link>{" "}
-        section.
+        to manage users.
       </p>
     </section>
   );

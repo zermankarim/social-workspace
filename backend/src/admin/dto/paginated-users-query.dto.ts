@@ -1,3 +1,3 @@
 import { SortableSearchPaginationQueryDto } from '../../shared/dto/sortable-search-pagination-query.dto';
 
-export class TodoQueryDto extends SortableSearchPaginationQueryDto {}
+export class PaginatedUsersQueryDto extends SortableSearchPaginationQueryDto {}

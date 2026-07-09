@@ -5,15 +5,20 @@ import type { PaginationMeta } from "@/core/domain/entities/pagination-meta.enti
 interface TodoPaginationProps {
   meta: PaginationMeta;
   onPageChange: (page: number) => void;
+  itemLabel?: string;
 }
 
-export function TodoPagination({ meta, onPageChange }: TodoPaginationProps) {
+export function TodoPagination({
+  meta,
+  onPageChange,
+  itemLabel = "task",
+}: TodoPaginationProps) {
   if (meta.total === 0) return null;
 
   return (
     <div className="flex flex-col gap-3 border-t border-zinc-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:border-zinc-800">
       <p className="text-sm text-zinc-500 dark:text-zinc-400">
-        Page {meta.page} of {meta.totalPages} · {meta.total} task
+        Page {meta.page} of {meta.totalPages} · {meta.total} {itemLabel}
         {meta.total === 1 ? "" : "s"}
       </p>
 
