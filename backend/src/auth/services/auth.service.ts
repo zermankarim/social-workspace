@@ -8,12 +8,15 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
 
-import { UserMapper } from '../../users/user.mapper';
+import { UserMapper } from '../../users/mappers/user.mapper';
 import { clearAuthCookies, setAuthCookies } from '../utils/cookie';
 import { JwtPayload } from '../types/jwt-payload';
 import { SessionService } from './session.service';
 import { randomUUID } from 'crypto';
 import { AppConfigService } from '../../infrastructure/config/services/config.service';
+import { SignupDto } from '../dto/auth.dto';
+import { Prisma, ProfileRole } from '@prisma/client';
+import { userPublicSelect } from '../../users/user.select';
 
 @Injectable()
 export class AuthService {
@@ -24,7 +27,7 @@ export class AuthService {
     private readonly envConfig: AppConfigService,
   ) {}
 
-  async signup(dto: { email: string; password: string }) {
+  async signup(dto: SignupDto) {
     const exists = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
@@ -33,12 +36,19 @@ export class AuthService {
 
     const hash = await bcrypt.hash(dto.password, 10);
 
+    const newUserToCreate: Prisma.UserCreateInput = {
+      email: dto.email,
+      passwordHash: hash,
+      role: ProfileRole.USER,
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      bio: dto.bio,
+      location: dto.location ? { create: dto.location } : undefined,
+    };
+
     const user = await this.prisma.user.create({
-      data: {
-        email: dto.email,
-        passwordHash: hash,
-        role: 'USER',
-      },
+      data: newUserToCreate,
+      select: userPublicSelect,
     });
 
     return { user: UserMapper.fromPrismaToResponse(user) };
@@ -47,27 +57,30 @@ export class AuthService {
   async signin(dto: { email: string; password: string }, res: Response) {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
+      select: { ...userPublicSelect, passwordHash: true },
     });
 
     if (!user) throw new BadRequestException('Wrong credentials');
 
-    const ok = await bcrypt.compare(dto.password, user.passwordHash);
+    const { passwordHash, ...publicUser } = user;
+
+    const ok = await bcrypt.compare(dto.password, passwordHash);
     if (!ok) throw new BadRequestException('Wrong credentials');
 
     const accessTokenExpiresAt = this.getAccessTokenExpiresAt();
     const refreshTokenExpiresAt = this.getRefreshTokenExpiresAt();
 
     const session = await this.sessionService.createSession({
-      userId: user.id,
+      userId: publicUser.id,
       refreshTokenHash: `pending:${randomUUID()}`,
       accessTokenExpiresAt,
       refreshTokenExpiresAt,
     });
 
     const { accessToken, refreshToken } = this.issueTokens({
-      userId: user.id,
-      email: user.email,
-      role: user.role,
+      userId: publicUser.id,
+      email: publicUser.email,
+      role: publicUser.role,
       sessionId: session.id,
     });
 
@@ -84,7 +97,7 @@ export class AuthService {
 
     return {
       message: 'Logged in',
-      user: UserMapper.fromPrismaToResponse(user),
+      user: UserMapper.fromPrismaToResponse(publicUser),
     };
   }
 
@@ -150,6 +163,7 @@ export class AuthService {
 
     const user = await this.prisma.user.findUnique({
       where: { id: payload.userId },
+      select: userPublicSelect,
     });
 
     if (!user) {

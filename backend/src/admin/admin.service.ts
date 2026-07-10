@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { AdminRepository } from './admin.repository';
 import { UserResponseDto } from '../users/dto/user.dto';
-import { UserMapper } from '../users/user.mapper';
+import { UserMapper } from '../users/mappers/user.mapper';
 import { PaginatedUsersQueryDto } from './dto/paginated-users-query.dto';
 import {
   PaginationOrderBy,

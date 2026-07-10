@@ -3,20 +3,72 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #fafafa;
-  --foreground: #18181b;
+  /* Product palette */
+  --background: #f3f2ef;
+  --foreground: #191919;
+  --surface: #ffffff;
+  --surface-muted: #f4f2ee;
+  --border: #e0dfdc;
+  --border-strong: #cfcfcf;
+  --muted: #666666;
+  --muted-foreground: #666666;
+  --primary: #0a66c2;
+  --primary-hover: #004182;
+  --primary-foreground: #ffffff;
+  --primary-soft: #e8f1fa;
+  --accent: #057642;
+  --danger: #cc1016;
+  --nav: #ffffff;
+  --nav-foreground: #666666;
+  --nav-active: #191919;
+  --ring: #0a66c2;
+  --shadow-card: 0 0 0 1px rgba(0, 0, 0, 0.08);
 }
 
 .dark {
-  --background: #09090b;
-  --foreground: #fafafa;
+  --background: #000000;
+  --foreground: #f3f2ef;
+  --surface: #1b1b1b;
+  --surface-muted: #2a2a2a;
+  --border: #38434f;
+  --border-strong: #5a5a5a;
+  --muted: #b0b0b0;
+  --muted-foreground: #b0b0b0;
+  --primary: #70b5f9;
+  --primary-hover: #9dceff;
+  --primary-foreground: #000000;
+  --primary-soft: #1b3348;
+  --accent: #5fbe82;
+  --danger: #f87171;
+  --nav: #1b1b1b;
+  --nav-foreground: #b0b0b0;
+  --nav-active: #f3f2ef;
+  --ring: #70b5f9;
+  --shadow-card: 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
+  --color-accent: var(--accent);
+  --color-danger: var(--danger);
+  --color-nav: var(--nav);
+  --color-nav-foreground: var(--nav-foreground);
+  --color-nav-active: var(--nav-active);
+  --color-ring: var(--ring);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --shadow-card: var(--shadow-card);
 }
 
 body {

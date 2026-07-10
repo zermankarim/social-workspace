@@ -15,6 +15,18 @@ async function main() {
       email: 'admin@example.com',
       passwordHash,
       role: ProfileRole.ADMIN,
+      firstName: 'Admin',
+      lastName: 'Admin',
+      location: {
+        create: {
+          lat: 0,
+          lng: 0,
+          label: 'New York, NY, USA',
+          city: 'New York',
+          country: 'USA',
+          placeId: 'ChIJN1t_t2ZagwRYpp_3PN47QTk',
+        },
+      },
     },
   });
 
@@ -25,6 +37,18 @@ async function main() {
       email: 'user@example.com',
       passwordHash,
       role: ProfileRole.USER,
+      firstName: 'John',
+      lastName: 'Doe',
+      location: {
+        create: {
+          lat: 0,
+          lng: 0,
+          label: 'New York, NY, USA',
+          city: 'New York',
+          country: 'USA',
+          placeId: 'ChIJN1t_t2ZagwRYpp_3PN47QTk',
+        },
+      },
     },
   });
 }

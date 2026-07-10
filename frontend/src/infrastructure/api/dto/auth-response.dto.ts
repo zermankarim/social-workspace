@@ -1,7 +1,26 @@
+export interface LocationResponseDto {
+  id: string;
+  lat: number;
+  lng: number;
+  label: string | null;
+  city: string | null;
+  country: string | null;
+  placeId: string | null;
+}
+
 export interface UserResponseDto {
   id: string;
   email: string;
   role: string;
+  firstName: string;
+  lastName: string;
+  bio: string | null;
+  location: LocationResponseDto | null;
+  avatarUrl: string | null;
+  github: string | null;
+  linkedin: string | null;
+  website: string | null;
+  twitter: string | null;
   createdAt: string;
   updatedAt: string;
 }

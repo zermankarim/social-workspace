@@ -1,12 +1,13 @@
 import type { User } from "@/core/domain/entities/user.entity";
-import type { AuthCredentials } from "@/core/domain/value-objects/auth-credentials.vo";
 import type { AuthRepository } from "@/core/domain/repositories/auth.repository";
+import { AuthCredentials } from "@/core/domain/value-objects/auth-credentials.vo";
+import type { SignupData } from "@/core/domain/value-objects/signup-data.vo";
 
 export class AuthService {
   constructor(private readonly authRepository: AuthRepository) {}
 
-  signup(credentials: AuthCredentials): Promise<User> {
-    return this.authRepository.signup(credentials);
+  signup(data: SignupData): Promise<User> {
+    return this.authRepository.signup(data);
   }
 
   signin(credentials: AuthCredentials): Promise<User> {
@@ -21,8 +22,10 @@ export class AuthService {
     return this.authRepository.refresh();
   }
 
-  async register(credentials: AuthCredentials): Promise<User> {
-    await this.authRepository.signup(credentials);
-    return this.authRepository.signin(credentials);
+  async register(data: SignupData): Promise<User> {
+    await this.authRepository.signup(data);
+    return this.authRepository.signin(
+      new AuthCredentials(data.email, data.password),
+    );
   }
 }

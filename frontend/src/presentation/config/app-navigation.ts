@@ -1,4 +1,11 @@
-import { LayoutDashboard, Users } from "lucide-react";
+import {
+  Home,
+  Briefcase,
+  Bell,
+  MessageSquare,
+  Users,
+  Shield,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { ProfileRole } from "@/core/domain/enums/profile-role.enum";
 
@@ -9,19 +16,50 @@ export interface AppNavItem {
   roles: ProfileRole[];
   /** Defaults to pathname.startsWith(href) */
   isActive?: (pathname: string) => boolean;
+  comingSoon?: boolean;
 }
 
 export const appNavItems: AppNavItem[] = [
   {
-    href: "/dashboard",
-    label: "Dashboard",
-    icon: LayoutDashboard,
+    href: "/feed",
+    label: "Home",
+    icon: Home,
     roles: [ProfileRole.ADMIN, ProfileRole.USER],
+    isActive: (pathname) =>
+      pathname === "/feed" || pathname.startsWith("/feed/"),
+  },
+  {
+    href: "/network",
+    label: "My Network",
+    icon: Users,
+    roles: [ProfileRole.ADMIN, ProfileRole.USER],
+    comingSoon: true,
+  },
+  {
+    href: "/jobs",
+    label: "Jobs",
+    icon: Briefcase,
+    roles: [ProfileRole.ADMIN, ProfileRole.USER],
+    comingSoon: true,
+  },
+  {
+    href: "/messaging",
+    label: "Messaging",
+    icon: MessageSquare,
+    roles: [ProfileRole.ADMIN, ProfileRole.USER],
+    comingSoon: true,
+  },
+  {
+    href: "/notifications",
+    label: "Notifications",
+    icon: Bell,
+    roles: [ProfileRole.ADMIN, ProfileRole.USER],
+    comingSoon: true,
   },
   {
     href: "/admin/users",
-    label: "Users",
-    icon: Users,
+    label: "Admin",
+    icon: Shield,
     roles: [ProfileRole.ADMIN],
     isActive: (pathname) => pathname.startsWith("/admin"),
   },

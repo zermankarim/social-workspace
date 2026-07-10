@@ -6,7 +6,16 @@ export const userPublicSelect = {
   role: true,
   createdAt: true,
   updatedAt: true,
-} as const;
+  firstName: true,
+  lastName: true,
+  bio: true,
+  location: true,
+  avatarUrl: true,
+  github: true,
+  linkedin: true,
+  website: true,
+  twitter: true,
+} as const satisfies Prisma.UserSelect;
 
 export type UserPublic = Prisma.UserGetPayload<{
   select: typeof userPublicSelect;

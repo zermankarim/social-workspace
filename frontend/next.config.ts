@@ -7,6 +7,15 @@ const apiPath = (process.env.NEXT_PUBLIC_API_URL ?? "/api/v1").replace(
 );
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/dashboard",
+        destination: "/feed",
+        permanent: false,
+      },
+    ];
+  },
   async rewrites() {
     return [
       {

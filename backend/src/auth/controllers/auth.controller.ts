@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
-import { AuthDto } from '../dto/auth.dto';
+import { AuthDto, SignupDto } from '../dto/auth.dto';
 import type { Request, Response } from 'express';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { SignupResponseDto } from '../dto/signup-response.dto copy';
@@ -16,7 +16,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Sign a user up' })
   @ApiResponse({ type: SignupResponseDto })
   @Post('signup')
-  signup(@Body() dto: AuthDto) {
+  signup(@Body() dto: SignupDto) {
     return this.authService.signup(dto);
   }
 

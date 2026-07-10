@@ -14,14 +14,14 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
-| Script | Purpose |
-|--------|---------|
-| `npm run dev` | Dev server |
-| `npm run build` / `start` | Production build / serve |
-| `npm run typecheck` | TypeScript (`tsc --noEmit`) |
-| `npm run lint` / `lint:fix` | ESLint |
-| `npm run format` / `format:check` | Prettier |
-| `npm run check` | typecheck + lint + format:check |
+| Script                            | Purpose                         |
+| --------------------------------- | ------------------------------- |
+| `npm run dev`                     | Dev server                      |
+| `npm run build` / `start`         | Production build / serve        |
+| `npm run typecheck`               | TypeScript (`tsc --noEmit`)     |
+| `npm run lint` / `lint:fix`       | ESLint                          |
+| `npm run format` / `format:check` | Prettier                        |
+| `npm run check`                   | typecheck + lint + format:check |
 
 ## Architecture
 

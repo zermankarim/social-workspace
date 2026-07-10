@@ -1,5 +1,6 @@
 import type { User } from "@/core/domain/entities/user.entity";
 import type { AuthCredentials } from "@/core/domain/value-objects/auth-credentials.vo";
+import type { SignupData } from "@/core/domain/value-objects/signup-data.vo";
 import { AuthRepository } from "@/core/domain/repositories/auth.repository";
 import type {
   RefreshResponseDto,
@@ -14,12 +15,28 @@ export class AuthApiRepository extends AuthRepository {
     super();
   }
 
-  async signup(credentials: AuthCredentials): Promise<User> {
+  async signup(data: SignupData): Promise<User> {
     const response = await this.httpClient.request<SignupResponseDto>(
       "/auth/signup",
       {
         method: "POST",
-        body: credentials,
+        body: {
+          email: data.email,
+          password: data.password,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          bio: data.bio,
+          location: data.location
+            ? {
+                lat: data.location.lat,
+                lng: data.location.lng,
+                label: data.location.label,
+                city: data.location.city,
+                country: data.location.country,
+                placeId: data.location.placeId,
+              }
+            : undefined,
+        },
         skipRefresh: true,
       },
     );

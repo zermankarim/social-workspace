@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AppProviders } from "@/presentation/components/providers/app-providers";
+import { BRAND } from "@/presentation/config/brand";
 import { themeInitScript } from "@/presentation/lib/theme-storage";
 import "./globals.css";
 
@@ -15,8 +16,25 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Social",
-  description: "Social app with posts, chats, and role-based access",
+  title: {
+    default: BRAND.name,
+    template: `%s — ${BRAND.name}`,
+  },
+  description: BRAND.tagline,
+  applicationName: BRAND.name,
+  icons: {
+    icon: [
+      { url: "/brand/logo-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/brand/logo-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [
+      {
+        url: "/brand/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -33,7 +51,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="flex min-h-full flex-col bg-background text-foreground">
         <AppProviders>{children}</AppProviders>
       </body>
     </html>
