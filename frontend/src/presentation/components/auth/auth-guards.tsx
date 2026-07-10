@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/presentation/stores/auth.store';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/presentation/stores/auth.store";
 
 export function RequireAuth({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const isInitialized = useAuthStore(s => s.isInitialized);
-  const isAuthenticated = useAuthStore(s => s.isAuthenticated());
+  const isInitialized = useAuthStore((s) => s.isInitialized);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated());
 
   useEffect(() => {
     if (isInitialized && !isAuthenticated) {
-      router.replace('/login');
+      router.replace("/login");
     }
   }, [isInitialized, isAuthenticated, router]);
 
@@ -28,12 +28,12 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
 
 export function RequireGuest({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const isInitialized = useAuthStore(s => s.isInitialized);
-  const isAuthenticated = useAuthStore(s => s.isAuthenticated());
+  const isInitialized = useAuthStore((s) => s.isInitialized);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated());
 
   useEffect(() => {
     if (isInitialized && isAuthenticated) {
-      router.replace('/dashboard');
+      router.replace("/dashboard");
     }
   }, [isInitialized, isAuthenticated, router]);
 
@@ -50,17 +50,17 @@ export function RequireGuest({ children }: { children: React.ReactNode }) {
 
 export function RequireAdmin({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const isInitialized = useAuthStore(s => s.isInitialized);
-  const isAuthenticated = useAuthStore(s => s.isAuthenticated());
-  const isAdmin = useAuthStore(s => s.isAdmin());
+  const isInitialized = useAuthStore((s) => s.isInitialized);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated());
+  const isAdmin = useAuthStore((s) => s.isAdmin());
 
   useEffect(() => {
     if (isInitialized && !isAuthenticated) {
-      router.replace('/login');
+      router.replace("/login");
       return;
     }
     if (isInitialized && isAuthenticated && !isAdmin) {
-      router.replace('/dashboard');
+      router.replace("/dashboard");
     }
   }, [isInitialized, isAuthenticated, isAdmin, router]);
 

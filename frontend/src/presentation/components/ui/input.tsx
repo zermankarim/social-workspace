@@ -5,12 +5,21 @@ type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   error?: string;
 };
 
-export function Input({ label, error, id, className = "", ...props }: InputProps) {
+export function Input({
+  label,
+  error,
+  id,
+  className = "",
+  ...props
+}: InputProps) {
   const inputId = id ?? label.toLowerCase().replace(/\s+/g, "-");
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={inputId} className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+      <label
+        htmlFor={inputId}
+        className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+      >
         {label}
       </label>
       <input

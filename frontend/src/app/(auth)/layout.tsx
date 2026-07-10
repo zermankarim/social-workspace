@@ -1,4 +1,4 @@
-import { ListTodo } from "lucide-react";
+import { MessagesSquare } from "lucide-react";
 import { RequireGuest } from "@/presentation/components/auth/auth-guards";
 import { ThemeToggle } from "@/presentation/components/ui/theme-toggle";
 
@@ -16,11 +16,11 @@ export default function AuthLayout({
         <div className="w-full max-w-md">
           <div className="mb-8 text-center">
             <h1 className="flex items-center justify-center gap-2 text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-              <ListTodo className="h-7 w-7" aria-hidden />
-              Todo List
+              <MessagesSquare className="h-7 w-7" aria-hidden />
+              Social
             </h1>
             <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-              Manage your tasks with role-based access
+              Posts, chats, and more — coming together
             </p>
           </div>
           <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8 dark:border-zinc-800 dark:bg-zinc-900">

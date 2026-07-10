@@ -1,6 +1,6 @@
 "use client";
 
-import { ListTodo, LogOut } from "lucide-react";
+import { LogOut, MessagesSquare } from "lucide-react";
 import Link from "next/link";
 import { AppNav } from "@/presentation/components/layout/app-nav";
 import { Button } from "@/presentation/components/ui/button";
@@ -23,8 +23,8 @@ export function AppHeader() {
             href="/dashboard"
             className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100"
           >
-            <ListTodo className="h-4 w-4" aria-hidden />
-            Todo List
+            <MessagesSquare className="h-4 w-4" aria-hidden />
+            Social
           </Link>
           <AppNav role={user.role} className="min-w-0 flex-1" />
         </div>

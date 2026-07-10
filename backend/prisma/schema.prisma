@@ -22,7 +22,6 @@ model User {
   sessions     Session[]
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
-  todos        Todo[]
 }
 
 // ---- Session -----
@@ -43,30 +42,4 @@ model Session {
 
   @@index([userId])
   @@index([refreshTokenHash])
-}
-
-model Todo {
-  id          String       @id @default(uuid())
-  userId      String
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  text        String
-  completed   Boolean      @default(false)
-  attachments Attachment[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-
-  @@index([userId])
-}
-
-model Attachment {
-  id        String   @id @default(uuid())
-  todoId    String
-  todo      Todo     @relation(fields: [todoId], references: [id], onDelete: Cascade)
-  url       String
-  fileName  String
-  mimeType  String?
-  sizeBytes Int?
-  createdAt DateTime @default(now())
-
-  @@index([todoId])
 }

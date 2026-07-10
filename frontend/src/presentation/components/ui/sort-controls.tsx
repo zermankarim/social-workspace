@@ -1,19 +1,19 @@
 "use client";
 
 import { ArrowDown, ArrowUp } from "lucide-react";
-import { TodoOrderBy } from "@/core/domain/enums/todo-order-by.enum";
-import { TodoSortBy } from "@/core/domain/enums/todo-sort-by.enum";
+import { SortBy } from "@/core/domain/enums/sort-by.enum";
+import { SortOrder } from "@/core/domain/enums/sort-order.enum";
 
-interface TodoSortControlsProps {
-  sortBy: TodoSortBy;
-  orderBy: TodoOrderBy;
-  onSortByChange: (sortBy: TodoSortBy) => void;
-  onOrderByChange: (orderBy: TodoOrderBy) => void;
+interface SortControlsProps {
+  sortBy: SortBy;
+  orderBy: SortOrder;
+  onSortByChange: (sortBy: SortBy) => void;
+  onOrderByChange: (orderBy: SortOrder) => void;
 }
 
-const sortOptions: { id: TodoSortBy; label: string }[] = [
-  { id: TodoSortBy.CREATED_AT, label: "Created" },
-  { id: TodoSortBy.UPDATED_AT, label: "Updated" },
+const sortOptions: { id: SortBy; label: string }[] = [
+  { id: SortBy.CREATED_AT, label: "Created" },
+  { id: SortBy.UPDATED_AT, label: "Updated" },
 ];
 
 function segmentButtonClass(isActive: boolean) {
@@ -24,13 +24,13 @@ function segmentButtonClass(isActive: boolean) {
   }`;
 }
 
-export function TodoSortControls({
+export function SortControls({
   sortBy,
   orderBy,
   onSortByChange,
   onOrderByChange,
-}: TodoSortControlsProps) {
-  const isDescending = orderBy === TodoOrderBy.DESC;
+}: SortControlsProps) {
+  const isDescending = orderBy === SortOrder.DESC;
   const OrderIcon = isDescending ? ArrowDown : ArrowUp;
 
   return (
@@ -51,7 +51,7 @@ export function TodoSortControls({
       <button
         type="button"
         onClick={() =>
-          onOrderByChange(isDescending ? TodoOrderBy.ASC : TodoOrderBy.DESC)
+          onOrderByChange(isDescending ? SortOrder.ASC : SortOrder.DESC)
         }
         className="inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-sky-200/80 bg-white/80 px-3 text-sm font-medium text-sky-950/80 transition-colors hover:bg-white dark:border-sky-800/80 dark:bg-zinc-900/80 dark:text-sky-200/80 dark:hover:bg-zinc-800"
         aria-label={isDescending ? "Sort oldest first" : "Sort newest first"}

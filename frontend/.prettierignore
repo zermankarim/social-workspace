@@ -1,0 +1,15 @@
+# dependencies
+node_modules
+package-lock.json
+
+# next
+.next
+out
+build
+next-env.d.ts
+
+# misc
+coverage
+*.tsbuildinfo
+.env*
+!.env.example

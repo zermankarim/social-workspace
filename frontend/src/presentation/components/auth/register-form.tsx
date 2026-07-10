@@ -60,7 +60,11 @@ export function RegisterForm() {
         </p>
       ) : null}
 
-      <Button type="submit" disabled={signup.isPending} className="mt-2 w-full gap-2">
+      <Button
+        type="submit"
+        disabled={signup.isPending}
+        className="mt-2 w-full gap-2"
+      >
         {signup.isPending ? (
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
         ) : (

@@ -1,9 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import {
-  PaginationOrderBy,
-  PaginationSortBy,
-} from '../enums/pagination.enum';
+import { PaginationOrderBy, PaginationSortBy } from '../enums/pagination.enum';
 import { PaginationQueryDto } from './pagination-query.dto';
 
 export class SortableSearchPaginationQueryDto extends PaginationQueryDto {

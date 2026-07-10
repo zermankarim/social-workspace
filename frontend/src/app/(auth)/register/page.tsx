@@ -1,7 +1,7 @@
 import { RegisterForm } from "@/presentation/components/auth/register-form";
 
 export const metadata = {
-  title: "Create account — Todo List",
+  title: "Create account — Social",
 };
 
 export default function RegisterPage() {

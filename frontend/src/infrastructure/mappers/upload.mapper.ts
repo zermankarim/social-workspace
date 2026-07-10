@@ -3,11 +3,6 @@ import type { UploadResponseDto } from "@/infrastructure/api/dto/upload-response
 
 export class UploadMapper {
   static fromApi(dto: UploadResponseDto): UploadResult {
-    return new UploadResult(
-      dto.url,
-      dto.fileName,
-      dto.mimeType,
-      dto.sizeBytes,
-    );
+    return new UploadResult(dto.url, dto.fileName, dto.mimeType, dto.sizeBytes);
   }
 }

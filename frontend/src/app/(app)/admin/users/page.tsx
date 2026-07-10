@@ -1,20 +1,20 @@
 "use client";
 
 import { AlertCircle, Loader2, Users } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ApiError } from "@/core/application/errors/api.error";
-import { TodoOrderBy } from "@/core/domain/enums/todo-order-by.enum";
-import { TodoSortBy } from "@/core/domain/enums/todo-sort-by.enum";
+import { SortBy } from "@/core/domain/enums/sort-by.enum";
+import { SortOrder } from "@/core/domain/enums/sort-order.enum";
 import { RoleBadge } from "@/presentation/components/ui/role-badge";
-import { TodoFilterBar } from "@/presentation/components/todos/todo-filter-bar";
-import { TodoPagination } from "@/presentation/components/todos/todo-pagination";
+import { ListFilterBar } from "@/presentation/components/ui/list-filter-bar";
+import { ListPagination } from "@/presentation/components/ui/list-pagination";
 import { useDebouncedValue } from "@/presentation/hooks/use-debounced-value";
 import { useUserById, useUsers } from "@/presentation/hooks/use-users";
 
 function UsersAdminContent() {
   const [page, setPage] = useState(1);
-  const [sortBy, setSortBy] = useState(TodoSortBy.CREATED_AT);
-  const [orderBy, setOrderBy] = useState(TodoOrderBy.DESC);
+  const [sortBy, setSortBy] = useState(SortBy.CREATED_AT);
+  const [orderBy, setOrderBy] = useState(SortOrder.DESC);
   const [searchInput, setSearchInput] = useState("");
   const debouncedSearch = useDebouncedValue(searchInput.trim(), 300);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -31,9 +31,20 @@ function UsersAdminContent() {
   const meta = data?.meta;
   const isSearching = debouncedSearch.length > 0;
 
-  useEffect(() => {
+  const handleSearchChange = (value: string) => {
+    setSearchInput(value);
     setPage(1);
-  }, [debouncedSearch, sortBy, orderBy]);
+  };
+
+  const handleSortByChange = (value: SortBy) => {
+    setSortBy(value);
+    setPage(1);
+  };
+
+  const handleOrderByChange = (value: SortOrder) => {
+    setOrderBy(value);
+    setPage(1);
+  };
 
   return (
     <div className="space-y-8">
@@ -63,14 +74,16 @@ function UsersAdminContent() {
               </p>
             </div>
 
-            <TodoFilterBar
+            <ListFilterBar
               search={searchInput}
-              onSearchChange={setSearchInput}
+              onSearchChange={handleSearchChange}
               sortBy={sortBy}
               orderBy={orderBy}
-              onSortByChange={setSortBy}
-              onOrderByChange={setOrderBy}
+              onSortByChange={handleSortByChange}
+              onOrderByChange={handleOrderByChange}
               disabled={isLoading && !data}
+              searchPlaceholder="Search users…"
+              searchLabel="Search users"
             />
           </div>
 
@@ -84,7 +97,9 @@ function UsersAdminContent() {
           ) : error ? (
             <p className="flex items-center gap-2 px-5 py-8 text-sm text-red-600">
               <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
-              {error instanceof ApiError ? error.message : "Failed to load users"}
+              {error instanceof ApiError
+                ? error.message
+                : "Failed to load users"}
             </p>
           ) : users.length > 0 ? (
             <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">
@@ -94,7 +109,9 @@ function UsersAdminContent() {
                     type="button"
                     onClick={() => setSelectedId(user.id)}
                     className={`flex w-full items-center justify-between px-5 py-3 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800 ${
-                      selectedId === user.id ? "bg-zinc-50 dark:bg-zinc-800" : ""
+                      selectedId === user.id
+                        ? "bg-zinc-50 dark:bg-zinc-800"
+                        : ""
                     }`}
                   >
                     <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
@@ -112,7 +129,7 @@ function UsersAdminContent() {
           )}
 
           {meta ? (
-            <TodoPagination
+            <ListPagination
               meta={meta}
               onPageChange={setPage}
               itemLabel="user"

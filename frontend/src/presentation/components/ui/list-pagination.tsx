@@ -2,17 +2,17 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/presentation/components/ui/button";
 import type { PaginationMeta } from "@/core/domain/entities/pagination-meta.entity";
 
-interface TodoPaginationProps {
+interface ListPaginationProps {
   meta: PaginationMeta;
   onPageChange: (page: number) => void;
   itemLabel?: string;
 }
 
-export function TodoPagination({
+export function ListPagination({
   meta,
   onPageChange,
-  itemLabel = "task",
-}: TodoPaginationProps) {
+  itemLabel = "item",
+}: ListPaginationProps) {
   if (meta.total === 0) return null;
 
   return (

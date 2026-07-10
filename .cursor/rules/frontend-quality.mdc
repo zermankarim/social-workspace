@@ -1,0 +1,29 @@
+---
+description: Run frontend typecheck, lint, and format checks while working on the frontend
+globs: frontend/**/*
+alwaysApply: false
+---
+
+# Frontend quality checks
+
+When working on `frontend/`, periodically run quality scripts from `frontend/`:
+
+```bash
+npm run typecheck
+npm run lint
+npm run format:check
+```
+
+Or the combined gate:
+
+```bash
+npm run check
+```
+
+## When to run
+
+- After a meaningful batch of frontend edits (not after every tiny tweak)
+- Before saying a frontend task is done
+- If a previous check failed, fix and re-run until clean
+
+Prefer `npm run check` near the end of a task. Use `npm run format` / `npm run lint:fix` only when intentionally applying auto-fixes.

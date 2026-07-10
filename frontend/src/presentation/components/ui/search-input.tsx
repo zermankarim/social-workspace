@@ -2,30 +2,36 @@
 
 import { Search, X } from "lucide-react";
 
-interface TodoSearchInputProps {
+interface SearchInputProps {
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  placeholder?: string;
+  label?: string;
+  id?: string;
 }
 
-export function TodoSearchInput({
+export function SearchInput({
   value,
   onChange,
   disabled = false,
-}: TodoSearchInputProps) {
+  placeholder = "Search…",
+  label = "Search",
+  id = "search",
+}: SearchInputProps) {
   return (
     <div className="relative w-full">
-      <label htmlFor="todo-search" className="sr-only">
-        Search tasks
+      <label htmlFor={id} className="sr-only">
+        {label}
       </label>
       <input
-        id="todo-search"
+        id={id}
         type="text"
         role="searchbox"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         disabled={disabled}
-        placeholder="Search tasks…"
+        placeholder={placeholder}
         className={`h-10 w-full rounded-lg border border-sky-200/90 bg-white/90 py-2 pl-9 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-200/80 disabled:cursor-not-allowed disabled:bg-white/60 disabled:text-zinc-400 dark:border-sky-800/80 dark:bg-zinc-900/80 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-sky-600 dark:focus:ring-sky-900/50 dark:disabled:bg-zinc-900/60 ${
           value ? "pr-10" : "pr-3"
         }`}

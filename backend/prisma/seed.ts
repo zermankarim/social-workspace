@@ -8,7 +8,7 @@ const SEED_PASSWORD = 'password123';
 async function main() {
   const passwordHash = await bcrypt.hash(SEED_PASSWORD, 10);
 
-  const admin = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'admin@example.com' },
     update: { passwordHash, role: ProfileRole.ADMIN },
     create: {
@@ -18,7 +18,7 @@ async function main() {
     },
   });
 
-  const user = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'user@example.com' },
     update: { passwordHash, role: ProfileRole.USER },
     create: {
@@ -27,14 +27,6 @@ async function main() {
       role: ProfileRole.USER,
     },
   });
-
-  const todos = Array.from({ length: 100 }, (_, index) => ({
-    userId: index % 2 === 0 ? user.id : admin.id, // 50/50
-    text: `Seed todo #${index + 1}`,
-    completed: index % 7 === 0, // ~14% completed
-  }));
-
-  await prisma.todo.createMany({ data: todos });
 }
 
 main()

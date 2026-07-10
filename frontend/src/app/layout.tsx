@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Todo List",
-  description: "Full-stack todo list with role-based access",
+  title: "Social",
+  description: "Social app with posts, chats, and role-based access",
 };
 
 export default function RootLayout({

@@ -2,8 +2,8 @@
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { UserQueryDto } from "@/core/application/dtos/user-query.dto";
-import { TodoOrderBy } from "@/core/domain/enums/todo-order-by.enum";
-import { TodoSortBy } from "@/core/domain/enums/todo-sort-by.enum";
+import { SortBy } from "@/core/domain/enums/sort-by.enum";
+import { SortOrder } from "@/core/domain/enums/sort-order.enum";
 import { appContainer } from "@/modules/app.container";
 import { useAuthStore } from "@/presentation/stores/auth.store";
 
@@ -14,8 +14,8 @@ export const DEFAULT_USER_PAGE_SIZE = 20;
 export type UserListParams = {
   page: number;
   limit?: number;
-  sortBy: TodoSortBy;
-  orderBy: TodoOrderBy;
+  sortBy: SortBy;
+  orderBy: SortOrder;
   search?: string;
 };
 

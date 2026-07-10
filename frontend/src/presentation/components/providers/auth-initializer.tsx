@@ -29,7 +29,9 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
             className="h-8 w-8 animate-spin text-zinc-900 dark:text-zinc-100"
             aria-hidden
           />
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">Loading session…</p>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            Loading session…
+          </p>
         </div>
       </div>
     );

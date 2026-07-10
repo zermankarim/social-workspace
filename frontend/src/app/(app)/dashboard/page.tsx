@@ -3,7 +3,6 @@
 import { LayoutDashboard } from "lucide-react";
 import { AdminNotice } from "@/presentation/components/dashboard/admin-notice";
 import { ProfileCard } from "@/presentation/components/dashboard/profile-card";
-import { TodoList } from "@/presentation/components/todos/todo-list";
 import { useAuthStore } from "@/presentation/stores/auth.store";
 
 export default function DashboardPage() {
@@ -20,7 +19,7 @@ export default function DashboardPage() {
           Dashboard
         </h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          Manage your tasks and account settings.
+          Your account hub. Posts and chats will live here soon.
         </p>
       </div>
 
@@ -30,7 +29,14 @@ export default function DashboardPage() {
           {isAdmin ? <AdminNotice /> : null}
         </aside>
 
-        <TodoList />
+        <section className="flex min-h-[12rem] flex-col justify-center rounded-2xl border border-dashed border-zinc-200 bg-white/60 px-6 py-10 text-center dark:border-zinc-800 dark:bg-zinc-900/40">
+          <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            Nothing here yet
+          </p>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+            Feed, posts, and chats are coming next.
+          </p>
+        </section>
       </div>
     </div>
   );

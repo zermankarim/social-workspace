@@ -39,7 +39,7 @@ export class UploadController {
   @ApiOperation({
     summary: 'Upload an image',
     description:
-      'Uploads an image and returns a public URL with metadata. Reuse the response for todo attachments, user avatars, or any other feature that stores file URLs.',
+      'Uploads an image and returns a public URL with metadata. Reuse the response for user avatars, or any other feature that stores file URLs.',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({

@@ -1,6 +1,6 @@
-# TODO List Fullstack
+# Social Workspace
 
-A pet fullstack project. The repository is meant to grow over time—new modules, endpoints, and UI can be added without treating this README as a fixed feature checklist.
+Pet fullstack project: auth, roles, uploads today; posts, chats, and social features next.
 
 ## Stack
 
@@ -15,13 +15,13 @@ A pet fullstack project. The repository is meant to grow over time—new modules
 
 ```
 .
-├── backend/          # NestJS API
-├── frontend/         # Next.js client
+├── backend/                 # NestJS API
+├── frontend/                # Next.js client (Clean Architecture)
 ├── docker-compose.yaml
 └── README.md
 ```
 
-See each package directory and `.env.example` files for more detail.
+Agent guidance for frontend layers lives in `frontend/src/**/AGENTS.md`.
 
 ## Requirements
 
@@ -92,20 +92,20 @@ Frontend ↔ backend integration notes:
 
 For the current endpoint list, use Swagger or browse `backend/src/` modules.
 
-## Architecture (overview)
+## Architecture
 
 ### Backend
 
-NestJS modules (auth, users, todos, upload, and more as the project grows). Common layers:
+NestJS feature modules (`auth`, `users`, `admin`, `upload`, …). Typical pieces:
 
 - controllers / services
 - Prisma for data access
-- guards and role-based access
+- JWT guards and role-based access (`ADMIN` / `USER`)
 - DTOs + validation pipe
 
 ### Frontend
 
-[Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) with clear separation of concerns:
+[Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html):
 
 ```
 frontend/src/
@@ -116,7 +116,9 @@ frontend/src/
 └── app/               # Next.js routes (thin layer)
 ```
 
-A typical new frontend feature follows: entity → repository contract → API repository + mapper → service → module → hook → component.
+New frontend feature flow: entity → repository contract → API repository + mapper → service → module → hook → component.
+
+See each layer’s `AGENTS.md` before changing that folder.
 
 ## Useful commands
 
@@ -125,7 +127,9 @@ A typical new frontend feature follows: entity → repository contract → API r
 ```bash
 npm run start:dev      # dev server
 npm run build          # production build
+npm run typecheck
 npm run lint
+npm run format
 npm run db:studio      # Prisma Studio
 ```
 
@@ -134,19 +138,22 @@ npm run db:studio      # Prisma Studio
 ```bash
 npm run dev
 npm run build
+npm run typecheck
 npm run lint
+npm run format
+npm run check          # typecheck + lint + format:check
 ```
 
 ## Roles & extending the project
 
-The system supports role separation (e.g. `ADMIN` / `USER`). New capabilities can be added via guards, dedicated modules, and UI sections without rewriting the whole app.
+Roles: `ADMIN` / `USER`. Add capabilities via Prisma models, Nest modules, and matching frontend Clean Architecture layers.
 
 When adding a feature:
 
 1. Prisma schema + migration (if new data is needed)
 2. Backend module (controller, service, DTOs)
 3. Frontend layers following the existing pattern
-4. Update `.env.example` if needed—never commit secrets
+4. Update `.env.example` if needed — never commit secrets
 
 ## License
 

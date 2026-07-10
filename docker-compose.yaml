@@ -3,12 +3,12 @@ services:
   db:
     image: postgres:17-alpine
 
-    container_name: todo-db
+    container_name: social-workspace-db
 
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: todo
+      POSTGRES_DB: social-workspace
 
     ports:
       - "5432:5432"
@@ -18,7 +18,7 @@ services:
 
 
   backend-dev:
-    container_name: todo-backend-dev
+    container_name: social-workspace-backend-dev
 
     build:
       context: ./backend
@@ -42,7 +42,7 @@ services:
   pgadmin:
     image: dpage/pgadmin4
 
-    container_name: todo-pgadmin
+    container_name: social-workspace-pgadmin
 
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@example.com

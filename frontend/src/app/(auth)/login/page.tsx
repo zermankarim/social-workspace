@@ -1,7 +1,7 @@
 import { LoginForm } from "@/presentation/components/auth/login-form";
 
 export const metadata = {
-  title: "Sign in — Todo List",
+  title: "Sign in — Social",
 };
 
 export default function LoginPage() {

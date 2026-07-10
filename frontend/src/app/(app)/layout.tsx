@@ -1,11 +1,7 @@
 import { RequireAuth } from "@/presentation/components/auth/auth-guards";
 import { AppHeader } from "@/presentation/components/layout/app-header";
 
-export default function AppLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <RequireAuth>
       <div className="flex min-h-dvh flex-col bg-zinc-50 dark:bg-zinc-950">
