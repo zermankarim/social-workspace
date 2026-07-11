@@ -1,27 +1,18 @@
 import type { PostAttachment } from "@/core/domain/entities/post-attachment.entity";
 import type { PostAuthor } from "@/core/domain/entities/post-author.entity";
-import type { PostComment } from "@/core/domain/entities/post-comment.entity";
-import type { PostLike } from "@/core/domain/entities/post-like.entity";
 
-export class Post {
+export class PostComment {
   constructor(
     public readonly id: string,
+    public readonly postId: string,
     public readonly textContent: string | null,
     public readonly author: PostAuthor,
     public readonly attachments: PostAttachment[],
-    public readonly likesCount: number,
-    public readonly commentsCount: number,
-    public readonly previewLikes: PostLike[],
-    public readonly previewComments: PostComment[],
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
   ) {}
 
   isAuthoredBy(userId: string): boolean {
     return this.author.id === userId;
-  }
-
-  findLikeByAuthor(userId: string): PostLike | null {
-    return this.previewLikes.find((like) => like.author.id === userId) ?? null;
   }
 }

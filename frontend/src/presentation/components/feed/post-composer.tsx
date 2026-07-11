@@ -9,6 +9,8 @@ import { appContainer } from "@/modules/app.container";
 import { FeedCard } from "@/presentation/components/feed/feed-card";
 import { PostAttachmentsEditor } from "@/presentation/components/feed/post-attachments-editor";
 import { Button } from "@/presentation/components/ui/button";
+import { EmojiPickerButton } from "@/presentation/components/ui/emoji-picker-button";
+import { useEmojiInsert } from "@/presentation/hooks/use-emoji-insert";
 import { useCreatePost } from "@/presentation/hooks/use-posts";
 import { moveArrayItem } from "@/presentation/lib/array-move";
 import {
@@ -77,6 +79,12 @@ export function PostComposer({ user }: PostComposerProps) {
   const canSubmit = hasPostContent(text, attachments.length) && !isBusy;
   const isDirty = text.trim().length > 0 || attachments.length > 0;
   const showCharCount = text.length >= POST_TEXT_MAX_LENGTH - 500;
+  const insertEmoji = useEmojiInsert(
+    textareaRef,
+    text,
+    setText,
+    POST_TEXT_MAX_LENGTH,
+  );
 
   const clearAttachments = () => {
     setAttachments((current) => {
@@ -360,6 +368,7 @@ export function PostComposer({ user }: PostComposerProps) {
                   )}
                   {tCommon("media")}
                 </Button>
+                <EmojiPickerButton disabled={isBusy} onSelect={insertEmoji} />
                 {showCharCount ? (
                   <span className="ml-1 text-xs text-muted">
                     {text.length}/{POST_TEXT_MAX_LENGTH}

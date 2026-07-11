@@ -10,22 +10,31 @@ import {
   Pencil,
   Repeat2,
   Send,
-  ThumbsUp,
   Trash2,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { ApiError } from "@/core/application/errors/api.error";
 import type { Post } from "@/core/domain/entities/post.entity";
+import type { User } from "@/core/domain/entities/user.entity";
+import { PostLikeType } from "@/core/domain/enums/post-like-type.enum";
 import { appContainer } from "@/modules/app.container";
 import { FeedCard } from "@/presentation/components/feed/feed-card";
 import { PostAttachmentsEditor } from "@/presentation/components/feed/post-attachments-editor";
 import { PostAttachmentsGallery } from "@/presentation/components/feed/post-attachments-gallery";
+import { PostCommentsPanel } from "@/presentation/components/feed/post-comments-panel";
+import { PostEngagementSummary } from "@/presentation/components/feed/post-engagement-summary";
+import { PostReactionButton } from "@/presentation/components/feed/post-reaction-button";
 import { Button } from "@/presentation/components/ui/button";
+import { EmojiPickerButton } from "@/presentation/components/ui/emoji-picker-button";
+import { useEmojiInsert } from "@/presentation/hooks/use-emoji-insert";
+import { useRemoveLike, useUpsertLike } from "@/presentation/hooks/use-likes";
 import {
   useDeletePost,
   useUpdatePost,
   type PostAttachmentInput,
 } from "@/presentation/hooks/use-posts";
 import { moveArrayItem } from "@/presentation/lib/array-move";
+import { formatEngagementCount } from "@/presentation/lib/format-engagement-count";
 import { formatRelativeTime } from "@/presentation/lib/format-relative-time";
 import {
   POST_ATTACHMENTS_MAX_COUNT,
@@ -35,7 +44,7 @@ import {
 
 type FeedPostCardProps = {
   post: Post;
-  currentUserId: string;
+  currentUser: User;
 };
 
 type EditableAttachment = PostAttachmentInput & {
@@ -43,15 +52,21 @@ type EditableAttachment = PostAttachmentInput & {
   localPreview?: boolean;
 };
 
-export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
+export function FeedPostCard({ post, currentUser }: FeedPostCardProps) {
+  const t = useTranslations("feed");
+  const tCommon = useTranslations("common");
   const updatePost = useUpdatePost();
   const deletePost = useDeletePost();
+  const upsertLike = useUpsertLike(post.id);
+  const removeLike = useRemoveLike(post.id);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const editTextareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const isAuthor = post.isAuthoredBy(currentUserId);
+  const isAuthor = post.isAuthoredBy(currentUser.id);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [commentsOpen, setCommentsOpen] = useState(false);
   const [text, setText] = useState(post.textContent ?? "");
   const [attachments, setAttachments] = useState<EditableAttachment[]>(() =>
     post.attachments.map((attachment) => ({
@@ -64,8 +79,49 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
   );
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const insertEmoji = useEmojiInsert(
+    editTextareaRef,
+    text,
+    setText,
+    POST_TEXT_MAX_LENGTH,
+  );
 
-  const isBusy = updatePost.isPending || deletePost.isPending || isUploading;
+  const [reactionOverride, setReactionOverride] = useState<
+    PostLikeType | null | undefined
+  >(undefined);
+  const [likesBaseline, setLikesBaseline] = useState(post.likesCount);
+  const [likesDelta, setLikesDelta] = useState(0);
+  const [commentsBaseline, setCommentsBaseline] = useState(post.commentsCount);
+  const [commentsDelta, setCommentsDelta] = useState(0);
+
+  const previewReaction =
+    post.findLikeByAuthor(currentUser.id)?.likeType ?? null;
+
+  if (post.likesCount !== likesBaseline) {
+    setLikesBaseline(post.likesCount);
+    setLikesDelta(0);
+  }
+
+  if (post.commentsCount !== commentsBaseline) {
+    setCommentsBaseline(post.commentsCount);
+    setCommentsDelta(0);
+  }
+
+  if (reactionOverride !== undefined && reactionOverride === previewReaction) {
+    setReactionOverride(undefined);
+  }
+
+  const myReaction =
+    reactionOverride !== undefined ? reactionOverride : previewReaction;
+  const likesCount = post.likesCount + likesDelta;
+  const commentsCount = post.commentsCount + commentsDelta;
+
+  const isBusy =
+    updatePost.isPending ||
+    deletePost.isPending ||
+    isUploading ||
+    upsertLike.isPending ||
+    removeLike.isPending;
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -79,6 +135,40 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
     document.addEventListener("mousedown", handlePointerDown);
     return () => document.removeEventListener("mousedown", handlePointerDown);
   }, [menuOpen]);
+
+  const applyReaction = async (next: PostLikeType | null) => {
+    const previous = myReaction;
+    setReactionOverride(next);
+
+    let delta = 0;
+    if (previous === null && next !== null) delta = 1;
+    else if (previous !== null && next === null) delta = -1;
+    if (delta !== 0) setLikesDelta((current) => current + delta);
+
+    try {
+      if (next === null) {
+        await removeLike.mutateAsync();
+      } else {
+        await upsertLike.mutateAsync(next);
+      }
+    } catch (reactionError) {
+      setReactionOverride(previous);
+      if (delta !== 0) setLikesDelta((current) => current - delta);
+      setError(
+        reactionError instanceof ApiError
+          ? reactionError.message
+          : t("reactions.failed"),
+      );
+    }
+  };
+
+  const handleToggleDefaultReaction = () => {
+    void applyReaction(myReaction ? null : PostLikeType.LIKE);
+  };
+
+  const handleSelectReaction = (type: PostLikeType) => {
+    void applyReaction(myReaction === type ? null : type);
+  };
 
   const startEditing = () => {
     setMenuOpen(false);
@@ -125,7 +215,7 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
 
     const remainingSlots = POST_ATTACHMENTS_MAX_COUNT - attachments.length;
     if (remainingSlots <= 0) {
-      setError(`You can attach up to ${POST_ATTACHMENTS_MAX_COUNT} images.`);
+      setError(t("attachmentsLimit", { count: POST_ATTACHMENTS_MAX_COUNT }));
       return;
     }
 
@@ -150,7 +240,7 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
       setError(
         uploadError instanceof ApiError
           ? uploadError.message
-          : "Failed to upload images",
+          : t("uploadFailed"),
       );
     } finally {
       setIsUploading(false);
@@ -159,7 +249,7 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
 
   const handleSave = async () => {
     if (!hasPostContent(text, attachments.length)) {
-      setError("Post must include text or at least one image.");
+      setError(t("postNeedsContent"));
       return;
     }
 
@@ -181,16 +271,14 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
       setIsEditing(false);
     } catch (saveError) {
       setError(
-        saveError instanceof ApiError
-          ? saveError.message
-          : "Failed to update post",
+        saveError instanceof ApiError ? saveError.message : t("updateFailed"),
       );
     }
   };
 
   const handleDelete = async () => {
     setMenuOpen(false);
-    if (!window.confirm("Delete this post?")) return;
+    if (!window.confirm(t("deleteConfirm"))) return;
 
     try {
       await deletePost.mutateAsync(post.id);
@@ -198,13 +286,13 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
       setError(
         deleteError instanceof ApiError
           ? deleteError.message
-          : "Failed to delete post",
+          : t("deleteFailed"),
       );
     }
   };
 
   return (
-    <FeedCard className="px-4 pt-3 pb-1">
+    <FeedCard className="px-4 pt-3 pb-2">
       <div className="flex items-start gap-2">
         {post.author.avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -225,7 +313,7 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
                 {post.author.displayName}
               </p>
               <p className="truncate text-xs text-muted">
-                {post.author.bio ?? "Member"}
+                {post.author.bio ?? t("member")}
               </p>
               <p className="flex items-center gap-1 text-xs text-muted">
                 {formatRelativeTime(post.createdAt)}
@@ -238,7 +326,7 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
                 <button
                   type="button"
                   className="rounded-full p-1 text-muted hover:bg-surface-muted"
-                  aria-label="Post actions"
+                  aria-label={t("postActions")}
                   aria-expanded={menuOpen}
                   disabled={isBusy}
                   onClick={() => setMenuOpen((open) => !open)}
@@ -253,7 +341,7 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
                       onClick={startEditing}
                     >
                       <Pencil className="h-4 w-4" aria-hidden />
-                      Edit
+                      {t("edit")}
                     </button>
                     <button
                       type="button"
@@ -261,7 +349,7 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
                       onClick={() => void handleDelete()}
                     >
                       <Trash2 className="h-4 w-4" aria-hidden />
-                      Delete
+                      {t("delete")}
                     </button>
                   </div>
                 ) : null}
@@ -274,6 +362,7 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
       {isEditing ? (
         <div className="mt-3 space-y-3">
           <textarea
+            ref={editTextareaRef}
             value={text}
             onChange={(event) => setText(event.target.value)}
             maxLength={POST_TEXT_MAX_LENGTH}
@@ -298,7 +387,7 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
           {error ? <p className="text-sm text-danger">{error}</p> : null}
 
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div>
+            <div className="flex items-center gap-1">
               <input
                 ref={fileInputRef}
                 type="file"
@@ -324,8 +413,9 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
                 ) : (
                   <ImageIcon className="h-4 w-4 text-accent" aria-hidden />
                 )}
-                Media
+                {tCommon("media")}
               </Button>
+              <EmojiPickerButton disabled={isBusy} onSelect={insertEmoji} />
             </div>
             <div className="flex gap-2">
               <Button
@@ -334,7 +424,7 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
                 disabled={isBusy}
                 onClick={cancelEditing}
               >
-                Cancel
+                {tCommon("cancel")}
               </Button>
               <Button
                 type="button"
@@ -345,7 +435,7 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
                 {updatePost.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
                 ) : null}
-                Save
+                {tCommon("save")}
               </Button>
             </div>
           </div>
@@ -360,7 +450,8 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
 
           {post.attachments.length > 0 ? (
             <PostAttachmentsGallery
-              className="mt-3"
+              className="mt-3 -mx-4"
+              fullBleed
               attachments={post.attachments.map((attachment) => ({
                 id: attachment.id,
                 url: attachment.url,
@@ -373,31 +464,76 @@ export function FeedPostCard({ post, currentUserId }: FeedPostCardProps) {
         </>
       )}
 
-      <div className="mt-3 flex items-center justify-between border-b border-border pb-2 text-xs text-muted">
-        <span>{post.likesCount} reactions</span>
-        <span>{post.commentsCount} comments</span>
+      <div className={likesCount > 0 ? "pt-1" : "pt-2"}>
+        <PostEngagementSummary
+          likesCount={likesCount}
+          previewLikes={post.previewLikes}
+        />
+
+        <div className="-mx-1 flex items-center py-0.5">
+          <PostReactionButton
+            myReaction={myReaction}
+            count={likesCount}
+            disabled={isBusy || isEditing}
+            onToggleDefault={handleToggleDefaultReaction}
+            onSelect={handleSelectReaction}
+          />
+          <button
+            type="button"
+            disabled={isEditing}
+            aria-label={t("comments.action")}
+            aria-pressed={commentsOpen}
+            title={t("comments.action")}
+            className={`inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md px-2 py-2 text-sm font-semibold tabular-nums transition-colors hover:bg-surface-muted disabled:pointer-events-none disabled:opacity-50 ${
+              commentsOpen ? "text-primary" : "text-muted hover:text-foreground"
+            }`}
+            onClick={() => setCommentsOpen((open) => !open)}
+          >
+            <MessageCircle
+              className="h-[18px] w-[18px]"
+              aria-hidden
+              fill={commentsOpen ? "currentColor" : "none"}
+            />
+            {commentsCount > 0 ? (
+              <span>{formatEngagementCount(commentsCount)}</span>
+            ) : null}
+          </button>
+          <button
+            type="button"
+            disabled
+            aria-label={t("repost")}
+            title={t("repost")}
+            className="inline-flex flex-1 items-center justify-center rounded-md px-2 py-2 text-muted opacity-40"
+          >
+            <Repeat2 className="h-[18px] w-[18px]" aria-hidden />
+          </button>
+          <button
+            type="button"
+            disabled
+            aria-label={t("send")}
+            title={t("send")}
+            className="inline-flex flex-1 items-center justify-center rounded-md px-2 py-2 text-muted opacity-40"
+          >
+            <Send className="h-[18px] w-[18px]" aria-hidden />
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-1 py-1">
-        {(
-          [
-            { icon: ThumbsUp, label: "Like" },
-            { icon: MessageCircle, label: "Comment" },
-            { icon: Repeat2, label: "Repost" },
-            { icon: Send, label: "Send" },
-          ] as const
-        ).map(({ icon: Icon, label }) => (
-          <Button
-            key={label}
-            variant="ghost"
-            disabled
-            className="gap-1.5 rounded-md px-1 text-xs font-semibold"
-          >
-            <Icon className="h-4 w-4" aria-hidden />
-            <span className="hidden sm:inline">{label}</span>
-          </Button>
-        ))}
-      </div>
+      {post.previewComments.length > 0 || commentsOpen ? (
+        <div className="pb-3">
+          <PostCommentsPanel
+            postId={post.id}
+            currentUser={currentUser}
+            previewComments={post.previewComments}
+            commentsCount={commentsCount}
+            showComposer={commentsOpen}
+            onRequestComposer={() => setCommentsOpen(true)}
+            onCommentsCountDelta={(delta) =>
+              setCommentsDelta((current) => current + delta)
+            }
+          />
+        </div>
+      ) : null}
     </FeedCard>
   );
 }

@@ -1,6 +1,11 @@
 import { Prisma } from '@prisma/client';
+import { commentSelect } from '../comments/comment.select';
+import { likeSelect } from '../likes/like.select';
+import {
+  POST_PREVIEW_COMMENTS,
+  POST_PREVIEW_LIKES,
+} from './constants/post.constants';
 
-//TODO: Add comments and likes preview to the post select
 export const postSelect = {
   id: true,
   textContent: true,
@@ -17,6 +22,16 @@ export const postSelect = {
       avatarUrl: true,
       bio: true,
     },
+  },
+  comments: {
+    take: POST_PREVIEW_COMMENTS,
+    orderBy: { createdAt: 'desc' as const },
+    select: commentSelect,
+  },
+  postLikes: {
+    take: POST_PREVIEW_LIKES,
+    orderBy: { createdAt: 'desc' as const },
+    select: likeSelect,
   },
 } as const satisfies Prisma.PostSelect;
 

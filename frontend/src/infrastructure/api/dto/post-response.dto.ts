@@ -1,3 +1,8 @@
+import type {
+  CommentResponseDto,
+  LikeResponseDto,
+} from "@/infrastructure/api/dto/engagement-response.dto";
+
 export interface PostAuthorResponseDto {
   id: string;
   firstName: string;
@@ -24,6 +29,8 @@ export interface PostResponseDto {
   commentsCount: number;
   likesCount: number;
   attachments: PostAttachmentResponseDto[];
+  previewComments?: CommentResponseDto[];
+  previewLikes?: LikeResponseDto[];
 }
 
 export interface CreatePostAttachmentRequestDto {

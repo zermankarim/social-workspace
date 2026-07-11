@@ -1,6 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PostAttachmentResponseDto } from './post-attachment.dto';
 import { PostAuthorDto } from './post-author.dto';
+import { CommentResponseDto } from '../../comments/dto/comment.dto';
+import { LikeResponseDto } from '../../likes/dto/like.dto';
 
 export class PostResponseDto {
   @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
@@ -30,4 +32,16 @@ export class PostResponseDto {
 
   @ApiProperty({ type: [PostAttachmentResponseDto] })
   public attachments: PostAttachmentResponseDto[];
+
+  @ApiProperty({
+    type: [CommentResponseDto],
+    description: 'Newest comments preview (up to 2)',
+  })
+  public previewComments: CommentResponseDto[];
+
+  @ApiProperty({
+    type: [LikeResponseDto],
+    description: 'Newest likes/reactions preview (up to 2)',
+  })
+  public previewLikes: LikeResponseDto[];
 }

@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 import { BrandLogo } from "@/presentation/components/brand/brand-logo";
 import { AppNav } from "@/presentation/components/layout/app-nav";
 import { Button } from "@/presentation/components/ui/button";
-import { LocaleSwitcher } from "@/presentation/components/ui/locale-switcher";
 import { ThemeToggle } from "@/presentation/components/ui/theme-toggle";
 import { useSignout } from "@/presentation/hooks/use-auth";
 import { useAuthStore } from "@/presentation/stores/auth.store";
@@ -54,7 +53,6 @@ export function AppHeader() {
         <AppNav role={user.role} className="min-w-0 flex-1" />
 
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-          <LocaleSwitcher />
           <ThemeToggle />
           <div className="hidden items-center gap-2 border-l border-border pl-2 lg:flex">
             <div

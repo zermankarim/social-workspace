@@ -1,2 +1,4 @@
 export const POST_TEXT_MAX_LENGTH = 5000;
 export const POST_ATTACHMENTS_MAX_COUNT = 10;
+export const POST_PREVIEW_COMMENTS = 2;
+export const POST_PREVIEW_LIKES = 2;

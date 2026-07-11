@@ -63,7 +63,7 @@ export function FeedPage() {
         ) : posts.length > 0 ? (
           <>
             {posts.map((post) => (
-              <FeedPostCard key={post.id} post={post} currentUserId={user.id} />
+              <FeedPostCard key={post.id} post={post} currentUser={user} />
             ))}
             {hasNextPage ? (
               <div className="flex justify-center py-3">

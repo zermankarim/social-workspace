@@ -15,6 +15,8 @@ export type GalleryAttachment = {
 type PostAttachmentsGalleryProps = {
   attachments: GalleryAttachment[];
   className?: string;
+  /** Stretch media to card edges (no side radius). */
+  fullBleed?: boolean;
 };
 
 function Tile({
@@ -53,6 +55,7 @@ function Tile({
 export function PostAttachmentsGallery({
   attachments,
   className = "",
+  fullBleed = false,
 }: PostAttachmentsGalleryProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
@@ -65,12 +68,15 @@ export function PostAttachmentsGallery({
 
   const openAt = (index: number) => setLightboxIndex(index);
   const count = attachments.length;
+  const frameClass = fullBleed
+    ? "overflow-hidden bg-surface-muted"
+    : "overflow-hidden rounded-lg bg-surface-muted";
 
   let mosaic: React.ReactNode;
 
   if (count === 1) {
     mosaic = (
-      <div className="overflow-hidden rounded-lg bg-surface-muted">
+      <div className={frameClass}>
         <button
           type="button"
           onClick={() => openAt(0)}
@@ -88,7 +94,7 @@ export function PostAttachmentsGallery({
     );
   } else if (count === 2) {
     mosaic = (
-      <div className="grid aspect-[16/9] grid-cols-2 gap-0.5 overflow-hidden rounded-lg">
+      <div className={`grid aspect-[16/9] grid-cols-2 gap-0.5 ${frameClass}`}>
         {attachments.map((attachment, index) => (
           <Tile
             key={attachment.id}
@@ -100,7 +106,9 @@ export function PostAttachmentsGallery({
     );
   } else if (count === 3) {
     mosaic = (
-      <div className="grid aspect-[16/10] grid-cols-2 grid-rows-2 gap-0.5 overflow-hidden rounded-lg">
+      <div
+        className={`grid aspect-[16/10] grid-cols-2 grid-rows-2 gap-0.5 ${frameClass}`}
+      >
         <Tile
           attachment={attachments[0]!}
           onOpen={() => openAt(0)}
@@ -114,7 +122,9 @@ export function PostAttachmentsGallery({
     const visible = attachments.slice(0, 4);
     const extra = count - 4;
     mosaic = (
-      <div className="grid aspect-square grid-cols-2 grid-rows-2 gap-0.5 overflow-hidden rounded-lg sm:aspect-[16/10]">
+      <div
+        className={`grid aspect-square grid-cols-2 grid-rows-2 gap-0.5 sm:aspect-[16/10] ${frameClass}`}
+      >
         {visible.map((attachment, index) => (
           <Tile
             key={attachment.id}

@@ -22,7 +22,8 @@ export class UploadService implements OnModuleInit {
   }
 
   saveImage(file: Express.Multer.File): UploadResponseDto {
-    const extension = extname(file.originalname).toLowerCase();
+    const originalName = this.decodeOriginalFileName(file.originalname);
+    const extension = extname(originalName).toLowerCase();
     const storedName = `${randomUUID()}${extension}`;
     const storedPath = join(this.uploadDir, storedName);
 
@@ -32,9 +33,22 @@ export class UploadService implements OnModuleInit {
 
     return {
       url: `${publicBase}/files/${storedName}`,
-      fileName: file.originalname,
+      fileName: originalName,
       mimeType: file.mimetype,
       sizeBytes: file.size,
     };
+  }
+
+  /**
+   * Multer reads multipart filenames as Latin-1. Non-ASCII names (e.g. Cyrillic)
+   * arrive mojibake'd ("Ð¼Ð°Ð¼Ð°.jpg") unless re-decoded as UTF-8.
+   */
+  private decodeOriginalFileName(originalName: string): string {
+    const decoded = Buffer.from(originalName, 'latin1').toString('utf8');
+    // Only accept the fix when it looks like a round-trip improvement.
+    if (decoded.includes('\uFFFD')) {
+      return originalName;
+    }
+    return decoded;
   }
 }

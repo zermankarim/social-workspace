@@ -82,13 +82,11 @@ export function ImageLightbox({
         className="relative z-10 flex max-h-full w-full max-w-5xl flex-col"
       >
         <div className="mb-3 flex items-center justify-between gap-3 text-white">
-          <p id={titleId} className="truncate text-sm font-medium">
-            {current.alt}
-            {canNavigate ? (
-              <span className="ml-2 text-white/70">
-                {index + 1} / {images.length}
-              </span>
-            ) : null}
+          <p
+            id={titleId}
+            className="truncate text-sm font-medium text-white/70"
+          >
+            {canNavigate ? `${index + 1} / ${images.length}` : "\u00a0"}
           </p>
           <button
             type="button"

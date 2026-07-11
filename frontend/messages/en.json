@@ -49,14 +49,62 @@
     "discardConfirm": "Discard this post?",
     "uploadFailed": "Failed to upload images",
     "createFailed": "Failed to create post",
+    "updateFailed": "Failed to update post",
+    "deleteFailed": "Failed to delete post",
+    "deleteConfirm": "Delete this post?",
+    "postNeedsContent": "Post must include text or at least one image.",
     "addMedia": "Add media",
     "closeComposer": "Close composer",
     "reorderHint": "Drag images or use arrows to change order · click to preview",
     "previewHint": "Click an image to preview",
-    "attachmentsLimit": "You can attach up to {count} images."
+    "attachmentsLimit": "You can attach up to {count} images.",
+    "member": "Member",
+    "postActions": "Post actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "repost": "Repost",
+    "send": "Send",
+    "reactions": {
+      "pickerLabel": "Choose a reaction",
+      "like": "Like",
+      "congratulations": "Celebrate",
+      "support": "Support",
+      "super": "Love",
+      "informative": "Insightful",
+      "fun": "Funny",
+      "andOthers": "{name} and {count, plural, one {# other} other {# others}}",
+      "count": "{count, plural, one {# reaction} other {# reactions}}",
+      "failed": "Failed to update reaction"
+    },
+    "comments": {
+      "action": "Comment",
+      "count": "{count, plural, one {# comment} other {# comments}}",
+      "placeholder": "Add a comment…",
+      "submit": "Comment",
+      "empty": "Add text or an image.",
+      "createFailed": "Failed to add comment",
+      "updateFailed": "Failed to update comment",
+      "deleteFailed": "Failed to delete comment",
+      "deleteConfirm": "Delete this comment?",
+      "loadMore": "Load more comments",
+      "actions": "Comment actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "attachmentsLimit": "You can attach up to {count} images."
+    }
   },
   "locale": {
     "en": "English",
     "ru": "Русский"
+  },
+  "emoji": {
+    "open": "Add emoji",
+    "title": "Emoji",
+    "categories": {
+      "smileys": "Smileys",
+      "gestures": "Hands",
+      "hearts": "Symbols",
+      "objects": "Objects"
+    }
   }
 }

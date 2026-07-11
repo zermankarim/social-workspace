@@ -1,0 +1,8 @@
+export enum PostLikeType {
+  LIKE = "LIKE",
+  CONGRATULATIONS = "CONGRATULATIONS",
+  SUPPORT = "SUPPORT",
+  SUPER = "SUPER",
+  INFORMATIVE = "INFORMATIVE",
+  FUN = "FUN",
+}
