@@ -4,6 +4,7 @@ import { PostComment } from "@/core/domain/entities/post-comment.entity";
 import { PostLike } from "@/core/domain/entities/post-like.entity";
 import { Post } from "@/core/domain/entities/post.entity";
 import { PostLikeType } from "@/core/domain/enums/post-like-type.enum";
+import { ProfileRole } from "@/core/domain/enums/profile-role.enum";
 import type {
   CommentResponseDto,
   LikeResponseDto,
@@ -13,6 +14,11 @@ import type {
   PostAuthorResponseDto,
   PostResponseDto,
 } from "@/infrastructure/api/dto/post-response.dto";
+
+function parseAuthorRole(role: string): ProfileRole {
+  if (role === ProfileRole.ADMIN || role === ProfileRole.USER) return role;
+  return ProfileRole.USER;
+}
 
 export class PostMapper {
   static fromApi(dto: PostResponseDto): Post {
@@ -39,6 +45,7 @@ export class PostMapper {
       dto.lastName,
       dto.avatarUrl,
       dto.bio,
+      parseAuthorRole(dto.role),
     );
   }
 

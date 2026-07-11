@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Bookmark, MapPin } from "lucide-react";
 import type { User } from "@/core/domain/entities/user.entity";
 import { FeedCard } from "@/presentation/components/feed/feed-card";
+import { UserNameWithBadge } from "@/presentation/components/ui/user-name-with-badge";
 
 type FeedLeftRailProps = {
   user: User;
@@ -26,9 +27,13 @@ export function FeedLeftRail({ user }: FeedLeftRailProps) {
           </div>
           <Link
             href="/feed"
-            className="mt-2 block text-sm font-semibold text-foreground hover:underline"
+            className="mt-2 inline-flex max-w-full items-center justify-center gap-1 text-sm font-semibold text-foreground hover:underline"
           >
-            {user.displayName}
+            <UserNameWithBadge
+              name={user.displayName}
+              showAdminBadge={user.isAdmin()}
+              nameClassName="text-sm font-semibold text-foreground"
+            />
           </Link>
           <p className="mt-0.5 line-clamp-2 text-xs text-muted">
             {user.bio?.trim() || "Add a bio to complete your profile"}

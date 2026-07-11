@@ -1,9 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ProfileRole } from '@prisma/client';
 import { UserPublic } from '../../users/user.select';
 
 export class PostAuthorDto implements Pick<
   UserPublic,
-  'id' | 'firstName' | 'lastName' | 'avatarUrl' | 'bio'
+  'id' | 'firstName' | 'lastName' | 'avatarUrl' | 'bio' | 'role'
 > {
   @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
   id: string;
@@ -26,4 +27,7 @@ export class PostAuthorDto implements Pick<
     nullable: true,
   })
   bio: string | null;
+
+  @ApiProperty({ enum: ProfileRole, example: ProfileRole.USER })
+  role: ProfileRole;
 }

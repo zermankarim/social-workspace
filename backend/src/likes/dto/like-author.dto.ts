@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ProfileRole } from '@prisma/client';
 
 export class LikeAuthorDto {
   @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
@@ -22,4 +23,7 @@ export class LikeAuthorDto {
     nullable: true,
   })
   bio: string | null;
+
+  @ApiProperty({ enum: ProfileRole, example: ProfileRole.USER })
+  role: ProfileRole;
 }

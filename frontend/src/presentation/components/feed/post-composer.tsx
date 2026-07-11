@@ -10,6 +10,7 @@ import { FeedCard } from "@/presentation/components/feed/feed-card";
 import { PostAttachmentsEditor } from "@/presentation/components/feed/post-attachments-editor";
 import { Button } from "@/presentation/components/ui/button";
 import { EmojiPickerButton } from "@/presentation/components/ui/emoji-picker-button";
+import { UserNameWithBadge } from "@/presentation/components/ui/user-name-with-badge";
 import { useEmojiInsert } from "@/presentation/hooks/use-emoji-insert";
 import { useCreatePost } from "@/presentation/hooks/use-posts";
 import { moveArrayItem } from "@/presentation/lib/array-move";
@@ -295,9 +296,11 @@ export function PostComposer({ user }: PostComposerProps) {
             <div className="flex items-center gap-3 px-4 pt-4">
               <UserAvatar user={user} size="sm" />
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-foreground">
-                  {user.displayName}
-                </p>
+                <UserNameWithBadge
+                  name={user.displayName}
+                  showAdminBadge={user.isAdmin()}
+                  nameClassName="text-sm font-semibold text-foreground"
+                />
                 <p className="truncate text-xs text-muted">
                   {user.bio?.trim() || t("postToAnyone")}
                 </p>

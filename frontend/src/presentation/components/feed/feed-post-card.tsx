@@ -26,6 +26,7 @@ import { PostEngagementSummary } from "@/presentation/components/feed/post-engag
 import { PostReactionButton } from "@/presentation/components/feed/post-reaction-button";
 import { Button } from "@/presentation/components/ui/button";
 import { EmojiPickerButton } from "@/presentation/components/ui/emoji-picker-button";
+import { UserNameWithBadge } from "@/presentation/components/ui/user-name-with-badge";
 import { useEmojiInsert } from "@/presentation/hooks/use-emoji-insert";
 import { useRemoveLike, useUpsertLike } from "@/presentation/hooks/use-likes";
 import {
@@ -309,9 +310,11 @@ export function FeedPostCard({ post, currentUser }: FeedPostCardProps) {
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-foreground">
-                {post.author.displayName}
-              </p>
+              <UserNameWithBadge
+                name={post.author.displayName}
+                showAdminBadge={post.author.isAdmin()}
+                nameClassName="text-sm font-semibold text-foreground"
+              />
               <p className="truncate text-xs text-muted">
                 {post.author.bio ?? t("member")}
               </p>

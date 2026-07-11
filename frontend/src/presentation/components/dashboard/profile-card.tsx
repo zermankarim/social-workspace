@@ -2,7 +2,9 @@
 
 import { Calendar, MapPin } from "lucide-react";
 import type { User } from "@/core/domain/entities/user.entity";
+import { AdminBadge } from "@/presentation/components/ui/admin-badge";
 import { RoleBadge } from "@/presentation/components/ui/role-badge";
+import { UserNameWithBadge } from "@/presentation/components/ui/user-name-with-badge";
 
 interface ProfileCardProps {
   user: User;
@@ -19,13 +21,18 @@ export function ProfileCard({ user }: ProfileCardProps) {
   return (
     <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
       <div className="flex items-center gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-sm font-semibold text-white dark:bg-zinc-100 dark:text-zinc-900">
+        <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-sm font-semibold text-white dark:bg-zinc-100 dark:text-zinc-900">
           {getInitials(user)}
+          {user.isAdmin() ? (
+            <AdminBadge className="absolute -right-0.5 -bottom-0.5" />
+          ) : null}
         </div>
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-            {user.displayName}
-          </p>
+          <UserNameWithBadge
+            name={user.displayName}
+            showAdminBadge={user.isAdmin()}
+            nameClassName="text-sm font-semibold text-zinc-900 dark:text-zinc-100"
+          />
           <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
             {user.email}
           </p>

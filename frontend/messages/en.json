@@ -9,7 +9,8 @@
     "post": "Post",
     "media": "Media",
     "close": "Close",
-    "language": "Language"
+    "language": "Language",
+    "adminBadge": "Admin"
   },
   "nav": {
     "main": "Main navigation",

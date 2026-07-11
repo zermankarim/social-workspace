@@ -14,6 +14,7 @@ export const commentSelect = {
       lastName: true,
       avatarUrl: true,
       bio: true,
+      role: true,
     },
   },
 } as const satisfies Prisma.PostCommentSelect;

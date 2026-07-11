@@ -1,3 +1,4 @@
+import type { ProfileRole } from "@/core/domain/enums/profile-role.enum";
 import type {
   CommentResponseDto,
   LikeResponseDto,
@@ -9,6 +10,7 @@ export interface PostAuthorResponseDto {
   lastName: string;
   avatarUrl: string | null;
   bio: string | null;
+  role: ProfileRole;
 }
 
 export interface PostAttachmentResponseDto {

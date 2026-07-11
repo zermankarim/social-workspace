@@ -6,6 +6,7 @@ import { BrandLogo } from "@/presentation/components/brand/brand-logo";
 import { AppNav } from "@/presentation/components/layout/app-nav";
 import { Button } from "@/presentation/components/ui/button";
 import { ThemeToggle } from "@/presentation/components/ui/theme-toggle";
+import { UserNameWithBadge } from "@/presentation/components/ui/user-name-with-badge";
 import { useSignout } from "@/presentation/hooks/use-auth";
 import { useAuthStore } from "@/presentation/stores/auth.store";
 
@@ -63,7 +64,11 @@ export function AppHeader() {
             </div>
             <div className="min-w-0">
               <p className="max-w-[9rem] truncate text-xs font-semibold text-foreground">
-                {user.displayName}
+                <UserNameWithBadge
+                  name={user.displayName}
+                  showAdminBadge={user.isAdmin()}
+                  nameClassName="text-xs font-semibold text-foreground"
+                />
               </p>
               <p className="max-w-[9rem] truncate text-[11px] text-muted">
                 {user.email}

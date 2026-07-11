@@ -1,3 +1,5 @@
+import { ProfileRole } from "@/core/domain/enums/profile-role.enum";
+
 export class PostAuthor {
   constructor(
     public readonly id: string,
@@ -5,6 +7,7 @@ export class PostAuthor {
     public readonly lastName: string,
     public readonly avatarUrl: string | null,
     public readonly bio: string | null,
+    public readonly role: ProfileRole,
   ) {}
 
   get displayName(): string {
@@ -14,5 +17,9 @@ export class PostAuthor {
   get initials(): string {
     const fromName = `${this.firstName[0] ?? ""}${this.lastName[0] ?? ""}`;
     return fromName.trim().toUpperCase() || "?";
+  }
+
+  isAdmin(): boolean {
+    return this.role === ProfileRole.ADMIN;
   }
 }

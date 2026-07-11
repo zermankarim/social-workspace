@@ -21,6 +21,7 @@ export const postSelect = {
       lastName: true,
       avatarUrl: true,
       bio: true,
+      role: true,
     },
   },
   comments: {

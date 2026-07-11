@@ -17,6 +17,7 @@ import type { User } from "@/core/domain/entities/user.entity";
 import { appContainer } from "@/modules/app.container";
 import { Button } from "@/presentation/components/ui/button";
 import { EmojiPickerButton } from "@/presentation/components/ui/emoji-picker-button";
+import { UserNameWithBadge } from "@/presentation/components/ui/user-name-with-badge";
 import {
   ImageLightbox,
   type LightboxImage,
@@ -195,13 +196,13 @@ function revokeLocalPreviews(attachments: PendingAttachment[]) {
 
 function CommentItem({
   comment,
-  currentUserId,
+  currentUser,
   disabled,
   onEdit,
   onDelete,
 }: {
   comment: PostComment;
-  currentUserId: string;
+  currentUser: User;
   disabled: boolean;
   onEdit: (
     comment: PostComment,
@@ -212,7 +213,7 @@ function CommentItem({
   const t = useTranslations("feed.comments");
   const tCommon = useTranslations("common");
   const tFeed = useTranslations("feed");
-  const isAuthor = comment.isAuthoredBy(currentUserId);
+  const isAuthor = comment.isAuthoredBy(currentUser.id);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -336,12 +337,16 @@ function CommentItem({
       <div className="min-w-0 flex-1">
         <div className="rounded-2xl bg-surface-muted px-3 py-2">
           <div className="flex items-start justify-between gap-2">
-            <p className="min-w-0 truncate text-xs font-semibold text-foreground">
-              {comment.author.displayName}
-              <span className="ml-1.5 font-normal text-muted">
+            <div className="flex min-w-0 items-center gap-1.5">
+              <UserNameWithBadge
+                name={comment.author.displayName}
+                showAdminBadge={comment.author.isAdmin()}
+                nameClassName="text-xs font-semibold text-foreground"
+              />
+              <span className="shrink-0 text-xs font-normal text-muted">
                 · {formatRelativeTime(comment.createdAt)}
               </span>
-            </p>
+            </div>
             {isAuthor && !isEditing ? (
               <div className="relative shrink-0" ref={menuRef}>
                 <button
@@ -740,7 +745,7 @@ export function PostCommentsPanel({
             <CommentItem
               key={comment.id}
               comment={comment}
-              currentUserId={currentUser.id}
+              currentUser={currentUser}
               disabled={isBusy}
               onEdit={handleEdit}
               onDelete={handleDelete}
