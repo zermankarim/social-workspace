@@ -1,5 +1,6 @@
 import { BrandLogo } from "@/presentation/components/brand/brand-logo";
 import { RequireGuest } from "@/presentation/components/auth/auth-guards";
+import { LocaleSwitcher } from "@/presentation/components/ui/locale-switcher";
 import { ThemeToggle } from "@/presentation/components/ui/theme-toggle";
 import { BRAND } from "@/presentation/config/brand";
 
@@ -11,7 +12,8 @@ export default function AuthLayout({
   return (
     <RequireGuest>
       <div className="relative flex min-h-screen items-center justify-center bg-background px-4 py-12">
-        <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
+        <div className="absolute top-4 right-4 flex items-center gap-2 sm:top-6 sm:right-6">
+          <LocaleSwitcher />
           <ThemeToggle />
         </div>
         <div className="w-full max-w-lg">

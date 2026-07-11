@@ -1,0 +1,62 @@
+{
+  "common": {
+    "search": "Search",
+    "signOut": "Sign out",
+    "signIn": "Sign in",
+    "loadMore": "Load more",
+    "cancel": "Cancel",
+    "save": "Save",
+    "post": "Post",
+    "media": "Media",
+    "close": "Close",
+    "language": "Language"
+  },
+  "nav": {
+    "main": "Main navigation",
+    "home": "Home",
+    "network": "My Network",
+    "jobs": "Jobs",
+    "messaging": "Messaging",
+    "notifications": "Notifications",
+    "admin": "Admin"
+  },
+  "auth": {
+    "signInTitle": "Sign in",
+    "createAccountTitle": "Create account",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "bio": "Bio (optional)",
+    "bioPlaceholder": "A short intro about you",
+    "location": "Location (optional)",
+    "signingIn": "Signing in…",
+    "creatingAccount": "Creating account…",
+    "noAccount": "No account?",
+    "createOne": "Create one",
+    "haveAccount": "Already have an account?"
+  },
+  "feed": {
+    "sortNewest": "Sort by: Newest",
+    "loadFailed": "Failed to load posts",
+    "emptyTitle": "No posts yet",
+    "emptyHint": "Be the first to share something.",
+    "startPost": "Start a post",
+    "createPost": "Create a post",
+    "postPlaceholder": "What do you want to talk about?",
+    "postToAnyone": "Post to anyone",
+    "discardConfirm": "Discard this post?",
+    "uploadFailed": "Failed to upload images",
+    "createFailed": "Failed to create post",
+    "addMedia": "Add media",
+    "closeComposer": "Close composer",
+    "reorderHint": "Drag images or use arrows to change order · click to preview",
+    "previewHint": "Click an image to preview",
+    "attachmentsLimit": "You can attach up to {count} images."
+  },
+  "locale": {
+    "en": "English",
+    "ru": "Русский"
+  }
+}

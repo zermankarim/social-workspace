@@ -2,6 +2,7 @@
 
 import { Loader2, UserPlus } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ApiError } from "@/core/application/errors/api.error";
@@ -16,6 +17,8 @@ import {
 } from "@/presentation/validations/auth.validation";
 
 export function RegisterForm() {
+  const t = useTranslations("auth");
+  const tCommon = useTranslations("common");
   const signup = useSignup();
   const {
     register,
@@ -57,13 +60,13 @@ export function RegisterForm() {
     <form onSubmit={onSubmit} className="flex w-full flex-col gap-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <Input
-          label="First name"
+          label={t("firstName")}
           autoComplete="given-name"
           error={errors.firstName?.message}
           {...register("firstName")}
         />
         <Input
-          label="Last name"
+          label={t("lastName")}
           autoComplete="family-name"
           error={errors.lastName?.message}
           {...register("lastName")}
@@ -71,7 +74,7 @@ export function RegisterForm() {
       </div>
 
       <Input
-        label="Email"
+        label={t("email")}
         type="email"
         autoComplete="email"
         error={errors.email?.message}
@@ -79,8 +82,8 @@ export function RegisterForm() {
       />
 
       <Textarea
-        label="Bio (optional)"
-        placeholder="A short intro about you"
+        label={t("bio")}
+        placeholder={t("bioPlaceholder")}
         error={errors.bio?.message}
         {...register("bio")}
       />
@@ -90,7 +93,7 @@ export function RegisterForm() {
         control={control}
         render={({ field }) => (
           <AddressAutocomplete
-            label="Location (optional)"
+            label={t("location")}
             value={field.value ?? ""}
             onChange={(nextValue) => {
               field.onChange(nextValue);
@@ -117,14 +120,14 @@ export function RegisterForm() {
       />
 
       <Input
-        label="Password"
+        label={t("password")}
         type="password"
         autoComplete="new-password"
         error={errors.password?.message}
         {...register("password")}
       />
       <Input
-        label="Confirm password"
+        label={t("confirmPassword")}
         type="password"
         autoComplete="new-password"
         error={errors.confirmPassword?.message}
@@ -147,16 +150,16 @@ export function RegisterForm() {
         ) : (
           <UserPlus className="h-4 w-4" aria-hidden />
         )}
-        {signup.isPending ? "Creating account…" : "Create account"}
+        {signup.isPending ? t("creatingAccount") : t("createAccountTitle")}
       </Button>
 
       <p className="text-center text-sm text-muted">
-        Already have an account?{" "}
+        {t("haveAccount")}{" "}
         <Link
           href="/login"
           className="font-semibold text-primary hover:underline"
         >
-          Sign in
+          {tCommon("signIn")}
         </Link>
       </p>
     </form>

@@ -1,9 +1,11 @@
 "use client";
 
 import { LogOut, Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { BrandLogo } from "@/presentation/components/brand/brand-logo";
 import { AppNav } from "@/presentation/components/layout/app-nav";
 import { Button } from "@/presentation/components/ui/button";
+import { LocaleSwitcher } from "@/presentation/components/ui/locale-switcher";
 import { ThemeToggle } from "@/presentation/components/ui/theme-toggle";
 import { useSignout } from "@/presentation/hooks/use-auth";
 import { useAuthStore } from "@/presentation/stores/auth.store";
@@ -19,6 +21,7 @@ function getInitials(
 }
 
 export function AppHeader() {
+  const t = useTranslations("common");
   const user = useAuthStore((s) => s.user);
   const signout = useSignout();
 
@@ -35,14 +38,14 @@ export function AppHeader() {
         />
 
         <label className="relative hidden min-w-0 flex-1 md:block md:max-w-[280px]">
-          <span className="sr-only">Search</span>
+          <span className="sr-only">{t("search")}</span>
           <Search
             className="pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-muted"
             aria-hidden
           />
           <input
             type="search"
-            placeholder="Search"
+            placeholder={t("search")}
             disabled
             className="h-8 w-full rounded border-0 bg-surface-muted py-1.5 pr-3 pl-8 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-ring"
           />
@@ -51,6 +54,7 @@ export function AppHeader() {
         <AppNav role={user.role} className="min-w-0 flex-1" />
 
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+          <LocaleSwitcher />
           <ThemeToggle />
           <div className="hidden items-center gap-2 border-l border-border pl-2 lg:flex">
             <div
@@ -73,11 +77,11 @@ export function AppHeader() {
             onClick={() => signout.mutate()}
             disabled={signout.isPending}
             className="gap-1.5 px-2"
-            aria-label="Sign out"
+            aria-label={t("signOut")}
           >
             <LogOut className="h-4 w-4" aria-hidden />
             <span className="hidden text-xs sm:inline">
-              {signout.isPending ? "…" : "Sign out"}
+              {signout.isPending ? "…" : t("signOut")}
             </span>
           </Button>
         </div>

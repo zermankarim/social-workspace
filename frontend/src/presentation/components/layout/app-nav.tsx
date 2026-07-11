@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   getVisibleNavItems,
   isNavItemActive,
@@ -16,12 +17,13 @@ interface AppNavProps {
 
 export function AppNav({ role, className = "" }: AppNavProps) {
   const pathname = usePathname();
+  const t = useTranslations("nav");
   const items = getVisibleNavItems(role);
 
   return (
     <nav
       className={`flex items-stretch justify-center gap-1 overflow-x-auto ${className}`}
-      aria-label="Main navigation"
+      aria-label={t("main")}
     >
       {items.map((item, index) => {
         const isActive = isNavItemActive(item, pathname);
@@ -48,7 +50,7 @@ export function AppNav({ role, className = "" }: AppNavProps) {
                 className={`h-5 w-5 ${isActive ? "stroke-[2.25]" : ""}`}
                 aria-hidden
               />
-              <span className="hidden sm:inline">{item.label}</span>
+              <span className="hidden sm:inline">{t(item.labelKey)}</span>
               {isActive ? (
                 <span
                   className="absolute inset-x-1 bottom-0 h-0.5 rounded-full bg-nav-active"

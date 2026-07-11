@@ -9,9 +9,12 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { ProfileRole } from "@/core/domain/enums/profile-role.enum";
 
+export type NavLabelKey =
+  "home" | "network" | "jobs" | "messaging" | "notifications" | "admin";
+
 export interface AppNavItem {
   href: string;
-  label: string;
+  labelKey: NavLabelKey;
   icon: LucideIcon;
   roles: ProfileRole[];
   /** Defaults to pathname.startsWith(href) */
@@ -22,7 +25,7 @@ export interface AppNavItem {
 export const appNavItems: AppNavItem[] = [
   {
     href: "/feed",
-    label: "Home",
+    labelKey: "home",
     icon: Home,
     roles: [ProfileRole.ADMIN, ProfileRole.USER],
     isActive: (pathname) =>
@@ -30,35 +33,35 @@ export const appNavItems: AppNavItem[] = [
   },
   {
     href: "/network",
-    label: "My Network",
+    labelKey: "network",
     icon: Users,
     roles: [ProfileRole.ADMIN, ProfileRole.USER],
     comingSoon: true,
   },
   {
     href: "/jobs",
-    label: "Jobs",
+    labelKey: "jobs",
     icon: Briefcase,
     roles: [ProfileRole.ADMIN, ProfileRole.USER],
     comingSoon: true,
   },
   {
     href: "/messaging",
-    label: "Messaging",
+    labelKey: "messaging",
     icon: MessageSquare,
     roles: [ProfileRole.ADMIN, ProfileRole.USER],
     comingSoon: true,
   },
   {
     href: "/notifications",
-    label: "Notifications",
+    labelKey: "notifications",
     icon: Bell,
     roles: [ProfileRole.ADMIN, ProfileRole.USER],
     comingSoon: true,
   },
   {
     href: "/admin/users",
-    label: "Admin",
+    labelKey: "admin",
     icon: Shield,
     roles: [ProfileRole.ADMIN],
     isActive: (pathname) => pathname.startsWith("/admin"),

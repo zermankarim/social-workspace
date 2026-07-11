@@ -1,0 +1,62 @@
+{
+  "common": {
+    "search": "Поиск",
+    "signOut": "Выйти",
+    "signIn": "Войти",
+    "loadMore": "Загрузить ещё",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "post": "Опубликовать",
+    "media": "Медиа",
+    "close": "Закрыть",
+    "language": "Язык"
+  },
+  "nav": {
+    "main": "Основная навигация",
+    "home": "Главная",
+    "network": "Сеть",
+    "jobs": "Вакансии",
+    "messaging": "Сообщения",
+    "notifications": "Уведомления",
+    "admin": "Админ"
+  },
+  "auth": {
+    "signInTitle": "Вход",
+    "createAccountTitle": "Регистрация",
+    "email": "Email",
+    "password": "Пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "bio": "О себе (необязательно)",
+    "bioPlaceholder": "Коротко расскажите о себе",
+    "location": "Локация (необязательно)",
+    "signingIn": "Входим…",
+    "creatingAccount": "Создаём аккаунт…",
+    "noAccount": "Нет аккаунта?",
+    "createOne": "Создать",
+    "haveAccount": "Уже есть аккаунт?"
+  },
+  "feed": {
+    "sortNewest": "Сортировка: сначала новые",
+    "loadFailed": "Не удалось загрузить посты",
+    "emptyTitle": "Пока нет постов",
+    "emptyHint": "Станьте первым — поделитесь чем-нибудь.",
+    "startPost": "Начать пост",
+    "createPost": "Создать пост",
+    "postPlaceholder": "О чём хотите рассказать?",
+    "postToAnyone": "Видно всем",
+    "discardConfirm": "Отменить этот пост?",
+    "uploadFailed": "Не удалось загрузить изображения",
+    "createFailed": "Не удалось создать пост",
+    "addMedia": "Добавить медиа",
+    "closeComposer": "Закрыть редактор",
+    "reorderHint": "Перетащите или стрелками меняйте порядок · клик — превью",
+    "previewHint": "Нажмите на изображение для превью",
+    "attachmentsLimit": "Можно прикрепить не больше {count} изображений."
+  },
+  "locale": {
+    "en": "English",
+    "ru": "Русский"
+  }
+}

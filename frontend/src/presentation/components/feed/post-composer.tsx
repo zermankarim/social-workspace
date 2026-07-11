@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { Image as ImageIcon, Loader2, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { ApiError } from "@/core/application/errors/api.error";
 import type { User } from "@/core/domain/entities/user.entity";
 import { appContainer } from "@/modules/app.container";
@@ -58,6 +59,8 @@ function UserAvatar({ user, size = "md" }: { user: User; size?: "sm" | "md" }) {
 }
 
 export function PostComposer({ user }: PostComposerProps) {
+  const t = useTranslations("feed");
+  const tCommon = useTranslations("common");
   const createPost = useCreatePost();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -94,7 +97,7 @@ export function PostComposer({ user }: PostComposerProps) {
 
   const requestClose = () => {
     if (isBusy) return;
-    if (isDirty && !window.confirm("Discard this post?")) return;
+    if (isDirty && !window.confirm(t("discardConfirm"))) return;
     reset();
   };
 
@@ -120,7 +123,7 @@ export function PostComposer({ user }: PostComposerProps) {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape" || isBusy) return;
       event.preventDefault();
-      if (isDirty && !window.confirm("Discard this post?")) return;
+      if (isDirty && !window.confirm(t("discardConfirm"))) return;
       setText("");
       setAttachments((current) => {
         current.forEach((attachment) =>
@@ -140,7 +143,7 @@ export function PostComposer({ user }: PostComposerProps) {
       window.clearTimeout(focusTimer);
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [isOpen, isBusy, isDirty]);
+  }, [isOpen, isBusy, isDirty, t]);
 
   const handleFilesSelected = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -151,7 +154,7 @@ export function PostComposer({ user }: PostComposerProps) {
 
     const remainingSlots = POST_ATTACHMENTS_MAX_COUNT - attachments.length;
     if (remainingSlots <= 0) {
-      setError(`You can attach up to ${POST_ATTACHMENTS_MAX_COUNT} images.`);
+      setError(t("attachmentsLimit", { count: POST_ATTACHMENTS_MAX_COUNT }));
       return;
     }
 
@@ -175,7 +178,7 @@ export function PostComposer({ user }: PostComposerProps) {
       setError(
         uploadError instanceof ApiError
           ? uploadError.message
-          : "Failed to upload images",
+          : t("uploadFailed"),
       );
     } finally {
       setIsUploading(false);
@@ -216,7 +219,7 @@ export function PostComposer({ user }: PostComposerProps) {
       setError(
         submitError instanceof ApiError
           ? submitError.message
-          : "Failed to create post",
+          : t("createFailed"),
       );
     }
   };
@@ -231,7 +234,7 @@ export function PostComposer({ user }: PostComposerProps) {
             onClick={() => openComposer(false)}
             className="h-12 flex-1 rounded-full border border-border-strong px-4 text-left text-sm text-muted transition-colors hover:bg-surface-muted hover:text-foreground"
           >
-            Start a post
+            {t("startPost")}
           </button>
         </div>
 
@@ -243,7 +246,7 @@ export function PostComposer({ user }: PostComposerProps) {
             className="gap-1.5 text-xs font-semibold"
           >
             <ImageIcon className="h-5 w-5 text-accent" aria-hidden />
-            Media
+            {tCommon("media")}
           </Button>
         </div>
       </FeedCard>
@@ -252,7 +255,7 @@ export function PostComposer({ user }: PostComposerProps) {
         <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 px-3 py-8 sm:items-center sm:py-10">
           <button
             type="button"
-            aria-label="Close composer"
+            aria-label={t("closeComposer")}
             className="absolute inset-0 cursor-default"
             onClick={requestClose}
           />
@@ -268,14 +271,14 @@ export function PostComposer({ user }: PostComposerProps) {
                 id={titleId}
                 className="text-lg font-semibold text-foreground"
               >
-                Create a post
+                {t("createPost")}
               </h2>
               <button
                 type="button"
                 onClick={requestClose}
                 disabled={isBusy}
                 className="rounded-full p-2 text-muted transition-colors hover:bg-surface-muted hover:text-foreground disabled:opacity-50"
-                aria-label="Close"
+                aria-label={tCommon("close")}
               >
                 <X className="h-5 w-5" aria-hidden />
               </button>
@@ -288,7 +291,7 @@ export function PostComposer({ user }: PostComposerProps) {
                   {user.displayName}
                 </p>
                 <p className="truncate text-xs text-muted">
-                  {user.bio?.trim() || "Post to anyone"}
+                  {user.bio?.trim() || t("postToAnyone")}
                 </p>
               </div>
             </div>
@@ -299,7 +302,7 @@ export function PostComposer({ user }: PostComposerProps) {
                 value={text}
                 onChange={(event) => setText(event.target.value)}
                 maxLength={POST_TEXT_MAX_LENGTH}
-                placeholder="What do you want to talk about?"
+                placeholder={t("postPlaceholder")}
                 disabled={isBusy}
                 className="min-h-[160px] w-full flex-1 resize-none border-0 bg-transparent text-base leading-relaxed text-foreground placeholder:text-muted focus:outline-none disabled:opacity-60"
               />
@@ -345,7 +348,7 @@ export function PostComposer({ user }: PostComposerProps) {
                   }
                   onClick={() => fileInputRef.current?.click()}
                   className="gap-1.5 px-3 text-xs font-semibold"
-                  aria-label="Add media"
+                  aria-label={t("addMedia")}
                 >
                   {isUploading ? (
                     <Loader2
@@ -355,7 +358,7 @@ export function PostComposer({ user }: PostComposerProps) {
                   ) : (
                     <ImageIcon className="h-5 w-5 text-accent" aria-hidden />
                   )}
-                  Media
+                  {tCommon("media")}
                 </Button>
                 {showCharCount ? (
                   <span className="ml-1 text-xs text-muted">
@@ -373,7 +376,7 @@ export function PostComposer({ user }: PostComposerProps) {
                 {createPost.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
                 ) : null}
-                Post
+                {tCommon("post")}
               </Button>
             </div>
           </div>

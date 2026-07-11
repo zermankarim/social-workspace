@@ -2,6 +2,7 @@
 
 import { Loader2, LogIn } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/presentation/components/ui/button";
@@ -14,6 +15,8 @@ import {
 import { ApiError } from "@/core/application/errors/api.error";
 
 export function LoginForm() {
+  const t = useTranslations("auth");
+  const tCommon = useTranslations("common");
   const signin = useSignin();
   const {
     register,
@@ -33,14 +36,14 @@ export function LoginForm() {
   return (
     <form onSubmit={onSubmit} className="flex w-full flex-col gap-4">
       <Input
-        label="Email"
+        label={t("email")}
         type="email"
         autoComplete="email"
         error={errors.email?.message}
         {...register("email")}
       />
       <Input
-        label="Password"
+        label={t("password")}
         type="password"
         autoComplete="current-password"
         error={errors.password?.message}
@@ -63,16 +66,16 @@ export function LoginForm() {
         ) : (
           <LogIn className="h-4 w-4" aria-hidden />
         )}
-        {signin.isPending ? "Signing in…" : "Sign in"}
+        {signin.isPending ? t("signingIn") : tCommon("signIn")}
       </Button>
 
       <p className="text-center text-sm text-muted">
-        No account?{" "}
+        {t("noAccount")}{" "}
         <Link
           href="/register"
           className="font-semibold text-primary hover:underline"
         >
-          Create one
+          {t("createOne")}
         </Link>
       </p>
     </form>

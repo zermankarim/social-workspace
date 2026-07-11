@@ -1,14 +1,18 @@
+import { getTranslations } from "next-intl/server";
 import { RegisterForm } from "@/presentation/components/auth/register-form";
 
-export const metadata = {
-  title: "Create account",
-};
+export async function generateMetadata() {
+  const t = await getTranslations("auth");
+  return { title: t("createAccountTitle") };
+}
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
+  const t = await getTranslations("auth");
+
   return (
     <div>
       <h2 className="mb-6 text-lg font-semibold text-foreground">
-        Create account
+        {t("createAccountTitle")}
       </h2>
       <RegisterForm />
     </div>

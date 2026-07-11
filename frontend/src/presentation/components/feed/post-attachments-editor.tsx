@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, GripVertical, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   ImageLightbox,
   type LightboxImage,
@@ -26,6 +27,7 @@ export function PostAttachmentsEditor({
   onReorder,
   onRemove,
 }: PostAttachmentsEditorProps) {
+  const t = useTranslations("feed");
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [overIndex, setOverIndex] = useState<number | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -40,13 +42,9 @@ export function PostAttachmentsEditor({
 
   return (
     <div className="space-y-2">
-      {canReorder ? (
-        <p className="text-xs text-muted">
-          Drag images or use arrows to change order · click to preview
-        </p>
-      ) : (
-        <p className="text-xs text-muted">Click an image to preview</p>
-      )}
+      <p className="text-xs text-muted">
+        {canReorder ? t("reorderHint") : t("previewHint")}
+      </p>
       <ul
         className={`grid gap-2 ${
           attachments.length === 1

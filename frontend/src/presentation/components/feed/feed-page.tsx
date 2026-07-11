@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertCircle, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { ApiError } from "@/core/application/errors/api.error";
 import { FeedLeftRail } from "@/presentation/components/feed/feed-left-rail";
 import { FeedPostCard } from "@/presentation/components/feed/feed-post-card";
@@ -11,6 +12,8 @@ import { useFeedPosts } from "@/presentation/hooks/use-posts";
 import { useAuthStore } from "@/presentation/stores/auth.store";
 
 export function FeedPage() {
+  const t = useTranslations("feed");
+  const tCommon = useTranslations("common");
   const user = useAuthStore((s) => s.user);
   const {
     data,
@@ -39,7 +42,7 @@ export function FeedPage() {
 
         <div className="flex items-center gap-2 px-1 py-1 text-xs text-muted">
           <span className="h-px flex-1 bg-border" />
-          Sort by: Newest
+          {t("sortNewest")}
           <span className="h-px flex-1 bg-border" />
         </div>
 
@@ -54,9 +57,7 @@ export function FeedPage() {
           <div className="rounded-lg bg-surface px-4 py-8 text-center shadow-card">
             <p className="inline-flex items-center gap-2 text-sm text-danger">
               <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
-              {error instanceof ApiError
-                ? error.message
-                : "Failed to load posts"}
+              {error instanceof ApiError ? error.message : t("loadFailed")}
             </p>
           </div>
         ) : posts.length > 0 ? (
@@ -76,17 +77,17 @@ export function FeedPage() {
                   {isFetchingNextPage ? (
                     <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
                   ) : null}
-                  Load more
+                  {tCommon("loadMore")}
                 </Button>
               </div>
             ) : null}
           </>
         ) : (
           <div className="rounded-lg bg-surface px-4 py-10 text-center shadow-card">
-            <p className="text-sm font-medium text-foreground">No posts yet</p>
-            <p className="mt-1 text-sm text-muted">
-              Be the first to share something.
+            <p className="text-sm font-medium text-foreground">
+              {t("emptyTitle")}
             </p>
+            <p className="mt-1 text-sm text-muted">{t("emptyHint")}</p>
           </div>
         )}
       </div>
