@@ -1,8 +1,10 @@
 import type { AuthService } from "@/core/application/services/auth.service";
+import type { PostService } from "@/core/application/services/post.service";
 import type { UploadService } from "@/core/application/services/upload.service";
 import type { UserService } from "@/core/application/services/user.service";
 import { HttpClient } from "@/infrastructure/http/http-client";
 import { AuthModule } from "@/modules/auth.module";
+import { PostModule } from "@/modules/post.module";
 import { UploadModule } from "@/modules/upload.module";
 import { UserModule } from "@/modules/user.module";
 
@@ -13,12 +15,14 @@ export class AppContainer {
   readonly authService: AuthService;
   readonly userService: UserService;
   readonly uploadService: UploadService;
+  readonly postService: PostService;
 
   private constructor() {
     this.httpClient = new HttpClient();
     this.authService = AuthModule.create(this.httpClient);
     this.userService = UserModule.create(this.httpClient);
     this.uploadService = UploadModule.create(this.httpClient);
+    this.postService = PostModule.create(this.httpClient);
   }
 
   static getInstance(): AppContainer {

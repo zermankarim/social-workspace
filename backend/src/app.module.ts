@@ -5,6 +5,9 @@ import { UsersModule } from './users/users.module';
 import { UploadModule } from './upload/upload.module';
 import { AppConfigModule } from './infrastructure/config/config.module';
 import { AdminModule } from './admin/admin.module';
+import { PostsModule } from './posts/posts.module';
+import { CommentsModule } from './comments/comments.module';
+import { LikesModule } from './likes/likes.module';
 
 @Module({
   imports: [
@@ -14,6 +17,9 @@ import { AdminModule } from './admin/admin.module';
     UploadModule,
     AppConfigModule,
     AdminModule,
+    PostsModule,
+    CommentsModule,
+    LikesModule,
   ],
 })
 export class AppModule {}

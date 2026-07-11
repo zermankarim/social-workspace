@@ -1,0 +1,29 @@
+//TODO: Add answers to comments
+model PostComment {
+  id          String                  @id @default(uuid())
+  textContent String?
+  authorId    String
+  author      User                    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post        Post                    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId      String
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+  attachments PostCommentAttachment[]
+
+  @@index([authorId])
+  @@index([postId])
+  @@index([createdAt])
+}
+
+model PostCommentAttachment {
+  id        String      @id @default(uuid())
+  commentId String
+  comment   PostComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  url       String
+  fileName  String
+  mimeType  String?
+  sizeBytes Int?
+  createdAt DateTime    @default(now())
+
+  @@index([commentId])
+}

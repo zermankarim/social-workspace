@@ -1,0 +1,22 @@
+enum PostLikeType {
+  LIKE
+  CONGRATULATIONS
+  SUPPORT
+  SUPER
+  INFORMATIVE
+  FUN
+}
+
+model PostLike {
+  id        String       @id @default(uuid())
+  postId    String
+  post      Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  likeType  PostLikeType
+  createdAt DateTime     @default(now())
+
+  @@unique([postId, authorId])
+  @@index([postId])
+  @@index([authorId])
+}

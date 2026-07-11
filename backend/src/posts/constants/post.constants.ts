@@ -1,0 +1,2 @@
+export const POST_TEXT_MAX_LENGTH = 5000;
+export const POST_ATTACHMENTS_MAX_COUNT = 10;

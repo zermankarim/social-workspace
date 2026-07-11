@@ -1,0 +1,30 @@
+model Post {
+  id              String           @id @default(uuid())
+  textContent     String?
+  authorId        String
+  author          User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  comments        PostComment[]
+  attachments PostAttachment[]
+  postLikes       PostLike[]
+
+  likesCount    Int @default(0)
+  commentsCount Int @default(0)
+
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+model PostAttachment {
+  id        String   @id @default(uuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  url       String
+  fileName  String
+  mimeType  String?
+  sizeBytes Int?
+  createdAt DateTime @default(now())
+
+  @@index([postId])
+}

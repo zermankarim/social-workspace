@@ -5,7 +5,7 @@ enum ProfileRole {
 }
 
 model User {
-  id           String      @id @default(uuid())
+  id           String        @id @default(uuid())
   // Public data
   firstName    String
   lastName     String
@@ -16,11 +16,15 @@ model User {
   twitter      String?
   github       String?
   linkedin     String?
-  email        String      @unique
+  email        String        @unique
   passwordHash String
-  role         ProfileRole @default(USER)
+  role         ProfileRole   @default(USER)
+  //Post
+  posts        Post[]
+  comments     PostComment[]
+  likes        PostLike[]
   // Internal data
   sessions     Session[]
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
