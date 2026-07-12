@@ -1,0 +1,7 @@
+export const HEADLINE_MAX_LENGTH = 220;
+export const PROFILE_DESCRIPTION_MAX_LENGTH = 5000;
+export const COMPANY_NAME_MAX_LENGTH = 200;
+export const SCHOOL_NAME_MAX_LENGTH = 200;
+export const JOB_TITLE_MAX_LENGTH = 200;
+export const SKILL_NAME_MAX_LENGTH = 100;
+export const SKILLS_MAX_COUNT = 50;

@@ -10,23 +10,33 @@ type FeedLeftRailProps = {
   user: User;
 };
 
-function getInitials(user: User): string {
-  const fromName = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`;
-  if (fromName.trim()) return fromName.toUpperCase();
-  return (user.email.split("@")[0] ?? "U").slice(0, 2).toUpperCase();
-}
-
 export function FeedLeftRail({ user }: FeedLeftRailProps) {
   return (
     <aside className="space-y-2">
       <FeedCard className="overflow-hidden">
-        <div className="h-14 bg-gradient-to-r from-primary to-primary-hover" />
+        <div
+          className="h-14 bg-gradient-to-r from-primary to-primary-hover bg-cover bg-center"
+          style={
+            user.coverUrl
+              ? { backgroundImage: `url(${user.coverUrl})` }
+              : undefined
+          }
+        />
         <div className="-mt-8 px-3 pb-3 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-surface bg-primary-soft text-lg font-semibold text-primary">
-            {getInitials(user)}
-          </div>
+          {user.avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={user.avatarUrl}
+              alt=""
+              className="mx-auto h-16 w-16 rounded-full border-2 border-surface object-cover"
+            />
+          ) : (
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-surface bg-primary-soft text-lg font-semibold text-primary">
+              {user.initials}
+            </div>
+          )}
           <Link
-            href="/feed"
+            href="/profile"
             className="mt-2 inline-flex max-w-full items-center justify-center gap-1 text-sm font-semibold text-foreground hover:underline"
           >
             <UserNameWithBadge
@@ -36,7 +46,9 @@ export function FeedLeftRail({ user }: FeedLeftRailProps) {
             />
           </Link>
           <p className="mt-0.5 line-clamp-2 text-xs text-muted">
-            {user.bio?.trim() || "Add a bio to complete your profile"}
+            {user.headline?.trim() ||
+              user.bio?.trim() ||
+              "Add a headline to complete your profile"}
           </p>
           {user.location?.label || user.location?.city ? (
             <p className="mt-2 inline-flex items-center justify-center gap-1 text-xs text-muted">

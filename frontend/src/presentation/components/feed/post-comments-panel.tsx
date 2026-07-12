@@ -9,6 +9,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { ApiError } from "@/core/application/errors/api.error";
 import type { PostAttachment } from "@/core/domain/entities/post-attachment.entity";
@@ -338,11 +339,16 @@ function CommentItem({
         <div className="rounded-2xl bg-surface-muted px-3 py-2">
           <div className="flex items-start justify-between gap-2">
             <div className="flex min-w-0 items-center gap-1.5">
-              <UserNameWithBadge
-                name={comment.author.displayName}
-                showAdminBadge={comment.author.isAdmin()}
-                nameClassName="text-xs font-semibold text-foreground"
-              />
+              <Link
+                href={`/users/${comment.author.id}`}
+                className="min-w-0 hover:underline"
+              >
+                <UserNameWithBadge
+                  name={comment.author.displayName}
+                  showAdminBadge={comment.author.isAdmin()}
+                  nameClassName="text-xs font-semibold text-foreground"
+                />
+              </Link>
               <span className="shrink-0 text-xs font-normal text-muted">
                 · {formatRelativeTime(comment.createdAt)}
               </span>

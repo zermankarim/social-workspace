@@ -1,6 +1,7 @@
 "use client";
 
 import { LogOut, Search } from "lucide-react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { BrandLogo } from "@/presentation/components/brand/brand-logo";
 import { AppNav } from "@/presentation/components/layout/app-nav";
@@ -56,24 +57,38 @@ export function AppHeader() {
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
           <ThemeToggle />
           <div className="hidden items-center gap-2 border-l border-border pl-2 lg:flex">
-            <div
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-primary-soft text-[11px] font-semibold text-primary"
-              aria-hidden
+            <Link
+              href="/profile"
+              className="flex items-center gap-2 rounded-md px-1 py-0.5 hover:bg-surface-muted"
             >
-              {getInitials(user.firstName, user.lastName, user.email)}
-            </div>
-            <div className="min-w-0">
-              <p className="max-w-[9rem] truncate text-xs font-semibold text-foreground">
-                <UserNameWithBadge
-                  name={user.displayName}
-                  showAdminBadge={user.isAdmin()}
-                  nameClassName="text-xs font-semibold text-foreground"
+              {user.avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={user.avatarUrl}
+                  alt=""
+                  className="h-7 w-7 rounded-full object-cover"
                 />
-              </p>
-              <p className="max-w-[9rem] truncate text-[11px] text-muted">
-                {user.email}
-              </p>
-            </div>
+              ) : (
+                <div
+                  className="flex h-7 w-7 items-center justify-center rounded-full bg-primary-soft text-[11px] font-semibold text-primary"
+                  aria-hidden
+                >
+                  {getInitials(user.firstName, user.lastName, user.email)}
+                </div>
+              )}
+              <div className="min-w-0">
+                <p className="max-w-[9rem] truncate text-xs font-semibold text-foreground">
+                  <UserNameWithBadge
+                    name={user.displayName}
+                    showAdminBadge={user.isAdmin()}
+                    nameClassName="text-xs font-semibold text-foreground"
+                  />
+                </p>
+                <p className="max-w-[9rem] truncate text-[11px] text-muted">
+                  {user.email}
+                </p>
+              </div>
+            </Link>
           </div>
           <Button
             variant="ghost"

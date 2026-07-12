@@ -5,19 +5,27 @@ import { revalidatePath } from "next/cache";
 import { isAppLocale, LOCALE_COOKIE_NAME, type AppLocale } from "@/i18n/config";
 
 /**
- * TODO(backend): After login, prefer the locale stored on the user profile
- * and call an API to update it when the user changes language here.
+ * Writes the locale cookie used by next-intl SSR.
+ * Returns the applied locale, or null if the value is invalid.
+ * `changed` is true when the cookie value actually differed.
  */
-export async function setLocale(locale: string): Promise<AppLocale | null> {
+export async function setLocale(
+  locale: string,
+): Promise<{ locale: AppLocale; changed: boolean } | null> {
   if (!isAppLocale(locale)) return null;
 
   const store = await cookies();
-  store.set(LOCALE_COOKIE_NAME, locale, {
-    path: "/",
-    maxAge: 60 * 60 * 24 * 365,
-    sameSite: "lax",
-  });
+  const previous = store.get(LOCALE_COOKIE_NAME)?.value;
+  const changed = previous !== locale;
 
-  revalidatePath("/", "layout");
-  return locale;
+  if (changed) {
+    store.set(LOCALE_COOKIE_NAME, locale, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+    });
+    revalidatePath("/", "layout");
+  }
+
+  return { locale, changed };
 }

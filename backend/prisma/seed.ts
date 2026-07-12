@@ -15,6 +15,47 @@ const COMMENT_MOCK_IDS = Array.from(
     `11111111-1111-1111-1112-${String(index + 1).padStart(12, '0')}`,
 );
 
+const LANGUAGES: { code: string; nameEn: string; nameRu: string }[] = [
+  { code: 'en', nameEn: 'English', nameRu: 'Английский' },
+  { code: 'ru', nameEn: 'Russian', nameRu: 'Русский' },
+  { code: 'kk', nameEn: 'Kazakh', nameRu: 'Казахский' },
+  { code: 'uk', nameEn: 'Ukrainian', nameRu: 'Украинский' },
+  { code: 'de', nameEn: 'German', nameRu: 'Немецкий' },
+  { code: 'fr', nameEn: 'French', nameRu: 'Французский' },
+  { code: 'es', nameEn: 'Spanish', nameRu: 'Испанский' },
+  { code: 'it', nameEn: 'Italian', nameRu: 'Итальянский' },
+  { code: 'pt', nameEn: 'Portuguese', nameRu: 'Португальский' },
+  { code: 'zh', nameEn: 'Chinese', nameRu: 'Китайский' },
+  { code: 'ja', nameEn: 'Japanese', nameRu: 'Японский' },
+  { code: 'ko', nameEn: 'Korean', nameRu: 'Корейский' },
+  { code: 'ar', nameEn: 'Arabic', nameRu: 'Арабский' },
+  { code: 'tr', nameEn: 'Turkish', nameRu: 'Турецкий' },
+  { code: 'pl', nameEn: 'Polish', nameRu: 'Польский' },
+];
+
+const SKILLS = [
+  'TypeScript',
+  'JavaScript',
+  'React',
+  'Next.js',
+  'Node.js',
+  'NestJS',
+  'PostgreSQL',
+  'Prisma',
+  'Docker',
+  'Git',
+  'Python',
+  'Java',
+  'Go',
+  'SQL',
+  'REST API',
+  'GraphQL',
+  'CSS',
+  'HTML',
+  'Leadership',
+  'Communication',
+];
+
 async function main() {
   const passwordHash = await bcrypt.hash(SEED_PASSWORD, 10);
 
@@ -27,6 +68,7 @@ async function main() {
       role: ProfileRole.ADMIN,
       firstName: 'Admin',
       lastName: 'Admin',
+      headline: 'Platform Administrator',
       location: {
         create: {
           lat: 0,
@@ -49,6 +91,7 @@ async function main() {
       role: ProfileRole.USER,
       firstName: 'John',
       lastName: 'Doe',
+      headline: 'Software Engineer',
       location: {
         create: {
           lat: 0,
@@ -61,6 +104,22 @@ async function main() {
       },
     },
   });
+
+  for (const language of LANGUAGES) {
+    await prisma.language.upsert({
+      where: { code: language.code },
+      update: { nameEn: language.nameEn, nameRu: language.nameRu },
+      create: language,
+    });
+  }
+
+  for (const name of SKILLS) {
+    await prisma.skill.upsert({
+      where: { name },
+      update: {},
+      create: { name },
+    });
+  }
 
   const posts = Array.from({ length: 20 }, (_, index) => ({
     id: POST_MOCK_IDS[index],

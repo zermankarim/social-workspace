@@ -1,0 +1,39 @@
+enum EducationDegree {
+  SECONDARY
+  HIGH_SCHOOL
+  ASSOCIATE
+  BACHELOR
+  MASTER
+  DOCTORATE
+  MBA
+  CERTIFICATE
+  OTHER
+}
+
+model Education {
+  id          String           @id @default(uuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  schoolName  String
+  degree      EducationDegree
+  startDate   DateTime         @db.Date
+  endDate     DateTime?        @db.Date
+  description String?
+  gradePoint  Float?
+  skills      EducationSkill[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([startDate])
+}
+
+model EducationSkill {
+  educationId String
+  education   Education @relation(fields: [educationId], references: [id], onDelete: Cascade)
+  skillId     String
+  skill       Skill     @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([educationId, skillId])
+  @@index([skillId])
+}

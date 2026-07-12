@@ -14,9 +14,9 @@ UI layer: components, hooks, stores, client validations.
 ## i18n
 
 - Use `next-intl` (`useTranslations` / `getTranslations`). Dictionaries: `frontend/messages/{locale}.json`.
-- Locale is stored in the `NEXT_LOCALE` cookie via `src/i18n/set-locale.ts` (client preference for now).
-- Supported locales: `en`, `ru` (`src/i18n/config.ts`).
-- TODO(backend): persist preferred language on the user profile and sync after auth; keep the cookie as a local/SSR cache.
+- Signed-in users: `User.preferredLocale` from the API is the source of truth; cookie `NEXT_LOCALE` is the SSR/local cache (`src/i18n/`).
+- On login/refresh, cookie is synced from the profile. Locale switcher PATCHes `/users/me` when authenticated.
+- Guests: cookie only. Supported locales: `en`, `ru`.
 
 ## Rules
 

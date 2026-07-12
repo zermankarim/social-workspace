@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { createHash } from 'crypto';
 import { AppConfigService } from '../../infrastructure/config/services/config.service';
 import { SessionRepository } from '../repositories/session.repository';
@@ -28,9 +28,21 @@ export class SessionService {
       refreshTokenExpiresAt: { gt: new Date() },
     });
 
-    if (sessions >= maxSessions) {
-      throw new BadRequestException('Max sessions reached');
+    // Drop oldest active sessions so login is never blocked after cookie loss /
+    // HMR refresh loops that left orphaned DB sessions behind.
+    const overflow = sessions - maxSessions + 1;
+    if (overflow > 0) {
+      const oldest = await this.sessionRepository.findOldestActiveSessions(
+        input.userId,
+        overflow,
+      );
+      await Promise.all(
+        oldest.map((session) =>
+          this.sessionRepository.revokeSession(session.id),
+        ),
+      );
     }
+
     return this.sessionRepository.create(input);
   }
 

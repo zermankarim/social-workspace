@@ -1,4 +1,5 @@
 import type { Location } from "@/core/domain/entities/location.entity";
+import { PreferredLocale } from "@/core/domain/enums/preferred-locale.enum";
 import { ProfileRole } from "@/core/domain/enums/profile-role.enum";
 
 export class User {
@@ -8,9 +9,12 @@ export class User {
     public readonly role: ProfileRole,
     public readonly firstName: string,
     public readonly lastName: string,
+    public readonly headline: string | null,
     public readonly bio: string | null,
     public readonly location: Location | null,
     public readonly avatarUrl: string | null,
+    public readonly coverUrl: string | null,
+    public readonly preferredLocale: PreferredLocale,
     public readonly github: string | null,
     public readonly linkedin: string | null,
     public readonly website: string | null,
@@ -21,6 +25,11 @@ export class User {
 
   get displayName(): string {
     return `${this.firstName} ${this.lastName}`.trim();
+  }
+
+  get initials(): string {
+    const fromName = `${this.firstName[0] ?? ""}${this.lastName[0] ?? ""}`;
+    return fromName.trim().toUpperCase() || "?";
   }
 
   isAdmin(): boolean {

@@ -55,6 +55,18 @@ export class SessionRepository {
     });
   }
 
+  findOldestActiveSessions(userId: string, take: number): Promise<Session[]> {
+    return this.prisma.session.findMany({
+      where: {
+        userId,
+        revokedAt: null,
+        refreshTokenExpiresAt: { gt: new Date() },
+      },
+      orderBy: { createdAt: 'asc' },
+      take,
+    });
+  }
+
   deleteExpiredSessions(now = new Date()) {
     return this.prisma.session.deleteMany({
       where: {

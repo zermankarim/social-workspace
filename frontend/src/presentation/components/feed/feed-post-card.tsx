@@ -12,6 +12,7 @@ import {
   Send,
   Trash2,
 } from "lucide-react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { ApiError } from "@/core/application/errors/api.error";
 import type { Post } from "@/core/domain/entities/post.entity";
@@ -310,11 +311,16 @@ export function FeedPostCard({ post, currentUser }: FeedPostCardProps) {
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <UserNameWithBadge
-                name={post.author.displayName}
-                showAdminBadge={post.author.isAdmin()}
-                nameClassName="text-sm font-semibold text-foreground"
-              />
+              <Link
+                href={`/users/${post.author.id}`}
+                className="hover:underline"
+              >
+                <UserNameWithBadge
+                  name={post.author.displayName}
+                  showAdminBadge={post.author.isAdmin()}
+                  nameClassName="text-sm font-semibold text-foreground"
+                />
+              </Link>
               <p className="truncate text-xs text-muted">
                 {post.author.bio ?? t("member")}
               </p>

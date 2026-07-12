@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AuthCredentials } from "@/core/domain/value-objects/auth-credentials.vo";
 import { LocationInput } from "@/core/domain/value-objects/location-input.vo";
 import { SignupData } from "@/core/domain/value-objects/signup-data.vo";
+import { applyUserLocaleAfterAuth } from "@/i18n/change-app-locale";
 import { appContainer } from "@/modules/app.container";
 import { useAuthStore } from "@/presentation/stores/auth.store";
 import type { LocationInputValues } from "@/presentation/validations/auth.validation";
@@ -40,6 +41,14 @@ function toSignupData(input: {
   );
 }
 
+async function hydrateSessionLocale(
+  preferredLocale: string,
+  router: ReturnType<typeof useRouter>,
+) {
+  const changed = await applyUserLocaleAfterAuth(preferredLocale);
+  if (changed) router.refresh();
+}
+
 export function useSignin() {
   const router = useRouter();
   const setUser = useAuthStore((s) => s.setUser);
@@ -48,9 +57,10 @@ export function useSignin() {
   return useMutation({
     mutationFn: (input: { email: string; password: string }) =>
       appContainer.authService.signin(toCredentials(input)),
-    onSuccess: (user) => {
+    onSuccess: async (user) => {
       setUser(user);
       queryClient.clear();
+      await hydrateSessionLocale(user.preferredLocale, router);
       router.replace("/feed");
     },
   });
@@ -70,9 +80,10 @@ export function useSignup() {
       bio?: string;
       location?: LocationInputValues;
     }) => appContainer.authService.register(toSignupData(input)),
-    onSuccess: (user) => {
+    onSuccess: async (user) => {
       setUser(user);
       queryClient.clear();
+      await hydrateSessionLocale(user.preferredLocale, router);
       router.replace("/feed");
     },
   });
@@ -94,11 +105,15 @@ export function useSignout() {
 }
 
 export function useRefreshSession() {
+  const router = useRouter();
   const setUser = useAuthStore((s) => s.setUser);
 
   return useMutation({
     mutationFn: () => appContainer.authService.refresh(),
-    onSuccess: (user) => setUser(user),
+    onSuccess: async (user) => {
+      setUser(user);
+      await hydrateSessionLocale(user.preferredLocale, router);
+    },
     onError: () => setUser(null),
   });
 }

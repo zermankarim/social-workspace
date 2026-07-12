@@ -1,0 +1,34 @@
+enum LanguageProficiency {
+  ELEMENTARY
+  ADVANCED
+  PROFESSIONAL
+  FULL_PROFESSIONAL
+  NATIVE_OR_BILINGUAL
+}
+
+model Language {
+  id        String         @id @default(uuid())
+  code      String         @unique
+  nameEn    String
+  nameRu    String
+  users     UserLanguage[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([nameEn])
+  @@index([nameRu])
+}
+
+model UserLanguage {
+  id           String               @id @default(uuid())
+  userId       String
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  languageId   String
+  language     Language             @relation(fields: [languageId], references: [id], onDelete: Cascade)
+  proficiency  LanguageProficiency
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  @@unique([userId, languageId])
+  @@index([languageId])
+}

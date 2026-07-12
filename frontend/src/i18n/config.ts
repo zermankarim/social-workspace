@@ -1,10 +1,8 @@
 /**
- * Client-side locale preference (cookie).
+ * App locale preference.
  *
- * TODO(backend): Persist the user's preferred language on the backend
- * (e.g. User.locale / profile settings) and sync it after login/signup
- * instead of relying only on a client cookie. Keep cookie (or similar)
- * as a fast local cache for guests and SSR.
+ * Source of truth for signed-in users: `User.preferredLocale` on the backend.
+ * Cookie `NEXT_LOCALE` is the SSR/local cache (and the only store for guests).
  */
 
 export const locales = ["en", "ru"] as const;
@@ -19,4 +17,8 @@ export function isAppLocale(
   value: string | undefined | null,
 ): value is AppLocale {
   return value != null && (locales as readonly string[]).includes(value);
+}
+
+export function toAppLocale(value: string | undefined | null): AppLocale {
+  return isAppLocale(value) ? value : defaultLocale;
 }

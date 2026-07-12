@@ -14,9 +14,12 @@ export interface UserResponseDto {
   role: string;
   firstName: string;
   lastName: string;
+  headline?: string | null;
   bio: string | null;
   location: LocationResponseDto | null;
   avatarUrl: string | null;
+  coverUrl?: string | null;
+  preferredLocale?: string; // PreferredLocale en|ru from API
   github: string | null;
   linkedin: string | null;
   website: string | null;
