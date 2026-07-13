@@ -1,5 +1,6 @@
 import type { AuthService } from "@/core/application/services/auth.service";
 import type { CommentService } from "@/core/application/services/comment.service";
+import type { ConnectionService } from "@/core/application/services/connection.service";
 import type { LikeService } from "@/core/application/services/like.service";
 import type { PostService } from "@/core/application/services/post.service";
 import type { ProfileService } from "@/core/application/services/profile.service";
@@ -8,6 +9,7 @@ import type { UserService } from "@/core/application/services/user.service";
 import { HttpClient } from "@/infrastructure/http/http-client";
 import { AuthModule } from "@/modules/auth.module";
 import { CommentModule } from "@/modules/comment.module";
+import { ConnectionModule } from "@/modules/connection.module";
 import { LikeModule } from "@/modules/like.module";
 import { PostModule } from "@/modules/post.module";
 import { ProfileModule } from "@/modules/profile.module";
@@ -25,6 +27,7 @@ export class AppContainer {
   readonly postService: PostService;
   readonly likeService: LikeService;
   readonly commentService: CommentService;
+  readonly connectionService: ConnectionService;
 
   private constructor() {
     this.httpClient = new HttpClient();
@@ -35,6 +38,7 @@ export class AppContainer {
     this.postService = PostModule.create(this.httpClient);
     this.likeService = LikeModule.create(this.httpClient);
     this.commentService = CommentModule.create(this.httpClient);
+    this.connectionService = ConnectionModule.create(this.httpClient);
   }
 
   static getInstance(): AppContainer {

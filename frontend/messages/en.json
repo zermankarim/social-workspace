@@ -112,6 +112,11 @@
     "loadFailed": "Failed to load profile",
     "saveFailed": "Could not save. Please try again.",
     "about": "About",
+    "connections": "Connections",
+    "connectionsCount": "{count, plural, one {# connection} other {# connections}}",
+    "connectionsEmpty": "No connections yet.",
+    "connectionsOf": "{name}’s connections",
+    "backToProfile": "Back to profile",
     "aboutEmpty": "No summary yet.",
     "experience": "Experience",
     "experienceEmpty": "No experience added yet.",
@@ -207,5 +212,27 @@
       "FULL_PROFESSIONAL": "Full professional",
       "NATIVE_OR_BILINGUAL": "Native or bilingual"
     }
+  },
+  "network": {
+    "manageNetwork": "Manage my network",
+    "invitations": "Invitations",
+    "connections": "Connections",
+    "sent": "Sent",
+    "invitationsTitle": "Invitations",
+    "connectionsTitle": "Your connections",
+    "sentTitle": "Sent invitations",
+    "invitationsEmpty": "No pending invitations.",
+    "connectionsEmpty": "You don’t have any connections yet.",
+    "sentEmpty": "No sent invitations.",
+    "accept": "Accept",
+    "ignore": "Ignore",
+    "withdraw": "Withdraw",
+    "remove": "Remove connection",
+    "removeConfirm": "Remove this connection?",
+    "connect": "Connect",
+    "pending": "Pending",
+    "pendingNavBadge": "{count, plural, one {# pending invitation} other {# pending invitations}}",
+    "loadFailed": "Failed to load network",
+    "actionFailed": "Something went wrong. Please try again."
   }
 }

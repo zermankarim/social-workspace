@@ -27,6 +27,7 @@ export class UserProfile {
     public readonly educations: Education[],
     public readonly languages: UserLanguage[],
     public readonly skills: Skill[],
+    public readonly connectionsCount: number,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
   ) {}

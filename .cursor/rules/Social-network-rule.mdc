@@ -1,0 +1,34 @@
+---
+alwaysApply: true
+---
+
+# Product: professional social network
+
+We are building a professional social / career networking product (profiles, feed, connections, messaging, jobs-adjacent features). Treat it as an original product — never name, compare to, or reference competing commercial platforms in code, UI copy, comments, commits, docs, or PR descriptions.
+
+## Product & naming
+
+- Use original product language: profile, network, feed, connections, experience, education, skills, posts, messages, companies.
+- Do not clone brand names, slogans, blue-hex logos, or trademarked UI labels.
+- Prefer domain language that matches our existing modules (`users`, `posts`, `auth`, …).
+
+## Frontend / visual direction
+
+- Aim for a familiar professional-network UX: clean layout, strong hierarchy, profile-centric pages, feed + left/right rails where the design already uses them.
+- Prefer restrained blues/neutrals, clear typography, dense but readable information — not flashy consumer-social aesthetics.
+- Preserve existing design system and architecture (Clean Architecture layers, AGENTS.md per folder). Do not invent a parallel UI kit.
+- Accessibility and responsive layout matter; avoid decorative clutter that hurts scanning of profiles and feeds.
+
+## Backend / scalability
+
+- NestJS feature modules by domain; keep controllers thin, services focused, Prisma for persistence.
+- Design for growth: clear module boundaries, DTOs + validation, pagination/cursors for lists, indexes for hot queries, auth/guards on mutating routes.
+- Prefer patterns that allow later expansion (notifications, messaging, search, recommendations, media) without rewriting core domains — avoid one-off god services and hard-coded cross-module coupling.
+- After schema changes: migrations + update `.env.example` when new env vars appear. Never commit secrets.
+- Do not reintroduce todo-app features unless explicitly requested.
+
+## Agent behavior
+
+- Follow `frontend/AGENTS.md` and `backend/AGENTS.md` (and nested layer notes) for structure and quality gates.
+- Prefer small, reversible changes that keep APIs and schemas extensible.
+- When unsure between a quick hack and a scalable boundary, choose the boundary that matches existing module layout.

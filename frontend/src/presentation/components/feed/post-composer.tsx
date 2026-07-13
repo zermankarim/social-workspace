@@ -302,7 +302,7 @@ export function PostComposer({ user }: PostComposerProps) {
                   nameClassName="text-sm font-semibold text-foreground"
                 />
                 <p className="truncate text-xs text-muted">
-                  {user.bio?.trim() || t("postToAnyone")}
+                  {user.headline?.trim() || t("postToAnyone")}
                 </p>
               </div>
             </div>

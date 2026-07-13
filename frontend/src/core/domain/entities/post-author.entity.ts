@@ -6,7 +6,7 @@ export class PostAuthor {
     public readonly firstName: string,
     public readonly lastName: string,
     public readonly avatarUrl: string | null,
-    public readonly bio: string | null,
+    public readonly headline: string | null,
     public readonly role: ProfileRole,
   ) {}
 

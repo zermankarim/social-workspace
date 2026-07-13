@@ -119,6 +119,9 @@ export class PublicUserProfileResponseDto {
 
   @ApiProperty({ type: [SkillResponseDto] })
   skills: SkillResponseDto[];
+
+  @ApiProperty({ type: Number })
+  connectionsCount: number;
 }
 
 export class PrivateUserProfileResponseDto extends PublicUserProfileResponseDto {

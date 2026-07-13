@@ -6,9 +6,10 @@ import {
 } from './controllers/users.controller';
 import { UsersRepository } from './repositories/users.repository';
 import { AuthModule } from '../auth/auth.module';
+import { ConnectionsModule } from '../connections/connections.module';
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, ConnectionsModule],
   controllers: [UsersController, CatalogController],
   providers: [UsersService, UsersRepository],
   exports: [UsersService, UsersRepository],

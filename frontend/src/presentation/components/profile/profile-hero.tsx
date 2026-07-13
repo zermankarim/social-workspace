@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
+import Link from "next/link";
 import { Camera, ExternalLink, Globe, MapPin, Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { UserProfile } from "@/core/domain/entities/user-profile.entity";
@@ -15,6 +16,7 @@ type ProfileHeroProps = {
   onEditIntro: () => void;
   onAvatarUploaded: (url: string) => void;
   onCoverUploaded: (url: string) => void;
+  connectActions?: ReactNode;
 };
 
 function formatLocation(profile: UserProfile): string | null {
@@ -33,6 +35,7 @@ export function ProfileHero({
   onEditIntro,
   onAvatarUploaded,
   onCoverUploaded,
+  connectActions,
 }: ProfileHeroProps) {
   const t = useTranslations("profile");
   const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -160,27 +163,41 @@ export function ProfileHero({
                 <Pencil className="h-4 w-4" aria-hidden />
                 {t("editIntro")}
               </Button>
-            ) : null}
+            ) : (
+              connectActions
+            )}
           </div>
 
-          <div className="mt-3">
-            <UserNameWithBadge
-              name={profile.displayName}
-              showAdminBadge={profile.isAdmin()}
-              badgeSize="md"
-              nameClassName="text-2xl font-semibold text-foreground"
-            />
+          <div className="mt-3 space-y-1">
+            <div>
+              <UserNameWithBadge
+                name={profile.displayName}
+                showAdminBadge={profile.isAdmin()}
+                badgeSize="md"
+                nameClassName="text-2xl font-semibold text-foreground"
+              />
+            </div>
             {profile.headline ? (
-              <p className="mt-1 text-base text-foreground">
-                {profile.headline}
-              </p>
+              <p className="text-base text-foreground">{profile.headline}</p>
             ) : null}
             {locationLabel ? (
-              <p className="mt-1 inline-flex items-center gap-1 text-sm text-muted">
+              <p className="flex items-center gap-1 text-sm text-muted">
                 <MapPin className="h-4 w-4 shrink-0" aria-hidden />
                 {locationLabel}
               </p>
             ) : null}
+            <p className="pt-1">
+              <Link
+                href={
+                  canEdit
+                    ? "/profile/connections"
+                    : `/users/${profile.id}/connections`
+                }
+                className="text-sm font-semibold text-primary hover:underline"
+              >
+                {t("connectionsCount", { count: profile.connectionsCount })}
+              </Link>
+            </p>
           </div>
 
           {(profile.website ||

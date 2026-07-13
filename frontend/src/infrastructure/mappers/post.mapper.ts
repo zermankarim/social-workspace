@@ -44,7 +44,7 @@ export class PostMapper {
       dto.firstName,
       dto.lastName,
       dto.avatarUrl,
-      dto.bio,
+      dto.headline,
       parseAuthorRole(dto.role),
     );
   }

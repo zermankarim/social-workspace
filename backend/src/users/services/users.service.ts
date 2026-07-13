@@ -45,27 +45,43 @@ import {
   UserLanguageSelected,
   WorkExperienceSelected,
 } from '../user.select';
+import { ConnectionsService } from '../../connections/services/connections.service';
+import { ConnectionResponseDto } from '../../connections/dto/connection.dto';
+import { PaginatedConnectionsQueryDto } from '../../connections/dto/paginated-connections-query.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly connectionsService: ConnectionsService,
+  ) {}
 
   async getMyProfile(userId: string): Promise<PrivateUserProfileResponseDto> {
-    const user = await this.usersRepository.findProfileById(userId);
+    const [user, connectionsCount] = await Promise.all([
+      this.usersRepository.findProfileById(userId),
+      this.connectionsService.countAcceptedByUserId(userId),
+    ]);
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return UserMapper.toPrivateProfile(user);
+
+    return UserMapper.toPrivateProfile(user, connectionsCount);
   }
 
   async getPublicProfile(
     userId: string,
   ): Promise<PublicUserProfileResponseDto> {
-    const user = await this.usersRepository.findProfileById(userId);
+    const [user, connectionsCount] = await Promise.all([
+      this.usersRepository.findProfileById(userId),
+      this.connectionsService.countAcceptedByUserId(userId),
+    ]);
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return UserMapper.toPublicProfile(user);
+
+    return UserMapper.toPublicProfile(user, connectionsCount);
   }
 
   async updateMyProfile(
@@ -88,8 +104,11 @@ export class UsersService {
       ...(dto.twitter !== undefined && { twitter: dto.twitter }),
     };
 
-    const user = await this.usersRepository.updateProfile(userId, data);
-    return UserMapper.toPrivateProfile(user);
+    const [user, connectionsCount] = await Promise.all([
+      this.usersRepository.updateProfile(userId, data),
+      this.connectionsService.countAcceptedByUserId(userId),
+    ]);
+    return UserMapper.toPrivateProfile(user, connectionsCount);
   }
 
   // --- Experiences ---
@@ -405,6 +424,13 @@ export class UsersService {
     if (!removed) {
       throw new NotFoundException('Skill not found on profile');
     }
+  }
+
+  listConnections(
+    userId: string,
+    query: PaginatedConnectionsQueryDto,
+  ): Promise<PaginatedResponseDto<ConnectionResponseDto>> {
+    return this.connectionsService.getAcceptedByUserId(userId, query);
   }
 
   private async getOwnedExperienceOrThrow(

@@ -1,4 +1,3 @@
-// ---- User ----
 enum ProfileRole {
   ADMIN
   USER
@@ -10,34 +9,37 @@ enum PreferredLocale {
 }
 
 model User {
-  id           String        @id @default(uuid())
+  id                  String           @id @default(uuid())
   // Public data
-  firstName    String
-  lastName     String
-  headline     String?
-  avatarUrl    String?
-  coverUrl     String?
-  bio          String?
-  location     Location?
-  website      String?
-  twitter      String?
-  github       String?
-  linkedin     String?
-  email        String        @unique
-  passwordHash String
-  role         ProfileRole   @default(USER)
-  preferredLocale PreferredLocale @default(en)
+  firstName           String
+  lastName            String
+  headline            String?
+  avatarUrl           String?
+  coverUrl            String?
+  bio                 String?
+  location            Location?
+  website             String?
+  twitter             String?
+  github              String?
+  linkedin            String?
+  email               String           @unique
+  passwordHash        String
+  role                ProfileRole      @default(USER)
+  preferredLocale     PreferredLocale  @default(en)
   // Post
-  posts        Post[]
-  comments     PostComment[]
-  likes        PostLike[]
+  posts               Post[]
+  comments            PostComment[]
+  likes               PostLike[]
   // Profile
-  experiences  WorkExperience[]
-  educations   Education[]
-  languages    UserLanguage[]
-  skills       UserSkill[]
+  experiences         WorkExperience[]
+  educations          Education[]
+  languages           UserLanguage[]
+  skills              UserSkill[]
+  // Connections
+  sentConnections     Connection[]     @relation("ConnectionRequester")
+  receivedConnections Connection[]     @relation("ConnectionAddressee")
   // Internal data
-  sessions     Session[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  sessions            Session[]
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
 }

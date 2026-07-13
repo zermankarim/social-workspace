@@ -1,12 +1,5 @@
-import { Users } from "lucide-react";
-import { ComingSoonPage } from "@/presentation/components/placeholders/coming-soon-page";
+import { NetworkPage } from "@/presentation/components/network/network-page";
 
-export default function NetworkPage() {
-  return (
-    <ComingSoonPage
-      title="My Network"
-      description="Connections, invitations, and people nearby will live here."
-      icon={Users}
-    />
-  );
+export default function NetworkRoutePage() {
+  return <NetworkPage />;
 }

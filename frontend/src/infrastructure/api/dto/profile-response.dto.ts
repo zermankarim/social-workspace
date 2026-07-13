@@ -79,6 +79,7 @@ export interface PublicUserProfileResponseDto {
   educations: EducationResponseDto[];
   languages: UserLanguageResponseDto[];
   skills: SkillResponseDto[];
+  connectionsCount: number;
 }
 
 export interface PrivateUserProfileResponseDto extends PublicUserProfileResponseDto {

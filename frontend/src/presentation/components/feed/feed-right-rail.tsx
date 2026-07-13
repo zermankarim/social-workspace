@@ -52,7 +52,7 @@ export function FeedRightRail() {
           ))}
         </ul>
         <p className="mt-3 text-[10px] text-muted">
-          Suggestions are mocked until network APIs exist.
+          Suggestions will appear when a recommendations API is available.
         </p>
       </FeedCard>
     </aside>

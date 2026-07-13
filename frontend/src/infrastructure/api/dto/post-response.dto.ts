@@ -9,7 +9,7 @@ export interface PostAuthorResponseDto {
   firstName: string;
   lastName: string;
   avatarUrl: string | null;
-  bio: string | null;
+  headline: string | null;
   role: ProfileRole;
 }
 

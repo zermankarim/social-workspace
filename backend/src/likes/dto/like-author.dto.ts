@@ -22,7 +22,7 @@ export class LikeAuthorDto {
     example: 'Software engineer',
     nullable: true,
   })
-  bio: string | null;
+  headline: string | null;
 
   @ApiProperty({ enum: ProfileRole, example: ProfileRole.USER })
   role: ProfileRole;

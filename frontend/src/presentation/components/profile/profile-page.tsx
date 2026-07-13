@@ -12,6 +12,7 @@ import { ProfileHero } from "@/presentation/components/profile/profile-hero";
 import { ProfileLanguagesSection } from "@/presentation/components/profile/profile-languages-section";
 import { ProfileSkillsSection } from "@/presentation/components/profile/profile-skills-section";
 import { FeedCard } from "@/presentation/components/feed/feed-card";
+import { ProfileConnectActions } from "@/presentation/components/network/profile-connect-actions";
 import { LocaleSwitcher } from "@/presentation/components/ui/locale-switcher";
 import {
   useMyProfile,
@@ -81,6 +82,11 @@ export function ProfilePage({ userId }: ProfilePageProps) {
             onEditIntro={() => setIntroModalOpen(true)}
             onAvatarUploaded={(url) => void handleAvatarUploaded(url)}
             onCoverUploaded={(url) => void handleCoverUploaded(url)}
+            connectActions={
+              !canEdit && authUser ? (
+                <ProfileConnectActions otherUserId={profile.id} />
+              ) : undefined
+            }
           />
           <ProfileAboutSection
             profile={profile}

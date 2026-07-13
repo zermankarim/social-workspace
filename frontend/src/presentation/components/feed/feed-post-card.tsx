@@ -25,6 +25,7 @@ import { PostAttachmentsGallery } from "@/presentation/components/feed/post-atta
 import { PostCommentsPanel } from "@/presentation/components/feed/post-comments-panel";
 import { PostEngagementSummary } from "@/presentation/components/feed/post-engagement-summary";
 import { PostReactionButton } from "@/presentation/components/feed/post-reaction-button";
+import { ConnectActions } from "@/presentation/components/network/connect-actions";
 import { Button } from "@/presentation/components/ui/button";
 import { EmojiPickerButton } from "@/presentation/components/ui/emoji-picker-button";
 import { UserNameWithBadge } from "@/presentation/components/ui/user-name-with-badge";
@@ -322,7 +323,7 @@ export function FeedPostCard({ post, currentUser }: FeedPostCardProps) {
                 />
               </Link>
               <p className="truncate text-xs text-muted">
-                {post.author.bio ?? t("member")}
+                {post.author.headline?.trim() || t("member")}
               </p>
               <p className="flex items-center gap-1 text-xs text-muted">
                 {formatRelativeTime(post.createdAt)}
@@ -363,7 +364,9 @@ export function FeedPostCard({ post, currentUser }: FeedPostCardProps) {
                   </div>
                 ) : null}
               </div>
-            ) : null}
+            ) : (
+              <ConnectActions otherUserId={post.author.id} variant="compact" />
+            )}
           </div>
         </div>
       </div>

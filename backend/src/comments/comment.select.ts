@@ -13,7 +13,7 @@ export const commentSelect = {
       firstName: true,
       lastName: true,
       avatarUrl: true,
-      bio: true,
+      headline: true,
       role: true,
     },
   },

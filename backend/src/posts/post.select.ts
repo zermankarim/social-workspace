@@ -20,7 +20,7 @@ export const postSelect = {
       firstName: true,
       lastName: true,
       avatarUrl: true,
-      bio: true,
+      headline: true,
       role: true,
     },
   },

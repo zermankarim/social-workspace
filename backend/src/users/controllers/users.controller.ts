@@ -59,6 +59,9 @@ import {
 import { PaginatedResponseDto } from '../../shared/dto/paginated-response.dto';
 import { type RequestWithJwtPayload } from '../../shared/types/request-with-jwt-payload.type';
 import { JwtAuthGuard } from '../../auth/guards/jwt.guard';
+import { PaginatedConnectionsQueryDto } from '../../connections/dto/paginated-connections-query.dto';
+import { PaginatedConnectionsResponseDto } from '../../connections/dto/paginated-connections-response.dto';
+import { ConnectionResponseDto } from '../../connections/dto/connection.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -310,6 +313,21 @@ export class UsersController {
     @Param('skillId', ParseUUIDPipe) skillId: string,
   ): Promise<void> {
     return this.usersService.removeUserSkill(req.user.userId, skillId);
+  }
+
+  @Get(':userId/connections')
+  @ApiOperation({
+    summary: 'List accepted connections for a user (paginated)',
+  })
+  @ApiOkResponse({ type: PaginatedConnectionsResponseDto })
+  @ApiBadRequestResponse({
+    description: 'Invalid user id or query parameters (page, limit)',
+  })
+  listConnections(
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Query() query: PaginatedConnectionsQueryDto,
+  ): Promise<PaginatedResponseDto<ConnectionResponseDto>> {
+    return this.usersService.listConnections(userId, query);
   }
 
   @Get(':id')

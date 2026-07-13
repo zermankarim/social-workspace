@@ -48,6 +48,7 @@ export class UserMapper {
 
   static toPublicProfile(
     user: UserProfileSelected,
+    connectionsCount: number,
   ): PublicUserProfileResponseDto {
     return {
       id: user.id,
@@ -76,14 +77,16 @@ export class UserMapper {
         this.toUserLanguageResponse(item),
       ),
       skills: user.skills.map((item) => this.toSkillResponse(item.skill)),
+      connectionsCount,
     };
   }
 
   static toPrivateProfile(
     user: UserProfileSelected,
+    connectionsCount: number,
   ): PrivateUserProfileResponseDto {
     return {
-      ...this.toPublicProfile(user),
+      ...this.toPublicProfile(user, connectionsCount),
       email: user.email,
     };
   }

@@ -1,5 +1,3 @@
-// ---- Session -----
-
 model Session {
   id String @id @default(uuid())
 

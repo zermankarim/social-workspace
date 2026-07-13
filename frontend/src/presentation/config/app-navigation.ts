@@ -36,7 +36,6 @@ export const appNavItems: AppNavItem[] = [
     labelKey: "network",
     icon: Users,
     roles: [ProfileRole.ADMIN, ProfileRole.USER],
-    comingSoon: true,
   },
   {
     href: "/jobs",

@@ -112,6 +112,11 @@
     "loadFailed": "Не удалось загрузить профиль",
     "saveFailed": "Не удалось сохранить. Попробуйте ещё раз.",
     "about": "О себе",
+    "connections": "Контакты",
+    "connectionsCount": "{count, plural, one {# контакт} few {# контакта} many {# контактов} other {# контакта}}",
+    "connectionsEmpty": "Контактов пока нет.",
+    "connectionsOf": "Контакты — {name}",
+    "backToProfile": "Назад к профилю",
     "aboutEmpty": "Пока нет описания.",
     "experience": "Опыт работы",
     "experienceEmpty": "Опыт работы ещё не добавлен.",
@@ -207,5 +212,27 @@
       "FULL_PROFESSIONAL": "Свободный",
       "NATIVE_OR_BILINGUAL": "Родной / двуязычный"
     }
+  },
+  "network": {
+    "manageNetwork": "Управление сетью",
+    "invitations": "Приглашения",
+    "connections": "Контакты",
+    "sent": "Отправленные",
+    "invitationsTitle": "Приглашения",
+    "connectionsTitle": "Ваши контакты",
+    "sentTitle": "Отправленные приглашения",
+    "invitationsEmpty": "Нет входящих приглашений.",
+    "connectionsEmpty": "У вас пока нет контактов.",
+    "sentEmpty": "Нет отправленных приглашений.",
+    "accept": "Принять",
+    "ignore": "Отклонить",
+    "withdraw": "Отозвать",
+    "remove": "Удалить контакт",
+    "removeConfirm": "Удалить этот контакт?",
+    "connect": "Установить контакт",
+    "pending": "Ожидание",
+    "pendingNavBadge": "{count, plural, one {# входящее приглашение} few {# входящих приглашения} many {# входящих приглашений} other {# входящих приглашений}}",
+    "loadFailed": "Не удалось загрузить сеть",
+    "actionFailed": "Что-то пошло не так. Попробуйте ещё раз."
   }
 }

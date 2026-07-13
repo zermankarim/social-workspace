@@ -4,7 +4,7 @@ import { UserPublic } from '../../users/user.select';
 
 export class PostAuthorDto implements Pick<
   UserPublic,
-  'id' | 'firstName' | 'lastName' | 'avatarUrl' | 'bio' | 'role'
+  'id' | 'firstName' | 'lastName' | 'avatarUrl' | 'headline' | 'role'
 > {
   @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
   id: string;
@@ -23,10 +23,10 @@ export class PostAuthorDto implements Pick<
   avatarUrl: string | null;
 
   @ApiPropertyOptional({
-    example: 'Software engineer',
+    example: 'Software engineer at Acme',
     nullable: true,
   })
-  bio: string | null;
+  headline: string | null;
 
   @ApiProperty({ enum: ProfileRole, example: ProfileRole.USER })
   role: ProfileRole;

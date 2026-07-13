@@ -46,9 +46,7 @@ export function FeedLeftRail({ user }: FeedLeftRailProps) {
             />
           </Link>
           <p className="mt-0.5 line-clamp-2 text-xs text-muted">
-            {user.headline?.trim() ||
-              user.bio?.trim() ||
-              "Add a headline to complete your profile"}
+            {user.headline?.trim() || "Add a headline to complete your profile"}
           </p>
           {user.location?.label || user.location?.city ? (
             <p className="mt-2 inline-flex items-center justify-center gap-1 text-xs text-muted">

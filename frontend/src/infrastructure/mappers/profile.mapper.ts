@@ -103,6 +103,7 @@ export class ProfileMapper {
       dto.educations.map((item) => this.educationFromApi(item)),
       dto.languages.map((item) => this.userLanguageFromApi(item)),
       dto.skills.map((item) => this.skillFromApi(item)),
+      dto.connectionsCount ?? 0,
       new Date(dto.createdAt),
       new Date(dto.updatedAt),
     );
