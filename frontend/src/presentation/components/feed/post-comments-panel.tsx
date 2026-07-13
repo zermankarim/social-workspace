@@ -31,6 +31,7 @@ import {
   type CommentAttachmentInput,
 } from "@/presentation/hooks/use-comments";
 import { useEmojiInsert } from "@/presentation/hooks/use-emoji-insert";
+import { getPastedImageFiles } from "@/presentation/lib/clipboard-images";
 import { formatRelativeTime } from "@/presentation/lib/format-relative-time";
 import {
   COMMENT_ATTACHMENTS_MAX_COUNT,
@@ -273,12 +274,8 @@ function CommentItem({
     });
   };
 
-  const handleFilesSelected = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const files = Array.from(event.target.files ?? []);
-    event.target.value = "";
-    if (files.length === 0) return;
+  const addImageFiles = async (files: File[]) => {
+    if (files.length === 0 || disabled || isUploading) return;
 
     if (attachments.length >= COMMENT_ATTACHMENTS_MAX_COUNT) {
       setError(t("attachmentsLimit", { count: COMMENT_ATTACHMENTS_MAX_COUNT }));
@@ -299,6 +296,21 @@ function CommentItem({
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleFilesSelected = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const files = Array.from(event.target.files ?? []);
+    event.target.value = "";
+    await addImageFiles(files);
+  };
+
+  const handlePaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const files = getPastedImageFiles(event.clipboardData);
+    if (!files) return;
+    event.preventDefault();
+    void addImageFiles(files);
   };
 
   const handleSave = async () => {
@@ -397,6 +409,7 @@ function CommentItem({
                 ref={textareaRef}
                 value={text}
                 onChange={(event) => setText(event.target.value)}
+                onPaste={handlePaste}
                 maxLength={COMMENT_TEXT_MAX_LENGTH}
                 rows={2}
                 disabled={editBusy}
@@ -544,12 +557,8 @@ export function PostCommentsPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- revoke only on unmount
   }, []);
 
-  const handleFilesSelected = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const files = Array.from(event.target.files ?? []);
-    event.target.value = "";
-    if (files.length === 0) return;
+  const addImageFiles = async (files: File[]) => {
+    if (files.length === 0 || isBusy) return;
 
     if (attachments.length >= COMMENT_ATTACHMENTS_MAX_COUNT) {
       setError(t("attachmentsLimit", { count: COMMENT_ATTACHMENTS_MAX_COUNT }));
@@ -570,6 +579,21 @@ export function PostCommentsPanel({
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleFilesSelected = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const files = Array.from(event.target.files ?? []);
+    event.target.value = "";
+    await addImageFiles(files);
+  };
+
+  const handlePaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const files = getPastedImageFiles(event.clipboardData);
+    if (!files) return;
+    event.preventDefault();
+    void addImageFiles(files);
   };
 
   const removeAttachment = (url: string) => {
@@ -658,6 +682,7 @@ export function PostCommentsPanel({
                 ref={composerRef}
                 value={draft}
                 onChange={(event) => setDraft(event.target.value)}
+                onPaste={handlePaste}
                 maxLength={COMMENT_TEXT_MAX_LENGTH}
                 rows={1}
                 placeholder={t("placeholder")}

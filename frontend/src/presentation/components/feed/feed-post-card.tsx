@@ -37,6 +37,7 @@ import {
   type PostAttachmentInput,
 } from "@/presentation/hooks/use-posts";
 import { moveArrayItem } from "@/presentation/lib/array-move";
+import { getPastedImageFiles } from "@/presentation/lib/clipboard-images";
 import { formatEngagementCount } from "@/presentation/lib/format-engagement-count";
 import { formatRelativeTime } from "@/presentation/lib/format-relative-time";
 import {
@@ -209,12 +210,8 @@ export function FeedPostCard({ post, currentUser }: FeedPostCardProps) {
     setAttachments((current) => moveArrayItem(current, fromIndex, toIndex));
   };
 
-  const handleFilesSelected = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const files = Array.from(event.target.files ?? []);
-    event.target.value = "";
-    if (files.length === 0) return;
+  const addImageFiles = async (files: File[]) => {
+    if (files.length === 0 || isBusy) return;
 
     const remainingSlots = POST_ATTACHMENTS_MAX_COUNT - attachments.length;
     if (remainingSlots <= 0) {
@@ -248,6 +245,21 @@ export function FeedPostCard({ post, currentUser }: FeedPostCardProps) {
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleFilesSelected = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const files = Array.from(event.target.files ?? []);
+    event.target.value = "";
+    await addImageFiles(files);
+  };
+
+  const handlePaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const files = getPastedImageFiles(event.clipboardData);
+    if (!files) return;
+    event.preventDefault();
+    void addImageFiles(files);
   };
 
   const handleSave = async () => {
@@ -377,6 +389,7 @@ export function FeedPostCard({ post, currentUser }: FeedPostCardProps) {
             ref={editTextareaRef}
             value={text}
             onChange={(event) => setText(event.target.value)}
+            onPaste={handlePaste}
             maxLength={POST_TEXT_MAX_LENGTH}
             rows={4}
             className="w-full resize-y rounded-md border border-border-strong bg-surface px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"

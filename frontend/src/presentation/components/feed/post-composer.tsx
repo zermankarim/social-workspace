@@ -14,6 +14,7 @@ import { UserNameWithBadge } from "@/presentation/components/ui/user-name-with-b
 import { useEmojiInsert } from "@/presentation/hooks/use-emoji-insert";
 import { useCreatePost } from "@/presentation/hooks/use-posts";
 import { moveArrayItem } from "@/presentation/lib/array-move";
+import { getPastedImageFiles } from "@/presentation/lib/clipboard-images";
 import {
   POST_ATTACHMENTS_MAX_COUNT,
   POST_TEXT_MAX_LENGTH,
@@ -154,12 +155,8 @@ export function PostComposer({ user }: PostComposerProps) {
     };
   }, [isOpen, isBusy, isDirty, t]);
 
-  const handleFilesSelected = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const files = Array.from(event.target.files ?? []);
-    event.target.value = "";
-    if (files.length === 0) return;
+  const addImageFiles = async (files: File[]) => {
+    if (files.length === 0 || isBusy) return;
 
     const remainingSlots = POST_ATTACHMENTS_MAX_COUNT - attachments.length;
     if (remainingSlots <= 0) {
@@ -192,6 +189,21 @@ export function PostComposer({ user }: PostComposerProps) {
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleFilesSelected = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const files = Array.from(event.target.files ?? []);
+    event.target.value = "";
+    await addImageFiles(files);
+  };
+
+  const handlePaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const files = getPastedImageFiles(event.clipboardData);
+    if (!files) return;
+    event.preventDefault();
+    void addImageFiles(files);
   };
 
   const removeAttachment = (url: string) => {
@@ -312,6 +324,7 @@ export function PostComposer({ user }: PostComposerProps) {
                 ref={textareaRef}
                 value={text}
                 onChange={(event) => setText(event.target.value)}
+                onPaste={handlePaste}
                 maxLength={POST_TEXT_MAX_LENGTH}
                 placeholder={t("postPlaceholder")}
                 disabled={isBusy}
