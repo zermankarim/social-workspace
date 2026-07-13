@@ -95,3 +95,16 @@ export interface PaginatedSkillsResponseDto {
   data: SkillResponseDto[];
   meta: PaginationMetaResponseDto;
 }
+
+export interface UserSearchResultResponseDto {
+  id: string;
+  firstName: string;
+  lastName: string;
+  headline: string | null;
+  avatarUrl: string | null;
+}
+
+export interface PaginatedUserSearchResponseDto {
+  data: UserSearchResultResponseDto[];
+  meta: PaginationMetaResponseDto;
+}

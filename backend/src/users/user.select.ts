@@ -125,3 +125,15 @@ export const userProfileSelect = {
 export type UserProfileSelected = Prisma.UserGetPayload<{
   select: typeof userProfileSelect;
 }>;
+
+export const userSearchSelect = {
+  id: true,
+  firstName: true,
+  lastName: true,
+  headline: true,
+  avatarUrl: true,
+} as const satisfies Prisma.UserSelect;
+
+export type UserSearchSelected = Prisma.UserGetPayload<{
+  select: typeof userSearchSelect;
+}>;

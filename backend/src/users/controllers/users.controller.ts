@@ -55,6 +55,7 @@ import { CatalogSearchQueryDto } from '../dto/catalog-search-query.dto';
 import {
   PaginatedLanguagesResponseDto,
   PaginatedSkillsResponseDto,
+  PaginatedUsersSearchResponseDto,
 } from '../dto/paginated-catalog-response.dto';
 import { PaginatedResponseDto } from '../../shared/dto/paginated-response.dto';
 import { type RequestWithJwtPayload } from '../../shared/types/request-with-jwt-payload.type';
@@ -62,6 +63,8 @@ import { JwtAuthGuard } from '../../auth/guards/jwt.guard';
 import { PaginatedConnectionsQueryDto } from '../../connections/dto/paginated-connections-query.dto';
 import { PaginatedConnectionsResponseDto } from '../../connections/dto/paginated-connections-response.dto';
 import { ConnectionResponseDto } from '../../connections/dto/connection.dto';
+import { UserSearchQueryDto } from '../dto/user-search-query.dto';
+import { UserSearchResultDto } from '../dto/user-search-result.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -96,6 +99,26 @@ export class UsersController {
     @Body() body: UpdateProfileDto,
   ): Promise<PrivateUserProfileResponseDto> {
     return this.usersService.updateMyProfile(req.user.userId, body);
+  }
+
+  @Get('search')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('access_token')
+  @ApiOperation({
+    summary: 'Search users by name (for mentions and discovery)',
+    description:
+      'Case-insensitive search by first name, last name, or full name. ' +
+      'Empty `q` returns an empty page.',
+  })
+  @ApiOkResponse({ type: PaginatedUsersSearchResponseDto })
+  @ApiBadRequestResponse({
+    description: 'Invalid query parameters (q, page, limit)',
+  })
+  @ApiUnauthorizedResponse()
+  searchUsers(
+    @Query() query: UserSearchQueryDto,
+  ): Promise<PaginatedResponseDto<UserSearchResultDto>> {
+    return this.usersService.searchUsers(query);
   }
 
   // --- Experiences ---

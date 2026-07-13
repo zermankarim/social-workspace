@@ -234,5 +234,9 @@
     "pendingNavBadge": "{count, plural, one {# pending invitation} other {# pending invitations}}",
     "loadFailed": "Failed to load network",
     "actionFailed": "Something went wrong. Please try again."
+  },
+  "mentions": {
+    "typeToSearch": "Type a name to mention someone",
+    "noResults": "No people found"
   }
 }

@@ -14,6 +14,8 @@ import {
   UserProfileSelected,
   userPublicSelect,
   UserPublic,
+  userSearchSelect,
+  UserSearchSelected,
   workExperienceSelect,
   WorkExperienceSelected,
 } from '../user.select';
@@ -28,6 +30,24 @@ export class UsersRepository {
       where: { id },
       select: userPublicSelect,
     });
+  }
+
+  searchUsers(
+    where: Prisma.UserWhereInput,
+    skip: number,
+    take: number,
+  ): Promise<UserSearchSelected[]> {
+    return this.prisma.user.findMany({
+      where,
+      select: userSearchSelect,
+      orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
+      skip,
+      take,
+    });
+  }
+
+  countUsers(where: Prisma.UserWhereInput): Promise<number> {
+    return this.prisma.user.count({ where });
   }
 
   findProfileById(id: string): Promise<UserProfileSelected | null> {

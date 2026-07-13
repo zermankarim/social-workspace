@@ -1,12 +1,13 @@
-import type { Education } from "@/core/domain/entities/education.entity";
 import type {
   PaginatedLanguages,
   PaginatedSkills,
 } from "@/core/domain/entities/paginated-catalog.entity";
+import type { PaginatedUserSearch } from "@/core/domain/entities/paginated-user-search.entity";
 import type { Skill } from "@/core/domain/entities/skill.entity";
 import type { UserLanguage } from "@/core/domain/entities/user-language.entity";
 import type { UserProfile } from "@/core/domain/entities/user-profile.entity";
 import type { WorkExperience } from "@/core/domain/entities/work-experience.entity";
+import type { Education } from "@/core/domain/entities/education.entity";
 import type { EducationDegree } from "@/core/domain/enums/education-degree.enum";
 import type { EmploymentType } from "@/core/domain/enums/employment-type.enum";
 import type { LanguageProficiency } from "@/core/domain/enums/language-proficiency.enum";
@@ -91,4 +92,10 @@ export abstract class ProfileRepository {
     page?: number,
     limit?: number,
   ): Promise<PaginatedSkills>;
+
+  abstract searchUsers(
+    q: string,
+    page?: number,
+    limit?: number,
+  ): Promise<PaginatedUserSearch>;
 }

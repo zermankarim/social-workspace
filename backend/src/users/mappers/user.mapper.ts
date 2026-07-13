@@ -6,6 +6,7 @@ import {
 import {
   UserProfileSelected,
   UserPublic,
+  UserSearchSelected,
   SkillSelected,
   WorkExperienceSelected,
   EducationSelected,
@@ -20,6 +21,7 @@ import {
   LanguageResponseDto,
   UserLanguageResponseDto,
 } from '../dto/user-language.dto';
+import { UserSearchResultDto } from '../dto/user-search-result.dto';
 
 export class UserMapper {
   static fromPrismaToResponse(user: UserPublic): UserResponseDto {
@@ -78,6 +80,16 @@ export class UserMapper {
       ),
       skills: user.skills.map((item) => this.toSkillResponse(item.skill)),
       connectionsCount,
+    };
+  }
+
+  static toUserSearchResult(user: UserSearchSelected): UserSearchResultDto {
+    return {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      headline: user.headline,
+      avatarUrl: user.avatarUrl,
     };
   }
 

@@ -28,6 +28,8 @@ import { PostReactionButton } from "@/presentation/components/feed/post-reaction
 import { ConnectActions } from "@/presentation/components/network/connect-actions";
 import { Button } from "@/presentation/components/ui/button";
 import { EmojiPickerButton } from "@/presentation/components/ui/emoji-picker-button";
+import { MentionText } from "@/presentation/components/ui/mention-text";
+import { MentionTextarea } from "@/presentation/components/ui/mention-textarea";
 import { UserNameWithBadge } from "@/presentation/components/ui/user-name-with-badge";
 import { useEmojiInsert } from "@/presentation/hooks/use-emoji-insert";
 import { useRemoveLike, useUpsertLike } from "@/presentation/hooks/use-likes";
@@ -385,10 +387,10 @@ export function FeedPostCard({ post, currentUser }: FeedPostCardProps) {
 
       {isEditing ? (
         <div className="mt-3 space-y-3">
-          <textarea
+          <MentionTextarea
             ref={editTextareaRef}
             value={text}
-            onChange={(event) => setText(event.target.value)}
+            onChange={setText}
             onPaste={handlePaste}
             maxLength={POST_TEXT_MAX_LENGTH}
             rows={4}
@@ -469,7 +471,7 @@ export function FeedPostCard({ post, currentUser }: FeedPostCardProps) {
         <>
           {post.textContent ? (
             <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
-              {post.textContent}
+              <MentionText text={post.textContent} />
             </p>
           ) : null}
 

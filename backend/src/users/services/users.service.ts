@@ -48,6 +48,9 @@ import {
 import { ConnectionsService } from '../../connections/services/connections.service';
 import { ConnectionResponseDto } from '../../connections/dto/connection.dto';
 import { PaginatedConnectionsQueryDto } from '../../connections/dto/paginated-connections-query.dto';
+import { UserSearchQueryDto } from '../dto/user-search-query.dto';
+import { UserSearchResultDto } from '../dto/user-search-result.dto';
+import { buildUserSearchWhere } from '../utils/user-search.utils';
 
 @Injectable()
 export class UsersService {
@@ -325,6 +328,33 @@ export class UsersService {
   }
 
   // --- Catalogs ---
+
+  async searchUsers(
+    query: UserSearchQueryDto,
+  ): Promise<PaginatedResponseDto<UserSearchResultDto>> {
+    const { page, limit, skip, take } = getPaginationParams(
+      query.page,
+      query.limit,
+    );
+    const q = query.q?.trim();
+    if (!q) {
+      return {
+        data: [],
+        meta: buildPaginationMeta(page, limit, 0),
+      };
+    }
+
+    const where = buildUserSearchWhere(q);
+    const [items, total] = await Promise.all([
+      this.usersRepository.searchUsers(where, skip, take),
+      this.usersRepository.countUsers(where),
+    ]);
+
+    return {
+      data: items.map((item) => UserMapper.toUserSearchResult(item)),
+      meta: buildPaginationMeta(page, limit, total),
+    };
+  }
 
   async searchLanguages(
     query: CatalogSearchQueryDto,

@@ -9,6 +9,7 @@ import {
   PaginatedLanguages,
   PaginatedSkills,
 } from "@/core/domain/entities/paginated-catalog.entity";
+import { PaginatedUserSearch } from "@/core/domain/entities/paginated-user-search.entity";
 import { PaginationMeta } from "@/core/domain/entities/pagination-meta.entity";
 import type { Skill } from "@/core/domain/entities/skill.entity";
 import type { UserLanguage } from "@/core/domain/entities/user-language.entity";
@@ -19,6 +20,7 @@ import type {
   EducationResponseDto,
   PaginatedLanguagesResponseDto,
   PaginatedSkillsResponseDto,
+  PaginatedUserSearchResponseDto,
   PrivateUserProfileResponseDto,
   PublicUserProfileResponseDto,
   SkillResponseDto,
@@ -26,6 +28,7 @@ import type {
   WorkExperienceResponseDto,
 } from "@/infrastructure/api/dto/profile-response.dto";
 import type { HttpClient } from "@/infrastructure/http/http-client";
+import { ConnectionMapper } from "@/infrastructure/mappers/connection.mapper";
 import { ProfileMapper } from "@/infrastructure/mappers/profile.mapper";
 
 export class ProfileApiRepository extends ProfileRepository {
@@ -194,6 +197,43 @@ export class ProfileApiRepository extends ProfileRepository {
 
     return new PaginatedSkills(
       response.data.map((item) => ProfileMapper.skillFromApi(item)),
+      new PaginationMeta(
+        response.meta.page,
+        response.meta.limit,
+        response.meta.total,
+        response.meta.totalPages,
+        response.meta.hasNextPage,
+        response.meta.hasPrevPage,
+      ),
+    );
+  }
+
+  async searchUsers(
+    q: string,
+    page = 1,
+    limit = 20,
+  ): Promise<PaginatedUserSearch> {
+    const trimmed = q.trim();
+    if (!trimmed) {
+      return new PaginatedUserSearch(
+        [],
+        new PaginationMeta(page, limit, 0, 1, false, false),
+      );
+    }
+
+    const params = new URLSearchParams({
+      q: trimmed,
+      page: String(page),
+      limit: String(limit),
+    });
+
+    const response =
+      await this.httpClient.request<PaginatedUserSearchResponseDto>(
+        `/users/search?${params.toString()}`,
+      );
+
+    return new PaginatedUserSearch(
+      response.data.map((item) => ConnectionMapper.userFromApi(item)),
       new PaginationMeta(
         response.meta.page,
         response.meta.limit,

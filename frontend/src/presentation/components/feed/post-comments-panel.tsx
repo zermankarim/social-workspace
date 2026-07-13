@@ -19,6 +19,8 @@ import { appContainer } from "@/modules/app.container";
 import { Button } from "@/presentation/components/ui/button";
 import { EmojiPickerButton } from "@/presentation/components/ui/emoji-picker-button";
 import { UserNameWithBadge } from "@/presentation/components/ui/user-name-with-badge";
+import { MentionText } from "@/presentation/components/ui/mention-text";
+import { MentionTextarea } from "@/presentation/components/ui/mention-textarea";
 import {
   ImageLightbox,
   type LightboxImage,
@@ -405,10 +407,10 @@ function CommentItem({
 
           {isEditing ? (
             <div className="mt-2 space-y-2">
-              <textarea
+              <MentionTextarea
                 ref={textareaRef}
                 value={text}
-                onChange={(event) => setText(event.target.value)}
+                onChange={setText}
                 onPaste={handlePaste}
                 maxLength={COMMENT_TEXT_MAX_LENGTH}
                 rows={2}
@@ -492,7 +494,7 @@ function CommentItem({
             <>
               {comment.textContent ? (
                 <p className="mt-0.5 whitespace-pre-wrap text-sm leading-snug text-foreground">
-                  {comment.textContent}
+                  <MentionText text={comment.textContent} />
                 </p>
               ) : null}
               <CommentAttachmentsView attachments={comment.attachments} />
@@ -678,10 +680,10 @@ export function PostCommentsPanel({
           />
           <div className="min-w-0 flex-1 space-y-2">
             <div className="rounded-2xl border border-border-strong bg-surface px-3 py-2 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
-              <textarea
+              <MentionTextarea
                 ref={composerRef}
                 value={draft}
-                onChange={(event) => setDraft(event.target.value)}
+                onChange={setDraft}
                 onPaste={handlePaste}
                 maxLength={COMMENT_TEXT_MAX_LENGTH}
                 rows={1}

@@ -10,6 +10,7 @@ import { FeedCard } from "@/presentation/components/feed/feed-card";
 import { PostAttachmentsEditor } from "@/presentation/components/feed/post-attachments-editor";
 import { Button } from "@/presentation/components/ui/button";
 import { EmojiPickerButton } from "@/presentation/components/ui/emoji-picker-button";
+import { MentionTextarea } from "@/presentation/components/ui/mention-textarea";
 import { UserNameWithBadge } from "@/presentation/components/ui/user-name-with-badge";
 import { useEmojiInsert } from "@/presentation/hooks/use-emoji-insert";
 import { useCreatePost } from "@/presentation/hooks/use-posts";
@@ -320,10 +321,10 @@ export function PostComposer({ user }: PostComposerProps) {
             </div>
 
             <div className="flex min-h-[220px] flex-1 flex-col px-4 pt-3">
-              <textarea
+              <MentionTextarea
                 ref={textareaRef}
                 value={text}
-                onChange={(event) => setText(event.target.value)}
+                onChange={setText}
                 onPaste={handlePaste}
                 maxLength={POST_TEXT_MAX_LENGTH}
                 placeholder={t("postPlaceholder")}

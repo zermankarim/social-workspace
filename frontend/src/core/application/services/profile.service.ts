@@ -1,19 +1,20 @@
 import type {
+  PaginatedLanguages,
+  PaginatedSkills,
+} from "@/core/domain/entities/paginated-catalog.entity";
+import type { PaginatedUserSearch } from "@/core/domain/entities/paginated-user-search.entity";
+import type { Skill } from "@/core/domain/entities/skill.entity";
+import type { UserLanguage } from "@/core/domain/entities/user-language.entity";
+import type { UserProfile } from "@/core/domain/entities/user-profile.entity";
+import type { WorkExperience } from "@/core/domain/entities/work-experience.entity";
+import type { Education } from "@/core/domain/entities/education.entity";
+import type { LanguageProficiency } from "@/core/domain/enums/language-proficiency.enum";
+import type {
   EducationInput,
   ProfileRepository,
   UpdateProfileInput,
   WorkExperienceInput,
 } from "@/core/domain/repositories/profile.repository";
-import type { Education } from "@/core/domain/entities/education.entity";
-import type {
-  PaginatedLanguages,
-  PaginatedSkills,
-} from "@/core/domain/entities/paginated-catalog.entity";
-import type { Skill } from "@/core/domain/entities/skill.entity";
-import type { UserLanguage } from "@/core/domain/entities/user-language.entity";
-import type { UserProfile } from "@/core/domain/entities/user-profile.entity";
-import type { WorkExperience } from "@/core/domain/entities/work-experience.entity";
-import type { LanguageProficiency } from "@/core/domain/enums/language-proficiency.enum";
 
 export class ProfileService {
   constructor(private readonly profileRepository: ProfileRepository) {}
@@ -128,5 +129,9 @@ export class ProfileService {
 
   searchSkills(q: string, page = 1, limit = 20): Promise<PaginatedSkills> {
     return this.profileRepository.searchSkills(q, page, limit);
+  }
+
+  searchUsers(q: string, page = 1, limit = 20): Promise<PaginatedUserSearch> {
+    return this.profileRepository.searchUsers(q, page, limit);
   }
 }
