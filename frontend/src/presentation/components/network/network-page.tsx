@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { ApiError } from "@/core/application/errors/api.error";
 import type { Connection } from "@/core/domain/entities/connection.entity";
 import { FeedCard } from "@/presentation/components/feed/feed-card";
+import { MessageUserButton } from "@/presentation/components/messaging/message-user-button";
 import {
   ConnectionPersonAvatar,
   ConnectionPersonRow,
@@ -335,7 +336,12 @@ function ConnectionsPanel({ currentUserId }: { currentUserId: string }) {
                   >
                     {person.headline?.trim() || "—"}
                   </p>
-                  <div className="mt-auto flex w-full justify-center pt-3">
+                  <div className="mt-auto flex w-full flex-wrap justify-center gap-2 pt-3">
+                    <MessageUserButton
+                      userId={person.id}
+                      variant="compact"
+                      className="justify-center"
+                    />
                     <Button
                       type="button"
                       variant="secondary"

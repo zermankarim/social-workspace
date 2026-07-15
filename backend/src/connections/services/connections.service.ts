@@ -84,6 +84,21 @@ export class ConnectionsService {
     return this.connectionsRepository.countAcceptedByUserId(userId);
   }
 
+  public async areAcceptedConnected(
+    userAId: string,
+    userBId: string,
+  ): Promise<boolean> {
+    const connection = await this.connectionsRepository.findBetweenUsers(
+      userAId,
+      userBId,
+    );
+    return connection?.status === ConnectionStatus.ACCEPTED;
+  }
+
+  public findAcceptedPeerUserIds(userId: string): Promise<string[]> {
+    return this.connectionsRepository.findAcceptedPeerUserIds(userId);
+  }
+
   public async getAcceptedByUserId(
     userId: string,
     query: PaginatedConnectionsQueryDto,

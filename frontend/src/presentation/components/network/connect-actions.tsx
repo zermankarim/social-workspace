@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Loader2, UserMinus, UserPlus, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ApiError } from "@/core/application/errors/api.error";
+import { MessageUserButton } from "@/presentation/components/messaging/message-user-button";
 import { Button } from "@/presentation/components/ui/button";
 import {
   useAcceptConnection,
@@ -15,7 +16,7 @@ import {
 
 type ConnectActionsProps = {
   otherUserId: string;
-  /** Compact control for post headers; hides when already connected. */
+  /** Compact control for post headers; shows Message when already connected. */
   variant?: "default" | "compact";
 };
 
@@ -66,10 +67,6 @@ export function ConnectActions({
         {t("connect")}
       </Button>
     );
-  }
-
-  if (compact && relation.kind === "connected") {
-    return null;
   }
 
   const buttonClass = compact
@@ -159,24 +156,32 @@ export function ConnectActions({
         </div>
       ) : null}
 
-      {!compact && relation.kind === "connected" && relation.connection ? (
-        <Button
-          type="button"
-          variant="secondary"
-          disabled={busy}
-          className={buttonClass}
-          onClick={() => {
-            if (!window.confirm(t("removeConfirm"))) return;
-            void run(() => remove.mutateAsync(relation.connection!.id));
-          }}
-        >
-          {busy ? (
-            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-          ) : (
-            <UserMinus className="h-4 w-4" aria-hidden />
-          )}
-          {t("remove")}
-        </Button>
+      {relation.kind === "connected" && relation.connection ? (
+        <div className="flex flex-wrap justify-end gap-1.5">
+          <MessageUserButton
+            userId={otherUserId}
+            variant={compact ? "compact" : "secondary"}
+          />
+          {!compact ? (
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={busy}
+              className={buttonClass}
+              onClick={() => {
+                if (!window.confirm(t("removeConfirm"))) return;
+                void run(() => remove.mutateAsync(relation.connection!.id));
+              }}
+            >
+              {busy ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+              ) : (
+                <UserMinus className="h-4 w-4" aria-hidden />
+              )}
+              {t("remove")}
+            </Button>
+          ) : null}
+        </div>
       ) : null}
 
       {error ? (

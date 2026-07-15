@@ -23,6 +23,6 @@ import { SessionRepository } from './repositories/session.repository';
     RolesGuard,
     SessionRepository,
   ],
-  exports: [JwtAuthGuard, RolesGuard],
+  exports: [JwtAuthGuard, RolesGuard, JwtModule],
 })
 export class AuthModule {}

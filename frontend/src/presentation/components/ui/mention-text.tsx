@@ -6,9 +6,14 @@ import { parseMentionSegments } from "@/presentation/lib/mentions";
 type MentionTextProps = {
   text: string;
   className?: string;
+  mentionClassName?: string;
 };
 
-export function MentionText({ text, className = "" }: MentionTextProps) {
+export function MentionText({
+  text,
+  className = "",
+  mentionClassName = "font-semibold text-primary hover:underline",
+}: MentionTextProps) {
   const segments = parseMentionSegments(text);
 
   return (
@@ -22,7 +27,7 @@ export function MentionText({ text, className = "" }: MentionTextProps) {
           <Link
             key={`m-${segment.userId}-${index}`}
             href={`/users/${segment.userId}`}
-            className="font-semibold text-primary hover:underline"
+            className={mentionClassName}
             onClick={(event) => event.stopPropagation()}
           >
             @{segment.displayName}

@@ -88,6 +88,24 @@ export class ConnectionsRepository {
     });
   }
 
+  /**
+   * Peer user ids for all ACCEPTED connections (no pagination).
+   * Used for presence fan-out.
+   */
+  async findAcceptedPeerUserIds(userId: string): Promise<string[]> {
+    const rows = await this.prisma.connection.findMany({
+      where: {
+        status: ConnectionStatus.ACCEPTED,
+        OR: [{ requesterId: userId }, { addresseeId: userId }],
+      },
+      select: { requesterId: true, addresseeId: true },
+    });
+
+    return rows.map((row) =>
+      row.requesterId === userId ? row.addresseeId : row.requesterId,
+    );
+  }
+
   findPendingIncomingByUserId(
     userId: string,
     skip: number,

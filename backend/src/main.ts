@@ -8,6 +8,8 @@ import { AppConfigService } from './infrastructure/config/services/config.servic
 import { CorsCallback, CorsOrigin } from './shared/validation/types/cors.types';
 import { join } from 'path';
 import { AppExceptionFilter } from './infrastructure/transport/filters/app-exception.filter';
+import { buildAllowedOrigins } from './shared/cors/allowed-origins';
+import { SocketIoAdapter } from './conversations/gateway/socket-io.adapter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -33,19 +35,12 @@ async function bootstrap() {
   });
 
   const port = appConfig.app.port ?? 3000;
-  const configuredOrigins = (appConfig.app.cors ?? '')
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean);
 
-  const allowedOrigins = [
-    ...new Set([
-      ...configuredOrigins,
-      ...(appConfig.app.nodeEnv === 'development'
-        ? [`http://localhost:${port}`, `http://127.0.0.1:${port}`]
-        : []),
-    ]),
-  ];
+  const allowedOrigins = buildAllowedOrigins(
+    appConfig.app.cors,
+    appConfig.app.nodeEnv,
+    port,
+  );
 
   app.enableCors({
     origin: (origin: CorsOrigin, callback: CorsCallback): void => {
@@ -66,6 +61,14 @@ async function bootstrap() {
     credentials: Boolean(appConfig.app.credentials),
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   });
+
+  app.useWebSocketAdapter(
+    new SocketIoAdapter(
+      app,
+      allowedOrigins,
+      Boolean(appConfig.app.credentials),
+    ),
+  );
 
   app.useGlobalPipes(
     new ValidationPipe({

@@ -10,6 +10,8 @@ import {
   shouldShowNavDivider,
 } from "@/presentation/config/app-navigation";
 import { useConnectionCounts } from "@/presentation/hooks/use-connections";
+import { useUnreadTotal } from "@/presentation/hooks/use-conversations";
+import { useAuthStore } from "@/presentation/stores/auth.store";
 
 interface AppNavProps {
   role: ProfileRole;
@@ -25,8 +27,12 @@ export function AppNav({ role, className = "" }: AppNavProps) {
   const pathname = usePathname();
   const t = useTranslations("nav");
   const tNetwork = useTranslations("network");
+  const tMessaging = useTranslations("messaging");
   const items = getVisibleNavItems(role);
   const { pending } = useConnectionCounts();
+  const user = useAuthStore((state) => state.user);
+  const unreadQuery = useUnreadTotal(Boolean(user));
+  const unreadTotal = unreadQuery.data ?? 0;
 
   return (
     <nav
@@ -37,6 +43,7 @@ export function AppNav({ role, className = "" }: AppNavProps) {
         const isActive = isNavItemActive(item, pathname);
         const Icon = item.icon;
         const showPendingBadge = item.href === "/network" && pending > 0;
+        const showUnreadBadge = item.href === "/messaging" && unreadTotal > 0;
 
         return (
           <div key={item.href} className="flex shrink-0 items-stretch">
@@ -57,7 +64,9 @@ export function AppNav({ role, className = "" }: AppNavProps) {
               aria-label={
                 showPendingBadge
                   ? tNetwork("pendingNavBadge", { count: pending })
-                  : undefined
+                  : showUnreadBadge
+                    ? tMessaging("unreadNavBadge", { count: unreadTotal })
+                    : undefined
               }
             >
               <span className="relative inline-flex">
@@ -68,6 +77,11 @@ export function AppNav({ role, className = "" }: AppNavProps) {
                 {showPendingBadge ? (
                   <span className="absolute -top-1.5 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold leading-none text-white">
                     {formatBadgeCount(pending)}
+                  </span>
+                ) : null}
+                {showUnreadBadge ? (
+                  <span className="absolute -top-1.5 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold leading-none text-white">
+                    {formatBadgeCount(unreadTotal)}
                   </span>
                 ) : null}
               </span>

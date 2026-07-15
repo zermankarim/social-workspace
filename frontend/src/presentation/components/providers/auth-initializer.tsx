@@ -3,6 +3,9 @@
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { BrandLogo } from "@/presentation/components/brand/brand-logo";
+import { MessagingToastHost } from "@/presentation/components/messaging/messaging-toast-host";
+import { MessagingDeviceBootstrap } from "@/presentation/components/providers/messaging-device-bootstrap";
+import { MessagingRealtimeBootstrap } from "@/presentation/components/providers/messaging-realtime-bootstrap";
 import { ThemeToggle } from "@/presentation/components/ui/theme-toggle";
 import { useRefreshSession } from "@/presentation/hooks/use-auth";
 import { useAuthStore } from "@/presentation/stores/auth.store";
@@ -39,5 +42,12 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
     );
   }
 
-  return children;
+  return (
+    <>
+      <MessagingDeviceBootstrap />
+      <MessagingRealtimeBootstrap />
+      <MessagingToastHost />
+      {children}
+    </>
+  );
 }

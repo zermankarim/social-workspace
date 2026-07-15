@@ -53,6 +53,15 @@ export function parseMentionSegments(text: string): MentionSegment[] {
   return segments;
 }
 
+/** Flat preview for lists/toasts — `@Name` instead of raw tokens. */
+export function formatMentionsForPreview(text: string): string {
+  return parseMentionSegments(text)
+    .map((segment) =>
+      segment.type === "mention" ? `@${segment.displayName}` : segment.value,
+    )
+    .join("");
+}
+
 /**
  * Detect an incomplete @mention being typed at the caret.
  * Skips completed `@[Name](id)` tokens.

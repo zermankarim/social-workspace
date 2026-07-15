@@ -49,7 +49,8 @@ export const appNavItems: AppNavItem[] = [
     labelKey: "messaging",
     icon: MessageSquare,
     roles: [ProfileRole.ADMIN, ProfileRole.USER],
-    comingSoon: true,
+    isActive: (pathname) =>
+      pathname === "/messaging" || pathname.startsWith("/messaging/"),
   },
   {
     href: "/notifications",

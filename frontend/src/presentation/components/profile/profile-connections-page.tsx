@@ -5,10 +5,12 @@ import { AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ApiError } from "@/core/application/errors/api.error";
 import { FeedCard } from "@/presentation/components/feed/feed-card";
+import { MessageUserButton } from "@/presentation/components/messaging/message-user-button";
 import { ConnectionPersonAvatar } from "@/presentation/components/network/connection-person-row";
 import { Button } from "@/presentation/components/ui/button";
 import { useMyProfile, useUserProfile } from "@/presentation/hooks/use-profile";
 import { useUserConnections } from "@/presentation/hooks/use-connections";
+import { useAuthStore } from "@/presentation/stores/auth.store";
 
 type ProfileConnectionsPageProps = {
   /** When omitted, loads the current user's profile and connections. */
@@ -22,6 +24,7 @@ export function ProfileConnectionsPage({
   const tNetwork = useTranslations("network");
   const tCommon = useTranslations("common");
   const isOwn = userId === undefined;
+  const authUser = useAuthStore((state) => state.user);
 
   const myProfileQuery = useMyProfile(isOwn);
   const userProfileQuery = useUserProfile(isOwn ? undefined : userId);
@@ -101,6 +104,8 @@ export function ProfileConnectionsPage({
             <ul className="grid items-stretch gap-3 sm:grid-cols-2">
               {items.map((connection) => {
                 const person = connection.otherUser(profile.id);
+                const canMessage =
+                  Boolean(authUser) && person.id !== authUser?.id;
                 return (
                   <li key={connection.id} className="min-h-0">
                     <FeedCard className="flex h-full flex-col px-4 py-4">
@@ -124,6 +129,14 @@ export function ProfileConnectionsPage({
                         >
                           {person.headline?.trim() || "—"}
                         </p>
+                        {canMessage ? (
+                          <div className="mt-auto flex w-full justify-center pt-3">
+                            <MessageUserButton
+                              userId={person.id}
+                              variant="compact"
+                            />
+                          </div>
+                        ) : null}
                       </div>
                     </FeedCard>
                   </li>

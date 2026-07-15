@@ -2,6 +2,8 @@
 
 Next.js client for Social Workspace. Uses Clean Architecture under `src/`.
 
+Includes the feed, profiles, network, and E2EE messaging UI (device keys + AES-GCM crypto live under `src/infrastructure/messaging/`; Socket.IO under `src/infrastructure/realtime/`).
+
 ## Setup
 
 ```bash
@@ -28,13 +30,13 @@ Open [http://localhost:3000](http://localhost:3000).
 ```
 src/
 ├── core/              # domain + application
-├── infrastructure/    # HTTP, API DTOs, mappers, repos
+├── infrastructure/    # HTTP, API DTOs, mappers, repos, messaging crypto, WS
 ├── modules/           # AppContainer DI wiring
 ├── presentation/      # UI, hooks, stores, validations
 └── app/               # Next.js App Router (thin)
 ```
 
-Read `AGENTS.md` in each of those folders before editing them. Root `AGENTS.md` covers Next.js version caveats.
+Read `AGENTS.md` in each of those folders before editing them. Root `AGENTS.md` covers Next.js version caveats. Product overview: repository root `README.md`.
 
 ## Env
 
@@ -42,3 +44,4 @@ See `.env.example`:
 
 - `NEXT_PUBLIC_API_URL` — public API base path (must match backend prefix/version)
 - `API_URL` — backend origin for Next.js rewrites
+- `NEXT_PUBLIC_WS_URL` — backend origin for Socket.IO messaging (e.g. `http://localhost:8000`)

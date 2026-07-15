@@ -1,6 +1,6 @@
 # Backend
 
-NestJS API for Social Workspace: auth (JWT cookies + sessions), users, admin, file upload.
+NestJS API for Social Workspace: auth, profiles, feed, network, E2EE messaging, devices, uploads, and admin.
 
 ## Setup
 
@@ -29,6 +29,7 @@ npm run docker:migrate   # from backend/
 | `npm run build` / `start:prod` | Production |
 | `npm run typecheck` | TypeScript |
 | `npm run lint` / `format` | ESLint / Prettier |
+| `npm run check` | typecheck + lint + format |
 | `npm run db:migrate` / `db:generate` / `db:studio` | Prisma |
 | `npm run docker:*` | Same Prisma ops inside `backend-dev` container |
 
@@ -37,13 +38,21 @@ npm run docker:migrate   # from backend/
 ```
 src/
 ├── auth/            # signup/signin, sessions, JWT guards
-├── users/           # user domain helpers
+├── users/           # profiles, search, catalog
 ├── admin/           # admin-only user listing
 ├── upload/          # file upload
+├── posts/           # feed posts + attachments
+├── comments/        # post comments
+├── likes/           # post reactions
+├── connections/     # network requests
+├── conversations/   # DMs + messaging gateway (Socket.IO)
+├── devices/         # E2EE public device keys
 ├── shared/          # pagination, shared DTOs/utils
 └── infrastructure/  # config, exception filter
 prisma/              # schema, migrations, seed
 ```
+
+Messaging stores **ciphertext only** (`ciphertext`, `nonce`, `keyVersion`). Private keys stay on the client. See the root `README.md` for the E2EE overview.
 
 ## Env
 

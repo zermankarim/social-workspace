@@ -1,12 +1,5 @@
-import { MessageSquare } from "lucide-react";
-import { ComingSoonPage } from "@/presentation/components/placeholders/coming-soon-page";
+import { MessagingPage } from "@/presentation/components/messaging/messaging-page";
 
-export default function MessagingPage() {
-  return (
-    <ComingSoonPage
-      title="Messaging"
-      description="Direct messages and conversations are coming next."
-      icon={MessageSquare}
-    />
-  );
+export default function MessagingRoutePage() {
+  return <MessagingPage />;
 }
