@@ -10,6 +10,7 @@ import { EducationDegree } from "@/core/domain/enums/education-degree.enum";
 import { ProfileModal } from "@/presentation/components/profile/profile-modal";
 import { ProfileSection } from "@/presentation/components/profile/profile-section";
 import { Button } from "@/presentation/components/ui/button";
+import { ExpandableText } from "@/presentation/components/ui/expandable-text";
 import { Input } from "@/presentation/components/ui/input";
 import { MonthYearPicker } from "@/presentation/components/ui/month-year-picker";
 import { Select } from "@/presentation/components/ui/select";
@@ -375,9 +376,13 @@ export function ProfileEducationSection({
                       : null}
                   </p>
                   {education.description ? (
-                    <p className="mt-2 whitespace-pre-wrap text-sm text-foreground">
-                      {education.description}
-                    </p>
+                    <div className="mt-2">
+                      <ExpandableText
+                        text={education.description}
+                        collapseAfter={160}
+                        collapsedClassName="line-clamp-3"
+                      />
+                    </div>
                   ) : null}
                   {education.skills.length > 0 ? (
                     <ul className="mt-2 flex flex-wrap gap-2">

@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { UserProfile } from "@/core/domain/entities/user-profile.entity";
 import { ProfileSection } from "@/presentation/components/profile/profile-section";
+import { ExpandableText } from "@/presentation/components/ui/expandable-text";
 
 type ProfileAboutSectionProps = {
   profile: UserProfile;
@@ -26,11 +27,7 @@ export function ProfileAboutSection({
       isEmpty={!bio}
       emptyText={t("aboutEmpty")}
     >
-      {bio ? (
-        <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
-          {bio}
-        </p>
-      ) : null}
+      {bio ? <ExpandableText text={bio} /> : null}
     </ProfileSection>
   );
 }

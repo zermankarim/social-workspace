@@ -8,6 +8,10 @@ import type { UserProfile } from "@/core/domain/entities/user-profile.entity";
 import { appContainer } from "@/modules/app.container";
 import { FeedCard } from "@/presentation/components/feed/feed-card";
 import { Button } from "@/presentation/components/ui/button";
+import {
+  ImageLightbox,
+  type LightboxImage,
+} from "@/presentation/components/ui/image-lightbox";
 import { UserNameWithBadge } from "@/presentation/components/ui/user-name-with-badge";
 
 type ProfileHeroProps = {
@@ -42,6 +46,10 @@ export function ProfileHero({
   const coverInputRef = useRef<HTMLInputElement>(null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [lightbox, setLightbox] = useState<{
+    images: LightboxImage[];
+    index: number;
+  } | null>(null);
 
   const locationLabel = formatLocation(profile);
 
@@ -59,21 +67,36 @@ export function ProfileHero({
     }
   }
 
+  function openLightbox(src: string, alt: string) {
+    setLightbox({ images: [{ src, alt }], index: 0 });
+  }
+
   return (
     <FeedCard className="overflow-hidden">
       <div className="relative">
         <div
-          className={`relative h-32 sm:h-40 ${
+          className={`relative h-36 overflow-hidden sm:h-44 ${
             profile.coverUrl
-              ? "bg-cover bg-center"
+              ? "bg-surface-muted"
               : "bg-gradient-to-r from-primary to-primary-hover"
           }`}
-          style={
-            profile.coverUrl
-              ? { backgroundImage: `url(${profile.coverUrl})` }
-              : undefined
-          }
         >
+          {profile.coverUrl ? (
+            <button
+              type="button"
+              className="group absolute inset-0 cursor-zoom-in"
+              onClick={() => openLightbox(profile.coverUrl!, t("viewCover"))}
+              aria-label={t("viewCover")}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={profile.coverUrl}
+                alt=""
+                className="h-full w-full object-cover transition duration-200 group-hover:brightness-95"
+              />
+            </button>
+          ) : null}
+
           {canEdit ? (
             <>
               <input
@@ -97,7 +120,7 @@ export function ProfileHero({
                 type="button"
                 disabled={uploadingCover}
                 onClick={() => coverInputRef.current?.click()}
-                className="absolute right-3 top-3 rounded-full bg-surface/90 p-2 text-muted shadow-sm hover:bg-surface hover:text-foreground"
+                className="absolute top-3 right-3 z-10 rounded-full bg-surface/90 p-2 text-muted shadow-sm hover:bg-surface hover:text-foreground"
                 aria-label={t("changeCover")}
               >
                 <Camera className="h-5 w-5" aria-hidden />
@@ -110,12 +133,21 @@ export function ProfileHero({
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="relative -mt-16 shrink-0">
               {profile.avatarUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={profile.avatarUrl}
-                  alt=""
-                  className="h-28 w-28 rounded-full border-4 border-surface object-cover"
-                />
+                <button
+                  type="button"
+                  onClick={() =>
+                    openLightbox(profile.avatarUrl!, t("viewPhoto"))
+                  }
+                  className="group block cursor-zoom-in rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+                  aria-label={t("viewPhoto")}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={profile.avatarUrl}
+                    alt=""
+                    className="h-28 w-28 rounded-full border-4 border-surface object-cover transition duration-200 group-hover:brightness-95"
+                  />
+                </button>
               ) : (
                 <div className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-surface bg-primary-soft text-2xl font-semibold text-primary">
                   {profile.initials}
@@ -144,7 +176,7 @@ export function ProfileHero({
                     type="button"
                     disabled={uploadingAvatar}
                     onClick={() => avatarInputRef.current?.click()}
-                    className="absolute bottom-1 right-1 rounded-full bg-surface p-2 text-muted shadow-sm hover:bg-surface-muted hover:text-foreground"
+                    className="absolute right-1 bottom-1 z-10 rounded-full bg-surface p-2 text-muted shadow-sm hover:bg-surface-muted hover:text-foreground"
                     aria-label={t("changePhoto")}
                   >
                     <Camera className="h-4 w-4" aria-hidden />
@@ -263,6 +295,14 @@ export function ProfileHero({
           )}
         </div>
       </div>
+
+      {lightbox ? (
+        <ImageLightbox
+          images={lightbox.images}
+          initialIndex={lightbox.index}
+          onClose={() => setLightbox(null)}
+        />
+      ) : null}
     </FeedCard>
   );
 }

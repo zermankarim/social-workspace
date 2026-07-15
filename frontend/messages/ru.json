@@ -10,7 +10,9 @@
     "media": "Медиа",
     "close": "Закрыть",
     "language": "Язык",
-    "adminBadge": "Админ"
+    "adminBadge": "Админ",
+    "showMore": "Ещё",
+    "showLess": "Свернуть"
   },
   "nav": {
     "main": "Основная навигация",
@@ -129,6 +131,8 @@
     "editIntro": "Редактировать",
     "changePhoto": "Изменить фото",
     "changeCover": "Изменить обложку",
+    "viewPhoto": "Смотреть фото профиля",
+    "viewCover": "Смотреть обложку",
     "firstName": "Имя",
     "lastName": "Фамилия",
     "headline": "Заголовок",

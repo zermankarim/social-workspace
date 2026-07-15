@@ -28,6 +28,7 @@ import { PostReactionButton } from "@/presentation/components/feed/post-reaction
 import { ConnectActions } from "@/presentation/components/network/connect-actions";
 import { Button } from "@/presentation/components/ui/button";
 import { EmojiPickerButton } from "@/presentation/components/ui/emoji-picker-button";
+import { ExpandableText } from "@/presentation/components/ui/expandable-text";
 import { MentionText } from "@/presentation/components/ui/mention-text";
 import { MentionTextarea } from "@/presentation/components/ui/mention-textarea";
 import { UserNameWithBadge } from "@/presentation/components/ui/user-name-with-badge";
@@ -42,6 +43,7 @@ import { moveArrayItem } from "@/presentation/lib/array-move";
 import { getPastedImageFiles } from "@/presentation/lib/clipboard-images";
 import { formatEngagementCount } from "@/presentation/lib/format-engagement-count";
 import { formatRelativeTime } from "@/presentation/lib/format-relative-time";
+import { formatMentionsForPreview } from "@/presentation/lib/mentions";
 import {
   POST_ATTACHMENTS_MAX_COUNT,
   POST_TEXT_MAX_LENGTH,
@@ -311,78 +313,74 @@ export function FeedPostCard({ post, currentUser }: FeedPostCardProps) {
   return (
     <FeedCard className="px-4 pt-3 pb-2">
       <div className="flex items-start gap-2">
-        {post.author.avatarUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={post.author.avatarUrl}
-            alt=""
-            className="h-12 w-12 shrink-0 rounded-full object-cover"
-          />
-        ) : (
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-soft text-sm font-semibold text-primary">
-            {post.author.initials}
-          </div>
-        )}
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <Link
-                href={`/users/${post.author.id}`}
-                className="hover:underline"
-              >
-                <UserNameWithBadge
-                  name={post.author.displayName}
-                  showAdminBadge={post.author.isAdmin()}
-                  nameClassName="text-sm font-semibold text-foreground"
-                />
-              </Link>
-              <p className="truncate text-xs text-muted">
-                {post.author.headline?.trim() || t("member")}
-              </p>
-              <p className="flex items-center gap-1 text-xs text-muted">
-                {formatRelativeTime(post.createdAt)}
-                <Globe2 className="h-3 w-3" aria-hidden />
-              </p>
+        <Link
+          href={`/users/${post.author.id}`}
+          className="group flex min-w-0 flex-1 items-start gap-2 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+        >
+          {post.author.avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={post.author.avatarUrl}
+              alt=""
+              className="h-12 w-12 shrink-0 rounded-full object-cover"
+            />
+          ) : (
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-soft text-sm font-semibold text-primary">
+              {post.author.initials}
             </div>
+          )}
+          <div className="min-w-0 pt-0.5">
+            <UserNameWithBadge
+              name={post.author.displayName}
+              showAdminBadge={post.author.isAdmin()}
+              nameClassName="text-sm font-semibold text-foreground group-hover:underline"
+            />
+            <p className="truncate text-xs text-muted">
+              {post.author.headline?.trim() || t("member")}
+            </p>
+            <p className="flex items-center gap-1 text-xs text-muted">
+              {formatRelativeTime(post.createdAt)}
+              <Globe2 className="h-3 w-3" aria-hidden />
+            </p>
+          </div>
+        </Link>
 
-            {isAuthor ? (
-              <div className="relative" ref={menuRef}>
+        {isAuthor ? (
+          <div className="relative shrink-0" ref={menuRef}>
+            <button
+              type="button"
+              className="rounded-full p-1 text-muted hover:bg-surface-muted"
+              aria-label={t("postActions")}
+              aria-expanded={menuOpen}
+              disabled={isBusy}
+              onClick={() => setMenuOpen((open) => !open)}
+            >
+              <MoreHorizontal className="h-5 w-5" />
+            </button>
+            {menuOpen ? (
+              <div className="absolute right-0 z-10 mt-1 w-36 overflow-hidden rounded-md border border-border bg-surface shadow-card">
                 <button
                   type="button"
-                  className="rounded-full p-1 text-muted hover:bg-surface-muted"
-                  aria-label={t("postActions")}
-                  aria-expanded={menuOpen}
-                  disabled={isBusy}
-                  onClick={() => setMenuOpen((open) => !open)}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-foreground hover:bg-surface-muted"
+                  onClick={startEditing}
                 >
-                  <MoreHorizontal className="h-5 w-5" />
+                  <Pencil className="h-4 w-4" aria-hidden />
+                  {t("edit")}
                 </button>
-                {menuOpen ? (
-                  <div className="absolute right-0 z-10 mt-1 w-36 overflow-hidden rounded-md border border-border bg-surface shadow-card">
-                    <button
-                      type="button"
-                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-foreground hover:bg-surface-muted"
-                      onClick={startEditing}
-                    >
-                      <Pencil className="h-4 w-4" aria-hidden />
-                      {t("edit")}
-                    </button>
-                    <button
-                      type="button"
-                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-danger hover:bg-surface-muted"
-                      onClick={() => void handleDelete()}
-                    >
-                      <Trash2 className="h-4 w-4" aria-hidden />
-                      {t("delete")}
-                    </button>
-                  </div>
-                ) : null}
+                <button
+                  type="button"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-danger hover:bg-surface-muted"
+                  onClick={() => void handleDelete()}
+                >
+                  <Trash2 className="h-4 w-4" aria-hidden />
+                  {t("delete")}
+                </button>
               </div>
-            ) : (
-              <ConnectActions otherUserId={post.author.id} variant="compact" />
-            )}
+            ) : null}
           </div>
-        </div>
+        ) : (
+          <ConnectActions otherUserId={post.author.id} variant="compact" />
+        )}
       </div>
 
       {isEditing ? (
@@ -470,9 +468,15 @@ export function FeedPostCard({ post, currentUser }: FeedPostCardProps) {
       ) : (
         <>
           {post.textContent ? (
-            <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
-              <MentionText text={post.textContent} />
-            </p>
+            <div className="mt-3">
+              <ExpandableText
+                text={formatMentionsForPreview(post.textContent)}
+                collapseAfter={260}
+                collapsedClassName="line-clamp-3"
+              >
+                <MentionText text={post.textContent} />
+              </ExpandableText>
+            </div>
           ) : null}
 
           {post.attachments.length > 0 ? (

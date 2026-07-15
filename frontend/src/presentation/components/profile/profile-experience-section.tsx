@@ -10,6 +10,7 @@ import { WorkplaceType } from "@/core/domain/enums/workplace-type.enum";
 import { ProfileModal } from "@/presentation/components/profile/profile-modal";
 import { ProfileSection } from "@/presentation/components/profile/profile-section";
 import { Button } from "@/presentation/components/ui/button";
+import { ExpandableText } from "@/presentation/components/ui/expandable-text";
 import { Input } from "@/presentation/components/ui/input";
 import { MonthYearPicker } from "@/presentation/components/ui/month-year-picker";
 import { Select } from "@/presentation/components/ui/select";
@@ -286,9 +287,13 @@ export function ProfileExperienceSection({
                     {t(`workplaceType.${experience.workplaceType}`)}
                   </p>
                   {experience.description ? (
-                    <p className="mt-2 whitespace-pre-wrap text-sm text-foreground">
-                      {experience.description}
-                    </p>
+                    <div className="mt-2">
+                      <ExpandableText
+                        text={experience.description}
+                        collapseAfter={160}
+                        collapsedClassName="line-clamp-3"
+                      />
+                    </div>
                   ) : null}
                 </div>
                 {canEdit ? (

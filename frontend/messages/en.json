@@ -10,7 +10,9 @@
     "media": "Media",
     "close": "Close",
     "language": "Language",
-    "adminBadge": "Admin"
+    "adminBadge": "Admin",
+    "showMore": "Show more",
+    "showLess": "Show less"
   },
   "nav": {
     "main": "Main navigation",
@@ -129,6 +131,8 @@
     "editIntro": "Edit intro",
     "changePhoto": "Change photo",
     "changeCover": "Change cover",
+    "viewPhoto": "View profile photo",
+    "viewCover": "View cover photo",
     "firstName": "First name",
     "lastName": "Last name",
     "headline": "Headline",
