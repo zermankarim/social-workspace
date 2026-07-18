@@ -140,6 +140,20 @@ export class MessagingGateway
     }
   }
 
+  emitMessageUpdated(
+    conversationId: string,
+    message: MessageResponseDto,
+    recipientUserIds: string[],
+  ) {
+    this.server
+      .to(this.conversationRoom(conversationId))
+      .emit('message:updated', message);
+
+    for (const userId of recipientUserIds) {
+      this.server.to(this.userRoom(userId)).emit('message:updated', message);
+    }
+  }
+
   emitConversationRead(
     conversationId: string,
     payload: {

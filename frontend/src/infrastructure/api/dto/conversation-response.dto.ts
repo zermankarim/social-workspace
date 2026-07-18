@@ -62,6 +62,13 @@ export interface MessageAttachmentResponseDto {
   createdAt: string;
 }
 
+export interface MessageReactionResponseDto {
+  id: string;
+  emoji: string;
+  userId: string;
+  createdAt: string;
+}
+
 export interface MessageResponseDto {
   id: string;
   conversationId: string;
@@ -72,6 +79,7 @@ export interface MessageResponseDto {
   nonce: string;
   keyVersion: number;
   attachments: MessageAttachmentResponseDto[];
+  reactions?: MessageReactionResponseDto[];
   createdAt: string;
   editedAt: string | null;
   deletedAt: string | null;

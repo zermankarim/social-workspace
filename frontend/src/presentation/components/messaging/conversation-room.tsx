@@ -20,6 +20,7 @@ import type { Message } from "@/core/domain/entities/message.entity";
 import type { UserDevicePublic } from "@/core/domain/entities/user-device-public.entity";
 import { appContainer } from "@/modules/app.container";
 import { MessageAttachmentsGallery } from "@/presentation/components/messaging/message-attachments-gallery";
+import { MessageReactionsBar } from "@/presentation/components/messaging/message-reactions-bar";
 import { Button } from "@/presentation/components/ui/button";
 import { EmojiPickerButton } from "@/presentation/components/ui/emoji-picker-button";
 import { MentionText } from "@/presentation/components/ui/mention-text";
@@ -60,12 +61,14 @@ function MessageBubble({
   message,
   isOwn,
   currentUserId,
+  conversationId,
   peerDevices,
   peerLastReadAt,
 }: {
   message: Message;
   isOwn: boolean;
   currentUserId: string;
+  conversationId: string;
   peerDevices: UserDevicePublic[] | undefined;
   peerLastReadAt: Date | null;
 }) {
@@ -101,63 +104,71 @@ function MessageBubble({
 
   return (
     <div className={`flex ${isOwn ? "justify-end" : "justify-start"}`}>
-      <div
-        className={`max-w-[min(85%,28rem)] rounded-2xl px-3 py-2 text-[13px] leading-snug sm:text-sm ${
-          isOwn
-            ? "rounded-br-md bg-primary text-primary-foreground"
-            : "rounded-bl-md bg-surface-muted text-foreground"
-        }`}
-      >
-        {!isOwn ? (
-          <p className="mb-1 text-[11px] font-semibold tracking-wide text-foreground/70">
-            {message.sender.displayName}
-          </p>
-        ) : null}
-        {statusBody ? (
-          <p className="whitespace-pre-wrap break-words">{statusBody}</p>
-        ) : null}
-        {mentionBody ? (
-          <p className="whitespace-pre-wrap break-words">
-            <MentionText
-              text={mentionBody}
-              mentionClassName={
-                isOwn
-                  ? "font-semibold text-primary-foreground underline decoration-primary-foreground/55 hover:decoration-primary-foreground"
-                  : undefined
-              }
-            />
-          </p>
-        ) : null}
-        {hasAttachments ? (
-          <div className={hasBody ? "mt-1.5" : undefined}>
-            <MessageAttachmentsGallery
-              attachments={message.attachments}
-              tone={isOwn ? "own" : "peer"}
-            />
-          </div>
-        ) : null}
-        <p
-          className={`mt-1 flex items-center gap-1 text-[10px] leading-none ${
-            isOwn ? "justify-end text-primary-foreground/75" : "text-muted"
+      <div className="max-w-[min(85%,28rem)]">
+        <div
+          className={`rounded-2xl px-3 py-2 text-[13px] leading-snug sm:text-sm ${
+            isOwn
+              ? "rounded-br-md bg-primary text-primary-foreground"
+              : "rounded-bl-md bg-surface-muted text-foreground"
           }`}
         >
-          <span>{formatTime(message.createdAt)}</span>
-          {isOwn ? (
-            isRead ? (
-              <CheckCheck
-                className="size-3.5 shrink-0"
-                strokeWidth={2.25}
-                aria-label={t("readReceiptRead")}
-              />
-            ) : (
-              <Check
-                className="size-3.5 shrink-0"
-                strokeWidth={2.25}
-                aria-label={t("readReceiptSent")}
-              />
-            )
+          {!isOwn ? (
+            <p className="mb-1 text-[11px] font-semibold tracking-wide text-foreground/70">
+              {message.sender.displayName}
+            </p>
           ) : null}
-        </p>
+          {statusBody ? (
+            <p className="whitespace-pre-wrap break-words">{statusBody}</p>
+          ) : null}
+          {mentionBody ? (
+            <p className="whitespace-pre-wrap break-words">
+              <MentionText
+                text={mentionBody}
+                mentionClassName={
+                  isOwn
+                    ? "font-semibold text-primary-foreground underline decoration-primary-foreground/55 hover:decoration-primary-foreground"
+                    : undefined
+                }
+              />
+            </p>
+          ) : null}
+          {hasAttachments ? (
+            <div className={hasBody ? "mt-1.5" : undefined}>
+              <MessageAttachmentsGallery
+                attachments={message.attachments}
+                tone={isOwn ? "own" : "peer"}
+              />
+            </div>
+          ) : null}
+          <p
+            className={`mt-1 flex items-center gap-1 text-[10px] leading-none ${
+              isOwn ? "justify-end text-primary-foreground/75" : "text-muted"
+            }`}
+          >
+            <span>{formatTime(message.createdAt)}</span>
+            {isOwn ? (
+              isRead ? (
+                <CheckCheck
+                  className="size-3.5 shrink-0"
+                  strokeWidth={2.25}
+                  aria-label={t("readReceiptRead")}
+                />
+              ) : (
+                <Check
+                  className="size-3.5 shrink-0"
+                  strokeWidth={2.25}
+                  aria-label={t("readReceiptSent")}
+                />
+              )
+            ) : null}
+          </p>
+        </div>
+        <MessageReactionsBar
+          message={message}
+          conversationId={conversationId}
+          currentUserId={currentUserId}
+          isOwn={isOwn}
+        />
       </div>
     </div>
   );
@@ -425,6 +436,7 @@ export function ConversationRoom({
               message={message}
               isOwn={message.isFrom(currentUserId)}
               currentUserId={currentUserId}
+              conversationId={conversationId}
               peerDevices={peerDevicesQuery.data}
               peerLastReadAt={peerMember?.lastReadAt ?? null}
             />

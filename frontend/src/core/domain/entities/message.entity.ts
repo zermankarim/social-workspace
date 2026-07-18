@@ -1,4 +1,5 @@
 import type { MessageAttachment } from "@/core/domain/entities/message-attachment.entity";
+import type { MessageReaction } from "@/core/domain/entities/message-reaction.entity";
 import type { MessagingUser } from "@/core/domain/entities/messaging-user.entity";
 
 export class Message {
@@ -15,6 +16,7 @@ export class Message {
     public readonly createdAt: Date,
     public readonly editedAt: Date | null,
     public readonly deletedAt: Date | null,
+    public readonly reactions: MessageReaction[] = [],
   ) {}
 
   isFrom(userId: string): boolean {
@@ -23,5 +25,11 @@ export class Message {
 
   get isDeleted(): boolean {
     return this.deletedAt !== null;
+  }
+
+  myReaction(userId: string): MessageReaction | null {
+    return (
+      this.reactions.find((reaction) => reaction.userId === userId) ?? null
+    );
   }
 }

@@ -46,6 +46,20 @@ export class MessageAttachmentResponseDto {
   createdAt: Date;
 }
 
+export class MessageReactionResponseDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty({ example: '👍' })
+  emoji: string;
+
+  @ApiProperty()
+  userId: string;
+
+  @ApiProperty()
+  createdAt: Date;
+}
+
 export class MessageResponseDto {
   @ApiProperty()
   id: string;
@@ -73,6 +87,9 @@ export class MessageResponseDto {
 
   @ApiProperty({ type: [MessageAttachmentResponseDto] })
   attachments: MessageAttachmentResponseDto[];
+
+  @ApiProperty({ type: [MessageReactionResponseDto] })
+  reactions: MessageReactionResponseDto[];
 
   @ApiProperty()
   createdAt: Date;
@@ -117,4 +134,12 @@ export class SendMessageDto {
   @ValidateNested({ each: true })
   @Type(() => MessageAttachmentInputDto)
   attachments?: MessageAttachmentInputDto[];
+}
+
+export class SetMessageReactionDto {
+  @ApiProperty({ example: '👍', description: 'Single emoji reaction' })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(16)
+  emoji: string;
 }

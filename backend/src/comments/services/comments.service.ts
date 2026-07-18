@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { NotificationType, Prisma } from '@prisma/client';
 import { CommentsRepository } from '../repositories/comments.repository';
 import { CommentResponseDto } from '../dto/comment.dto';
 import { CreateCommentDto } from '../dto/create-comment.dto';
@@ -17,10 +17,14 @@ import {
   getPaginationParams,
 } from '../../shared/utils/pagination';
 import { CommentSelected } from '../comment.select';
+import { NotificationsService } from '../../notifications/services/notifications.service';
 
 @Injectable()
 export class CommentsService {
-  constructor(private readonly commentsRepository: CommentsRepository) {}
+  constructor(
+    private readonly commentsRepository: CommentsRepository,
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
   public async getCommentsByPostIdPaginated(
     postId: string,
@@ -60,6 +64,12 @@ export class CommentsService {
         textContent: dto.textContent,
         attachments: dto.attachments,
       },
+    );
+
+    await this.notificationsService.notifyPostInteraction(
+      authorId,
+      postId,
+      NotificationType.POST_COMMENT,
     );
 
     return CommentsMapper.toCommentResponseDto(comment);

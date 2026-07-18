@@ -65,6 +65,17 @@ export type ConversationSelected = Prisma.ConversationGetPayload<{
   select: typeof conversationSelect;
 }>;
 
+export const messageReactionSelect = {
+  id: true,
+  emoji: true,
+  userId: true,
+  createdAt: true,
+} as const satisfies Prisma.MessageReactionSelect;
+
+export type MessageReactionSelected = Prisma.MessageReactionGetPayload<{
+  select: typeof messageReactionSelect;
+}>;
+
 export const messageSelect = {
   id: true,
   conversationId: true,
@@ -79,6 +90,10 @@ export const messageSelect = {
   sender: { select: messagingUserSelect },
   attachments: {
     select: messageAttachmentSelect,
+    orderBy: { createdAt: 'asc' as const },
+  },
+  reactions: {
+    select: messageReactionSelect,
     orderBy: { createdAt: 'asc' as const },
   },
 } as const satisfies Prisma.MessageSelect;

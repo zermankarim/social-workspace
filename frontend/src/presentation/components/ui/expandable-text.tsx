@@ -14,7 +14,7 @@ type ExpandableTextProps = {
 };
 
 /**
- * Long copy with Show more / Show less (LinkedIn-style).
+ * Long copy with Show more / Show less for feed posts.
  * Collapsed state uses CSS line-clamp; the toggle appears when copy is long.
  */
 export function ExpandableText({
@@ -31,13 +31,13 @@ export function ExpandableText({
 
   return (
     <div>
-      <p
+      <div
         className={`whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground ${className} ${
           needsToggle && !expanded ? collapsedClassName : ""
         }`}
       >
         {children ?? text}
-      </p>
+      </div>
       {needsToggle ? (
         <button
           type="button"

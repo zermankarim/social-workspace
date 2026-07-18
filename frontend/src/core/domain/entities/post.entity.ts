@@ -11,10 +11,14 @@ export class Post {
     public readonly attachments: PostAttachment[],
     public readonly likesCount: number,
     public readonly commentsCount: number,
+    public readonly repostsCount: number,
+    public readonly impressionsCount: number,
     public readonly previewLikes: PostLike[],
     public readonly previewComments: PostComment[],
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
+    /** Original post when this entry is a repost (optional quote in textContent). */
+    public readonly repostOf: Post | null = null,
   ) {}
 
   isAuthoredBy(userId: string): boolean {
@@ -23,5 +27,14 @@ export class Post {
 
   findLikeByAuthor(userId: string): PostLike | null {
     return this.previewLikes.find((like) => like.author.id === userId) ?? null;
+  }
+
+  get isRepost(): boolean {
+    return this.repostOf !== null;
+  }
+
+  /** True for a plain repost (shares an original with no added quote). */
+  get isPlainRepost(): boolean {
+    return this.isRepost && !this.textContent?.trim();
   }
 }

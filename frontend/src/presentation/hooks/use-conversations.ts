@@ -74,6 +74,28 @@ function prependMessageToCache(
   );
 }
 
+function replaceMessageInCache(
+  queryClient: ReturnType<typeof useQueryClient>,
+  conversationId: string,
+  message: Message,
+) {
+  queryClient.setQueryData<InfiniteData<PaginatedMessages>>(
+    [...messagesKey(conversationId), DEFAULT_MESSAGE_PAGE_SIZE],
+    (current) => {
+      if (!current) return current;
+      return {
+        ...current,
+        pages: current.pages.map((page) => ({
+          ...page,
+          data: page.data.map((item) =>
+            item.id === message.id ? message : item,
+          ),
+        })),
+      };
+    },
+  );
+}
+
 export function upsertMessageFromSocket(
   queryClient: ReturnType<typeof useQueryClient>,
   dto: MessageResponseDto,
@@ -82,6 +104,14 @@ export function upsertMessageFromSocket(
   prependMessageToCache(queryClient, message.conversationId, message);
   void queryClient.invalidateQueries({ queryKey: conversationsListKey });
   void queryClient.invalidateQueries({ queryKey: conversationsUnreadTotalKey });
+}
+
+export function updateMessageFromSocket(
+  queryClient: ReturnType<typeof useQueryClient>,
+  dto: MessageResponseDto,
+) {
+  const message = ConversationMapper.messageFromApi(dto);
+  replaceMessageInCache(queryClient, message.conversationId, message);
 }
 
 export function applyConversationReadFromSocket(
@@ -216,6 +246,32 @@ export function useSendMessage(conversationId: string, peerUserId: string) {
     onSuccess: (message) => {
       prependMessageToCache(queryClient, conversationId, message);
       void queryClient.invalidateQueries({ queryKey: conversationsListKey });
+    },
+  });
+}
+
+export function useSetMessageReaction(conversationId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      messageId,
+      emoji,
+    }: {
+      messageId: string;
+      emoji: string | null;
+    }) =>
+      emoji
+        ? appContainer.conversationService.setReaction(
+            conversationId,
+            messageId,
+            emoji,
+          )
+        : appContainer.conversationService.removeReaction(
+            conversationId,
+            messageId,
+          ),
+    onSuccess: (message) => {
+      replaceMessageInCache(queryClient, conversationId, message);
     },
   });
 }

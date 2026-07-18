@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
+  Bookmark,
   Image as ImageIcon,
   Loader2,
   MessageCircle,
@@ -25,6 +26,9 @@ import { PostAttachmentsGallery } from "@/presentation/components/feed/post-atta
 import { PostCommentsPanel } from "@/presentation/components/feed/post-comments-panel";
 import { PostEngagementSummary } from "@/presentation/components/feed/post-engagement-summary";
 import { PostReactionButton } from "@/presentation/components/feed/post-reaction-button";
+import { PostRepostEmbed } from "@/presentation/components/feed/post-repost-embed";
+import { RepostDialog } from "@/presentation/components/feed/repost-dialog";
+import { SharePostDialog } from "@/presentation/components/feed/share-post-dialog";
 import { ConnectActions } from "@/presentation/components/network/connect-actions";
 import { Button } from "@/presentation/components/ui/button";
 import { EmojiPickerButton } from "@/presentation/components/ui/emoji-picker-button";
@@ -33,9 +37,12 @@ import { MentionText } from "@/presentation/components/ui/mention-text";
 import { MentionTextarea } from "@/presentation/components/ui/mention-textarea";
 import { UserNameWithBadge } from "@/presentation/components/ui/user-name-with-badge";
 import { useEmojiInsert } from "@/presentation/hooks/use-emoji-insert";
+import { usePostImpression } from "@/presentation/hooks/use-impressions";
 import { useRemoveLike, useUpsertLike } from "@/presentation/hooks/use-likes";
 import {
   useDeletePost,
+  useRepostPost,
+  useSavePost,
   useUpdatePost,
   type PostAttachmentInput,
 } from "@/presentation/hooks/use-posts";
@@ -53,6 +60,8 @@ import {
 type FeedPostCardProps = {
   post: Post;
   currentUser: User;
+  /** Initial saved state (true on the Saved page). */
+  initialSaved?: boolean;
 };
 
 type EditableAttachment = PostAttachmentInput & {
@@ -60,19 +69,32 @@ type EditableAttachment = PostAttachmentInput & {
   localPreview?: boolean;
 };
 
-export function FeedPostCard({ post, currentUser }: FeedPostCardProps) {
+export function FeedPostCard({
+  post,
+  currentUser,
+  initialSaved = false,
+}: FeedPostCardProps) {
   const t = useTranslations("feed");
   const tCommon = useTranslations("common");
   const updatePost = useUpdatePost();
   const deletePost = useDeletePost();
+  const repostPost = useRepostPost();
+  const savePost = useSavePost();
   const upsertLike = useUpsertLike(post.id);
   const removeLike = useRemoveLike(post.id);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const repostMenuRef = useRef<HTMLDivElement>(null);
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const isAuthor = post.isAuthoredBy(currentUser.id);
+  // The original underlying post to reference/embed when reposting.
+  const original = post.repostOf ?? post;
   const [menuOpen, setMenuOpen] = useState(false);
+  const [repostMenuOpen, setRepostMenuOpen] = useState(false);
+  const [quoteOpen, setQuoteOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [isSaved, setIsSaved] = useState(initialSaved);
   const [isEditing, setIsEditing] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [text, setText] = useState(post.textContent ?? "");
@@ -127,9 +149,13 @@ export function FeedPostCard({ post, currentUser }: FeedPostCardProps) {
   const isBusy =
     updatePost.isPending ||
     deletePost.isPending ||
+    repostPost.isPending ||
+    savePost.isPending ||
     isUploading ||
     upsertLike.isPending ||
     removeLike.isPending;
+
+  const impressionRef = usePostImpression(post.id, !isAuthor);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -143,6 +169,47 @@ export function FeedPostCard({ post, currentUser }: FeedPostCardProps) {
     document.addEventListener("mousedown", handlePointerDown);
     return () => document.removeEventListener("mousedown", handlePointerDown);
   }, [menuOpen]);
+
+  useEffect(() => {
+    if (!repostMenuOpen) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!repostMenuRef.current?.contains(event.target as Node)) {
+        setRepostMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => document.removeEventListener("mousedown", handlePointerDown);
+  }, [repostMenuOpen]);
+
+  const handlePlainRepost = async () => {
+    setRepostMenuOpen(false);
+    setError(null);
+    try {
+      await repostPost.mutateAsync({ id: post.id });
+    } catch (repostError) {
+      setError(
+        repostError instanceof ApiError
+          ? repostError.message
+          : t("repostFailed"),
+      );
+    }
+  };
+
+  const handleToggleSaved = async () => {
+    setMenuOpen(false);
+    const previous = isSaved;
+    setIsSaved(!previous);
+    try {
+      await savePost.mutateAsync({ id: post.id, saved: previous });
+    } catch (saveError) {
+      setIsSaved(previous);
+      setError(
+        saveError instanceof ApiError ? saveError.message : t("saveFailed"),
+      );
+    }
+  };
 
   const applyReaction = async (next: PostLikeType | null) => {
     const previous = myReaction;
@@ -311,260 +378,354 @@ export function FeedPostCard({ post, currentUser }: FeedPostCardProps) {
   };
 
   return (
-    <FeedCard className="px-4 pt-3 pb-2">
-      <div className="flex items-start gap-2">
-        <Link
-          href={`/users/${post.author.id}`}
-          className="group flex min-w-0 flex-1 items-start gap-2 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+    <div ref={impressionRef}>
+      <FeedCard className="px-4 pt-3 pb-2">
+        {post.isRepost ? (
+          <div className="flex items-center gap-1.5 border-b border-border pb-2 text-xs text-muted">
+            <Repeat2 className="h-3.5 w-3.5" aria-hidden />
+            <span>
+              <Link
+                href={`/users/${post.author.id}`}
+                className="font-semibold text-foreground hover:underline"
+              >
+                {isAuthor ? tCommon("you") : post.author.displayName}
+              </Link>{" "}
+              {t("reposted")}
+            </span>
+          </div>
+        ) : null}
+
+        <div
+          className={`flex items-start gap-2 ${post.isRepost ? "pt-2" : ""}`}
         >
-          {post.author.avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={post.author.avatarUrl}
-              alt=""
-              className="h-12 w-12 shrink-0 rounded-full object-cover"
-            />
-          ) : (
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-soft text-sm font-semibold text-primary">
-              {post.author.initials}
-            </div>
-          )}
-          <div className="min-w-0 pt-0.5">
-            <UserNameWithBadge
-              name={post.author.displayName}
-              showAdminBadge={post.author.isAdmin()}
-              nameClassName="text-sm font-semibold text-foreground group-hover:underline"
-            />
+          <Link
+            href={`/users/${post.author.id}`}
+            className="shrink-0 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+          >
+            {post.author.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={post.author.avatarUrl}
+                alt=""
+                className="h-12 w-12 rounded-full object-cover"
+              />
+            ) : (
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft text-sm font-semibold text-primary">
+                {post.author.initials}
+              </div>
+            )}
+          </Link>
+          <div className="min-w-0 flex-1 pt-0.5">
+            <Link
+              href={`/users/${post.author.id}`}
+              className="inline-flex max-w-full outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+            >
+              <UserNameWithBadge
+                name={post.author.displayName}
+                showAdminBadge={post.author.isAdmin()}
+                nameClassName="text-sm font-semibold text-foreground hover:underline"
+              />
+            </Link>
             <p className="truncate text-xs text-muted">
               {post.author.headline?.trim() || t("member")}
             </p>
-            <p className="flex items-center gap-1 text-xs text-muted">
+            <Link
+              href={`/feed/posts/${post.id}`}
+              className="flex items-center gap-1 text-xs text-muted hover:underline outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+            >
               {formatRelativeTime(post.createdAt)}
               <Globe2 className="h-3 w-3" aria-hidden />
-            </p>
+            </Link>
           </div>
-        </Link>
 
-        {isAuthor ? (
-          <div className="relative shrink-0" ref={menuRef}>
-            <button
-              type="button"
-              className="rounded-full p-1 text-muted hover:bg-surface-muted"
-              aria-label={t("postActions")}
-              aria-expanded={menuOpen}
+          <div className="flex shrink-0 items-center gap-1">
+            {isAuthor ? null : (
+              <ConnectActions otherUserId={post.author.id} variant="compact" />
+            )}
+            <div className="relative" ref={menuRef}>
+              <button
+                type="button"
+                className="rounded-full p-1 text-muted hover:bg-surface-muted"
+                aria-label={t("postActions")}
+                aria-expanded={menuOpen}
+                disabled={isBusy}
+                onClick={() => setMenuOpen((open) => !open)}
+              >
+                <MoreHorizontal className="h-5 w-5" />
+              </button>
+              {menuOpen ? (
+                <div className="absolute right-0 z-10 mt-1 w-44 overflow-hidden rounded-md border border-border bg-surface shadow-card">
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-foreground hover:bg-surface-muted"
+                    onClick={() => void handleToggleSaved()}
+                  >
+                    <Bookmark
+                      className="h-4 w-4"
+                      aria-hidden
+                      fill={isSaved ? "currentColor" : "none"}
+                    />
+                    {isSaved ? t("unsave") : t("save")}
+                  </button>
+                  {isAuthor ? (
+                    <>
+                      <button
+                        type="button"
+                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-foreground hover:bg-surface-muted"
+                        onClick={startEditing}
+                      >
+                        <Pencil className="h-4 w-4" aria-hidden />
+                        {t("edit")}
+                      </button>
+                      <button
+                        type="button"
+                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-danger hover:bg-surface-muted"
+                        onClick={() => void handleDelete()}
+                      >
+                        <Trash2 className="h-4 w-4" aria-hidden />
+                        {t("delete")}
+                      </button>
+                    </>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+
+        {isEditing ? (
+          <div className="mt-3 space-y-3">
+            <MentionTextarea
+              ref={editTextareaRef}
+              value={text}
+              onChange={setText}
+              onPaste={handlePaste}
+              maxLength={POST_TEXT_MAX_LENGTH}
+              rows={4}
+              className="w-full resize-y rounded-md border border-border-strong bg-surface px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
               disabled={isBusy}
-              onClick={() => setMenuOpen((open) => !open)}
-            >
-              <MoreHorizontal className="h-5 w-5" />
-            </button>
-            {menuOpen ? (
-              <div className="absolute right-0 z-10 mt-1 w-36 overflow-hidden rounded-md border border-border bg-surface shadow-card">
-                <button
-                  type="button"
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-foreground hover:bg-surface-muted"
-                  onClick={startEditing}
-                >
-                  <Pencil className="h-4 w-4" aria-hidden />
-                  {t("edit")}
-                </button>
-                <button
-                  type="button"
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-danger hover:bg-surface-muted"
-                  onClick={() => void handleDelete()}
-                >
-                  <Trash2 className="h-4 w-4" aria-hidden />
-                  {t("delete")}
-                </button>
-              </div>
+            />
+
+            {attachments.length > 0 ? (
+              <PostAttachmentsEditor
+                attachments={attachments.map((attachment) => ({
+                  id: attachment.url,
+                  previewUrl: attachment.previewUrl,
+                  fileName: attachment.fileName,
+                }))}
+                disabled={isBusy}
+                onReorder={reorderAttachments}
+                onRemove={removeAttachment}
+              />
             ) : null}
+
+            {error ? <p className="text-sm text-danger">{error}</p> : null}
+
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-1">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  multiple
+                  className="sr-only"
+                  onChange={handleFilesSelected}
+                  disabled={
+                    isBusy || attachments.length >= POST_ATTACHMENTS_MAX_COUNT
+                  }
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={
+                    isBusy || attachments.length >= POST_ATTACHMENTS_MAX_COUNT
+                  }
+                  onClick={() => fileInputRef.current?.click()}
+                  className="gap-1.5 text-xs font-semibold"
+                >
+                  {isUploading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                  ) : (
+                    <ImageIcon className="h-4 w-4 text-accent" aria-hidden />
+                  )}
+                  {tCommon("media")}
+                </Button>
+                <EmojiPickerButton disabled={isBusy} onSelect={insertEmoji} />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={isBusy}
+                  onClick={cancelEditing}
+                >
+                  {tCommon("cancel")}
+                </Button>
+                <Button
+                  type="button"
+                  disabled={isBusy || !hasPostContent(text, attachments.length)}
+                  onClick={() => void handleSave()}
+                  className="gap-1.5"
+                >
+                  {updatePost.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                  ) : null}
+                  {tCommon("save")}
+                </Button>
+              </div>
+            </div>
           </div>
         ) : (
-          <ConnectActions otherUserId={post.author.id} variant="compact" />
-        )}
-      </div>
+          <>
+            {post.textContent ? (
+              <div className="mt-3">
+                <ExpandableText
+                  text={formatMentionsForPreview(post.textContent)}
+                  collapseAfter={260}
+                  collapsedClassName="line-clamp-3"
+                >
+                  <MentionText text={post.textContent} />
+                </ExpandableText>
+              </div>
+            ) : null}
 
-      {isEditing ? (
-        <div className="mt-3 space-y-3">
-          <MentionTextarea
-            ref={editTextareaRef}
-            value={text}
-            onChange={setText}
-            onPaste={handlePaste}
-            maxLength={POST_TEXT_MAX_LENGTH}
-            rows={4}
-            className="w-full resize-y rounded-md border border-border-strong bg-surface px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-            disabled={isBusy}
+            {post.attachments.length > 0 ? (
+              <PostAttachmentsGallery
+                className="mt-3 -mx-4"
+                fullBleed
+                attachments={post.attachments.map((attachment) => ({
+                  id: attachment.id,
+                  url: attachment.url,
+                  fileName: attachment.fileName,
+                }))}
+              />
+            ) : null}
+
+            {post.isRepost && post.repostOf ? (
+              <PostRepostEmbed post={post.repostOf} />
+            ) : null}
+
+            {error ? <p className="mt-2 text-sm text-danger">{error}</p> : null}
+          </>
+        )}
+
+        <div className={likesCount > 0 ? "pt-1" : "pt-2"}>
+          <PostEngagementSummary
+            likesCount={likesCount}
+            previewLikes={post.previewLikes}
           />
 
-          {attachments.length > 0 ? (
-            <PostAttachmentsEditor
-              attachments={attachments.map((attachment) => ({
-                id: attachment.url,
-                previewUrl: attachment.previewUrl,
-                fileName: attachment.fileName,
-              }))}
-              disabled={isBusy}
-              onReorder={reorderAttachments}
-              onRemove={removeAttachment}
+          <div className="-mx-1 flex items-center py-0.5">
+            <PostReactionButton
+              myReaction={myReaction}
+              count={likesCount}
+              disabled={isBusy || isEditing}
+              onToggleDefault={handleToggleDefaultReaction}
+              onSelect={handleSelectReaction}
             />
-          ) : null}
-
-          {error ? <p className="text-sm text-danger">{error}</p> : null}
-
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-1">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif"
-                multiple
-                className="sr-only"
-                onChange={handleFilesSelected}
-                disabled={
-                  isBusy || attachments.length >= POST_ATTACHMENTS_MAX_COUNT
-                }
+            <button
+              type="button"
+              disabled={isEditing}
+              aria-label={t("comments.action")}
+              aria-pressed={commentsOpen}
+              title={t("comments.action")}
+              className={`inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md px-2 py-2 text-sm font-semibold tabular-nums transition-colors hover:bg-surface-muted disabled:pointer-events-none disabled:opacity-50 ${
+                commentsOpen
+                  ? "text-primary"
+                  : "text-muted hover:text-foreground"
+              }`}
+              onClick={() => setCommentsOpen((open) => !open)}
+            >
+              <MessageCircle
+                className="h-[18px] w-[18px]"
+                aria-hidden
+                fill={commentsOpen ? "currentColor" : "none"}
               />
-              <Button
+              {commentsCount > 0 ? (
+                <span>{formatEngagementCount(commentsCount)}</span>
+              ) : null}
+            </button>
+            <div className="relative flex flex-1" ref={repostMenuRef}>
+              <button
                 type="button"
-                variant="ghost"
-                disabled={
-                  isBusy || attachments.length >= POST_ATTACHMENTS_MAX_COUNT
-                }
-                onClick={() => fileInputRef.current?.click()}
-                className="gap-1.5 text-xs font-semibold"
+                disabled={isEditing || isBusy}
+                aria-label={t("repost")}
+                aria-expanded={repostMenuOpen}
+                title={t("repost")}
+                className="inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md px-2 py-2 text-sm font-semibold tabular-nums text-muted transition-colors hover:bg-surface-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
+                onClick={() => setRepostMenuOpen((open) => !open)}
               >
-                {isUploading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                ) : (
-                  <ImageIcon className="h-4 w-4 text-accent" aria-hidden />
-                )}
-                {tCommon("media")}
-              </Button>
-              <EmojiPickerButton disabled={isBusy} onSelect={insertEmoji} />
-            </div>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="ghost"
-                disabled={isBusy}
-                onClick={cancelEditing}
-              >
-                {tCommon("cancel")}
-              </Button>
-              <Button
-                type="button"
-                disabled={isBusy || !hasPostContent(text, attachments.length)}
-                onClick={() => void handleSave()}
-                className="gap-1.5"
-              >
-                {updatePost.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                <Repeat2 className="h-[18px] w-[18px]" aria-hidden />
+                {post.repostsCount > 0 ? (
+                  <span>{formatEngagementCount(post.repostsCount)}</span>
                 ) : null}
-                {tCommon("save")}
-              </Button>
+              </button>
+              {repostMenuOpen ? (
+                <div className="absolute bottom-full left-1/2 z-10 mb-1 w-44 -translate-x-1/2 overflow-hidden rounded-md border border-border bg-surface shadow-card">
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-foreground hover:bg-surface-muted"
+                    onClick={() => void handlePlainRepost()}
+                  >
+                    <Repeat2 className="h-4 w-4" aria-hidden />
+                    {t("repostAction")}
+                  </button>
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-foreground hover:bg-surface-muted"
+                    onClick={() => {
+                      setRepostMenuOpen(false);
+                      setQuoteOpen(true);
+                    }}
+                  >
+                    <Pencil className="h-4 w-4" aria-hidden />
+                    {t("quoteRepost")}
+                  </button>
+                </div>
+              ) : null}
             </div>
+            <button
+              type="button"
+              disabled={isEditing || isBusy}
+              aria-label={t("send")}
+              title={t("send")}
+              className="inline-flex flex-1 cursor-pointer items-center justify-center rounded-md px-2 py-2 text-muted transition-colors hover:bg-surface-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
+              onClick={() => setShareOpen(true)}
+            >
+              <Send className="h-[18px] w-[18px]" aria-hidden />
+            </button>
           </div>
         </div>
-      ) : (
-        <>
-          {post.textContent ? (
-            <div className="mt-3">
-              <ExpandableText
-                text={formatMentionsForPreview(post.textContent)}
-                collapseAfter={260}
-                collapsedClassName="line-clamp-3"
-              >
-                <MentionText text={post.textContent} />
-              </ExpandableText>
-            </div>
-          ) : null}
 
-          {post.attachments.length > 0 ? (
-            <PostAttachmentsGallery
-              className="mt-3 -mx-4"
-              fullBleed
-              attachments={post.attachments.map((attachment) => ({
-                id: attachment.id,
-                url: attachment.url,
-                fileName: attachment.fileName,
-              }))}
+        {post.previewComments.length > 0 || commentsOpen ? (
+          <div className="pb-3">
+            <PostCommentsPanel
+              postId={post.id}
+              currentUser={currentUser}
+              previewComments={post.previewComments}
+              commentsCount={commentsCount}
+              showComposer={commentsOpen}
+              onRequestComposer={() => setCommentsOpen(true)}
+              onCommentsCountDelta={(delta) =>
+                setCommentsDelta((current) => current + delta)
+              }
             />
-          ) : null}
+          </div>
+        ) : null}
 
-          {error ? <p className="mt-2 text-sm text-danger">{error}</p> : null}
-        </>
-      )}
-
-      <div className={likesCount > 0 ? "pt-1" : "pt-2"}>
-        <PostEngagementSummary
-          likesCount={likesCount}
-          previewLikes={post.previewLikes}
-        />
-
-        <div className="-mx-1 flex items-center py-0.5">
-          <PostReactionButton
-            myReaction={myReaction}
-            count={likesCount}
-            disabled={isBusy || isEditing}
-            onToggleDefault={handleToggleDefaultReaction}
-            onSelect={handleSelectReaction}
+        {quoteOpen ? (
+          <RepostDialog
+            targetPostId={post.id}
+            original={original}
+            user={currentUser}
+            onClose={() => setQuoteOpen(false)}
           />
-          <button
-            type="button"
-            disabled={isEditing}
-            aria-label={t("comments.action")}
-            aria-pressed={commentsOpen}
-            title={t("comments.action")}
-            className={`inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md px-2 py-2 text-sm font-semibold tabular-nums transition-colors hover:bg-surface-muted disabled:pointer-events-none disabled:opacity-50 ${
-              commentsOpen ? "text-primary" : "text-muted hover:text-foreground"
-            }`}
-            onClick={() => setCommentsOpen((open) => !open)}
-          >
-            <MessageCircle
-              className="h-[18px] w-[18px]"
-              aria-hidden
-              fill={commentsOpen ? "currentColor" : "none"}
-            />
-            {commentsCount > 0 ? (
-              <span>{formatEngagementCount(commentsCount)}</span>
-            ) : null}
-          </button>
-          <button
-            type="button"
-            disabled
-            aria-label={t("repost")}
-            title={t("repost")}
-            className="inline-flex flex-1 items-center justify-center rounded-md px-2 py-2 text-muted opacity-40"
-          >
-            <Repeat2 className="h-[18px] w-[18px]" aria-hidden />
-          </button>
-          <button
-            type="button"
-            disabled
-            aria-label={t("send")}
-            title={t("send")}
-            className="inline-flex flex-1 items-center justify-center rounded-md px-2 py-2 text-muted opacity-40"
-          >
-            <Send className="h-[18px] w-[18px]" aria-hidden />
-          </button>
-        </div>
-      </div>
+        ) : null}
 
-      {post.previewComments.length > 0 || commentsOpen ? (
-        <div className="pb-3">
-          <PostCommentsPanel
-            postId={post.id}
-            currentUser={currentUser}
-            previewComments={post.previewComments}
-            commentsCount={commentsCount}
-            showComposer={commentsOpen}
-            onRequestComposer={() => setCommentsOpen(true)}
-            onCommentsCountDelta={(delta) =>
-              setCommentsDelta((current) => current + delta)
-            }
-          />
-        </div>
-      ) : null}
-    </FeedCard>
+        {shareOpen ? (
+          <SharePostDialog post={post} onClose={() => setShareOpen(false)} />
+        ) : null}
+      </FeedCard>
+    </div>
   );
 }

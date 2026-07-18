@@ -17,10 +17,14 @@ import {
   buildPaginationMeta,
   getPaginationParams,
 } from '../../shared/utils/pagination';
+import { NotificationsService } from '../../notifications/services/notifications.service';
 
 @Injectable()
 export class ConnectionsService {
-  constructor(private readonly connectionsRepository: ConnectionsRepository) {}
+  constructor(
+    private readonly connectionsRepository: ConnectionsRepository,
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
   public async createConnection(
     requesterId: string,
@@ -69,11 +73,19 @@ export class ConnectionsService {
           existing.id,
           ConnectionStatus.PENDING,
         );
+        await this.notificationsService.notifyConnectionRequest(
+          requesterId,
+          addresseeId,
+        );
         return ConnectionsMapper.toConnectionResponseDto(reopened);
       }
     }
 
     const connection = await this.connectionsRepository.create(
+      requesterId,
+      addresseeId,
+    );
+    await this.notificationsService.notifyConnectionRequest(
       requesterId,
       addresseeId,
     );
@@ -184,6 +196,10 @@ export class ConnectionsService {
     const updated = await this.connectionsRepository.updateStatus(
       connection.id,
       ConnectionStatus.ACCEPTED,
+    );
+    await this.notificationsService.notifyConnectionAccepted(
+      userId,
+      connection.requester.id,
     );
     return ConnectionsMapper.toConnectionResponseDto(updated);
   }

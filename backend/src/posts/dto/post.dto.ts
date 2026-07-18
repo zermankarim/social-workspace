@@ -30,6 +30,23 @@ export class PostResponseDto {
   @ApiProperty({ example: 10, description: 'Denormalized likes counter' })
   public likesCount: number;
 
+  @ApiProperty({ example: 2, description: 'Denormalized reposts counter' })
+  public repostsCount: number;
+
+  @ApiProperty({
+    example: 128,
+    description: 'Denormalized impressions counter',
+  })
+  public impressionsCount: number;
+
+  @ApiPropertyOptional({
+    type: () => PostResponseDto,
+    nullable: true,
+    description:
+      'Original post when this entry is a repost (with an optional quote in textContent).',
+  })
+  public repostOf: PostResponseDto | null;
+
   @ApiProperty({ type: [PostAttachmentResponseDto] })
   public attachments: PostAttachmentResponseDto[];
 

@@ -1,0 +1,12 @@
+/// One read per (user, story). Repeat opens do not inflate readersCount.
+model NewsStoryRead {
+  id        String    @id @default(uuid())
+  storyId   String
+  story     NewsStory @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+
+  @@unique([userId, storyId])
+  @@index([storyId])
+}

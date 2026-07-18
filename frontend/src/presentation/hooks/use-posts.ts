@@ -126,3 +126,42 @@ export function useDeletePost() {
     },
   });
 }
+
+export function useRepostPost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, textContent }: { id: string; textContent?: string }) =>
+      appContainer.postService.repost(id, textContent),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: postsQueryKey });
+    },
+  });
+}
+
+export const savedPostsQueryKey = [...postsQueryKey, "saved"] as const;
+
+export function useSavedPosts(limit = DEFAULT_POST_PAGE_SIZE) {
+  return useInfiniteQuery({
+    queryKey: [...savedPostsQueryKey, limit],
+    queryFn: ({ pageParam }) =>
+      appContainer.postService.getSaved(new PostFeedQueryDto(pageParam, limit)),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.meta.hasNextPage ? lastPage.meta.page + 1 : undefined,
+  });
+}
+
+export function useSavePost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, saved }: { id: string; saved: boolean }) =>
+      saved
+        ? appContainer.postService.unsave(id)
+        : appContainer.postService.save(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: savedPostsQueryKey });
+    },
+  });
+}

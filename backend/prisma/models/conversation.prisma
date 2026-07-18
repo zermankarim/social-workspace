@@ -39,6 +39,7 @@ model Message {
   keyVersion Int    @default(1)
 
   attachments MessageAttachment[]
+  reactions   MessageReaction[]
 
   createdAt DateTime  @default(now())
   editedAt  DateTime?

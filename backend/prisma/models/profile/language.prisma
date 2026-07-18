@@ -20,14 +20,14 @@ model Language {
 }
 
 model UserLanguage {
-  id           String               @id @default(uuid())
-  userId       String
-  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  languageId   String
-  language     Language             @relation(fields: [languageId], references: [id], onDelete: Cascade)
-  proficiency  LanguageProficiency
-  createdAt    DateTime             @default(now())
-  updatedAt    DateTime             @updatedAt
+  id          String              @id @default(uuid())
+  userId      String
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  languageId  String
+  language    Language            @relation(fields: [languageId], references: [id], onDelete: Cascade)
+  proficiency LanguageProficiency
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
 
   @@unique([userId, languageId])
   @@index([languageId])

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ApiError } from "@/core/application/errors/api.error";
@@ -19,6 +19,7 @@ import {
   useUpdateProfile,
   useUserProfile,
 } from "@/presentation/hooks/use-profile";
+import { useRecordProfileView } from "@/presentation/hooks/use-profile-views";
 import { useAuthStore } from "@/presentation/stores/auth.store";
 
 type ProfilePageProps = {
@@ -37,7 +38,16 @@ export function ProfilePage({ userId }: ProfilePageProps) {
   const { data: profile, isLoading, error } = query;
 
   const updateProfile = useUpdateProfile();
+  const recordView = useRecordProfileView(userId);
   const [introModalOpen, setIntroModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (isOwnProfile || !userId || !profile) return;
+    if (authUser && authUser.id === userId) return;
+    recordView.mutate();
+    // Record once per profile open.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOwnProfile, userId, profile?.id]);
 
   const canEdit = Boolean(
     profile && authUser && profile.isOwnedBy(authUser.id),

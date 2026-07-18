@@ -53,4 +53,23 @@ export class ConversationService {
   ): Promise<Message> {
     return this.conversationRepository.sendMessage(conversationId, input);
   }
+
+  setReaction(
+    conversationId: string,
+    messageId: string,
+    emoji: string,
+  ): Promise<Message> {
+    return this.conversationRepository.setReaction(
+      conversationId,
+      messageId,
+      emoji,
+    );
+  }
+
+  removeReaction(conversationId: string, messageId: string): Promise<Message> {
+    return this.conversationRepository.removeReaction(
+      conversationId,
+      messageId,
+    );
+  }
 }

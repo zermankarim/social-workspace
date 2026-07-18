@@ -30,9 +30,16 @@ export interface PostResponseDto {
   author: PostAuthorResponseDto;
   commentsCount: number;
   likesCount: number;
+  repostsCount: number;
+  impressionsCount?: number;
+  repostOf?: PostResponseDto | null;
   attachments: PostAttachmentResponseDto[];
   previewComments?: CommentResponseDto[];
   previewLikes?: LikeResponseDto[];
+}
+
+export interface CreateRepostRequestDto {
+  textContent?: string;
 }
 
 export interface CreatePostAttachmentRequestDto {

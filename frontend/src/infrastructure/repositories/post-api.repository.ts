@@ -7,6 +7,7 @@ import type { Post } from "@/core/domain/entities/post.entity";
 import { PostRepository } from "@/core/domain/repositories/post.repository";
 import type {
   CreatePostRequestDto,
+  CreateRepostRequestDto,
   PaginatedPostsResponseDto,
   PostResponseDto,
   UpdatePostRequestDto,
@@ -99,5 +100,71 @@ export class PostApiRepository extends PostRepository {
     await this.httpClient.request<void>(`/posts/${id}`, {
       method: "DELETE",
     });
+  }
+
+  async repost(id: string, textContent?: string): Promise<Post> {
+    const body: CreateRepostRequestDto = {
+      textContent: textContent?.trim() || undefined,
+    };
+
+    const response = await this.httpClient.request<PostResponseDto>(
+      `/posts/${id}/repost`,
+      { method: "POST", body },
+    );
+
+    return PostMapper.fromApi(response);
+  }
+
+  async save(id: string): Promise<void> {
+    await this.httpClient.request<void>(`/saved-posts/${id}`, {
+      method: "POST",
+    });
+  }
+
+  async unsave(id: string): Promise<void> {
+    await this.httpClient.request<void>(`/saved-posts/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  async findSaved(query: PostFeedQueryDto): Promise<PaginatedPosts> {
+    const params = new URLSearchParams({
+      page: String(query.page),
+      limit: String(query.limit),
+    });
+
+    const response = await this.httpClient.request<PaginatedPostsResponseDto>(
+      `/saved-posts?${params.toString()}`,
+    );
+
+    return PaginatedPostsMapper.fromApi(response);
+  }
+
+  async search(q: string, page = 1, limit = 20): Promise<PaginatedPosts> {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+    });
+    if (q.trim()) params.set("q", q.trim());
+
+    const response = await this.httpClient.request<PaginatedPostsResponseDto>(
+      `/posts/search?${params.toString()}`,
+    );
+
+    return PaginatedPostsMapper.fromApi(response);
+  }
+
+  async registerImpressions(postIds: string[]): Promise<void> {
+    await this.httpClient.request<void>(`/posts/impressions`, {
+      method: "POST",
+      body: { postIds },
+    });
+  }
+
+  async getImpressionsSummary(): Promise<number> {
+    const response = await this.httpClient.request<{
+      impressionsCount: number;
+    }>(`/posts/impressions/summary`);
+    return response.impressionsCount;
   }
 }

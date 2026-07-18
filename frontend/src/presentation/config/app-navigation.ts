@@ -57,7 +57,6 @@ export const appNavItems: AppNavItem[] = [
     labelKey: "notifications",
     icon: Bell,
     roles: [ProfileRole.ADMIN, ProfileRole.USER],
-    comingSoon: true,
   },
   {
     href: "/admin/users",

@@ -3,9 +3,13 @@ import type { CommentService } from "@/core/application/services/comment.service
 import type { ConnectionService } from "@/core/application/services/connection.service";
 import type { ConversationService } from "@/core/application/services/conversation.service";
 import type { DeviceService } from "@/core/application/services/device.service";
+import type { HashtagService } from "@/core/application/services/hashtag.service";
 import type { LikeService } from "@/core/application/services/like.service";
+import type { NewsService } from "@/core/application/services/news.service";
+import type { NotificationService } from "@/core/application/services/notification.service";
 import type { PostService } from "@/core/application/services/post.service";
 import type { ProfileService } from "@/core/application/services/profile.service";
+import type { ProfileViewService } from "@/core/application/services/profile-view.service";
 import type { UploadService } from "@/core/application/services/upload.service";
 import type { UserService } from "@/core/application/services/user.service";
 import { HttpClient } from "@/infrastructure/http/http-client";
@@ -14,9 +18,13 @@ import { CommentModule } from "@/modules/comment.module";
 import { ConnectionModule } from "@/modules/connection.module";
 import { ConversationModule } from "@/modules/conversation.module";
 import { DeviceModule } from "@/modules/device.module";
+import { HashtagModule } from "@/modules/hashtag.module";
 import { LikeModule } from "@/modules/like.module";
+import { NewsModule } from "@/modules/news.module";
+import { NotificationModule } from "@/modules/notification.module";
 import { PostModule } from "@/modules/post.module";
 import { ProfileModule } from "@/modules/profile.module";
+import { ProfileViewModule } from "@/modules/profile-view.module";
 import { UploadModule } from "@/modules/upload.module";
 import { UserModule } from "@/modules/user.module";
 
@@ -27,6 +35,7 @@ export class AppContainer {
   readonly authService: AuthService;
   readonly userService: UserService;
   readonly profileService: ProfileService;
+  readonly profileViewService: ProfileViewService;
   readonly uploadService: UploadService;
   readonly postService: PostService;
   readonly likeService: LikeService;
@@ -34,12 +43,16 @@ export class AppContainer {
   readonly connectionService: ConnectionService;
   readonly conversationService: ConversationService;
   readonly deviceService: DeviceService;
+  readonly hashtagService: HashtagService;
+  readonly notificationService: NotificationService;
+  readonly newsService: NewsService;
 
   private constructor() {
     this.httpClient = new HttpClient();
     this.authService = AuthModule.create(this.httpClient);
     this.userService = UserModule.create(this.httpClient);
     this.profileService = ProfileModule.create(this.httpClient);
+    this.profileViewService = ProfileViewModule.create(this.httpClient);
     this.uploadService = UploadModule.create(this.httpClient);
     this.postService = PostModule.create(this.httpClient);
     this.likeService = LikeModule.create(this.httpClient);
@@ -47,6 +60,9 @@ export class AppContainer {
     this.connectionService = ConnectionModule.create(this.httpClient);
     this.conversationService = ConversationModule.create(this.httpClient);
     this.deviceService = DeviceModule.create(this.httpClient);
+    this.hashtagService = HashtagModule.create(this.httpClient);
+    this.notificationService = NotificationModule.create(this.httpClient);
+    this.newsService = NewsModule.create(this.httpClient);
   }
 
   static getInstance(): AppContainer {

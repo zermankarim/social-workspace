@@ -35,18 +35,19 @@ export class LikesRepository {
     postId: string,
     authorId: string,
     likeType: PostLikeType,
-  ): Promise<LikeSelected> {
+  ): Promise<{ like: LikeSelected; created: boolean }> {
     const existing = await this.prisma.postLike.findUnique({
       where: { postId_authorId: { postId, authorId } },
       select: { id: true },
     });
 
     if (existing) {
-      return this.prisma.postLike.update({
+      const like = await this.prisma.postLike.update({
         where: { postId_authorId: { postId, authorId } },
         data: { likeType },
         select: likeSelect,
       });
+      return { like, created: false };
     }
 
     const [like] = await this.prisma.$transaction([
@@ -64,7 +65,7 @@ export class LikesRepository {
       }),
     ]);
 
-    return like;
+    return { like, created: true };
   }
 
   async deleteLikeByPostAndAuthor(

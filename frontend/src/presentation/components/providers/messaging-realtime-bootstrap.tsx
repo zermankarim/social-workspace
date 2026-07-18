@@ -8,6 +8,7 @@ import { messagingSocket } from "@/infrastructure/realtime/messaging-socket.clie
 import { appContainer } from "@/modules/app.container";
 import {
   applyConversationReadFromSocket,
+  updateMessageFromSocket,
   upsertMessageFromSocket,
 } from "@/presentation/hooks/use-conversations";
 import { formatMentionsForPreview } from "@/presentation/lib/mentions";
@@ -77,6 +78,10 @@ export function MessagingRealtimeBootstrap() {
       });
     });
 
+    const offMessageUpdated = messagingSocket.onMessageUpdated((dto) => {
+      updateMessageFromSocket(queryClient, dto);
+    });
+
     const offRead = messagingSocket.onConversationRead((payload) => {
       applyConversationReadFromSocket(queryClient, payload);
     });
@@ -87,6 +92,7 @@ export function MessagingRealtimeBootstrap() {
 
     return () => {
       offMessage();
+      offMessageUpdated();
       offRead();
       offPresence();
     };

@@ -109,4 +109,27 @@ export class ConversationApiRepository extends ConversationRepository {
     );
     return ConversationMapper.messageFromApi(response);
   }
+
+  async setReaction(
+    conversationId: string,
+    messageId: string,
+    emoji: string,
+  ): Promise<Message> {
+    const response = await this.httpClient.request<MessageResponseDto>(
+      `/conversations/${conversationId}/messages/${messageId}/reaction`,
+      { method: "PUT", body: { emoji } },
+    );
+    return ConversationMapper.messageFromApi(response);
+  }
+
+  async removeReaction(
+    conversationId: string,
+    messageId: string,
+  ): Promise<Message> {
+    const response = await this.httpClient.request<MessageResponseDto>(
+      `/conversations/${conversationId}/messages/${messageId}/reaction`,
+      { method: "DELETE" },
+    );
+    return ConversationMapper.messageFromApi(response);
+  }
 }

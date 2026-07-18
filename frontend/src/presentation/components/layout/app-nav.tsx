@@ -11,11 +11,14 @@ import {
 } from "@/presentation/config/app-navigation";
 import { useConnectionCounts } from "@/presentation/hooks/use-connections";
 import { useUnreadTotal } from "@/presentation/hooks/use-conversations";
+import { useUnreadNotificationsCount } from "@/presentation/hooks/use-notifications";
 import { useAuthStore } from "@/presentation/stores/auth.store";
 
 interface AppNavProps {
+  id?: string;
   role: ProfileRole;
   className?: string;
+  onNavigate?: () => void;
 }
 
 function formatBadgeCount(count: number): string {
@@ -23,20 +26,24 @@ function formatBadgeCount(count: number): string {
   return String(count);
 }
 
-export function AppNav({ role, className = "" }: AppNavProps) {
+export function AppNav({ id, role, className = "", onNavigate }: AppNavProps) {
   const pathname = usePathname();
   const t = useTranslations("nav");
   const tNetwork = useTranslations("network");
   const tMessaging = useTranslations("messaging");
+  const tNotifications = useTranslations("notifications");
   const items = getVisibleNavItems(role);
   const { pending } = useConnectionCounts();
   const user = useAuthStore((state) => state.user);
   const unreadQuery = useUnreadTotal(Boolean(user));
   const unreadTotal = unreadQuery.data ?? 0;
+  const notificationsQuery = useUnreadNotificationsCount(Boolean(user));
+  const unreadNotifications = notificationsQuery.data ?? 0;
 
   return (
     <nav
-      className={`flex items-stretch justify-center gap-1 overflow-x-auto ${className}`}
+      id={id}
+      className={`items-stretch justify-center gap-1 ${className}`}
       aria-label={t("main")}
     >
       {items.map((item, index) => {
@@ -44,9 +51,14 @@ export function AppNav({ role, className = "" }: AppNavProps) {
         const Icon = item.icon;
         const showPendingBadge = item.href === "/network" && pending > 0;
         const showUnreadBadge = item.href === "/messaging" && unreadTotal > 0;
+        const showNotificationsBadge =
+          item.href === "/notifications" && unreadNotifications > 0;
 
         return (
-          <div key={item.href} className="flex shrink-0 items-stretch">
+          <div
+            key={item.href}
+            className="flex min-w-0 items-stretch md:shrink-0"
+          >
             {shouldShowNavDivider(items, index) ? (
               <div
                 className="mx-1 hidden w-px self-center bg-border sm:block"
@@ -56,7 +68,8 @@ export function AppNav({ role, className = "" }: AppNavProps) {
             ) : null}
             <Link
               href={item.href}
-              className={`relative flex min-w-[4.5rem] flex-col items-center justify-center gap-0.5 px-2 py-1.5 text-[11px] transition-colors sm:min-w-[5rem] ${
+              onClick={onNavigate}
+              className={`relative flex min-h-12 w-full min-w-0 flex-col items-center justify-center gap-0.5 rounded-md px-2 py-1.5 text-[11px] transition-colors md:min-w-20 md:rounded-none ${
                 isActive
                   ? "font-semibold text-nav-active"
                   : "font-normal text-nav-foreground hover:text-nav-active"
@@ -66,7 +79,11 @@ export function AppNav({ role, className = "" }: AppNavProps) {
                   ? tNetwork("pendingNavBadge", { count: pending })
                   : showUnreadBadge
                     ? tMessaging("unreadNavBadge", { count: unreadTotal })
-                    : undefined
+                    : showNotificationsBadge
+                      ? tNotifications("unreadNavBadge", {
+                          count: unreadNotifications,
+                        })
+                      : undefined
               }
             >
               <span className="relative inline-flex">
@@ -84,8 +101,13 @@ export function AppNav({ role, className = "" }: AppNavProps) {
                     {formatBadgeCount(unreadTotal)}
                   </span>
                 ) : null}
+                {showNotificationsBadge ? (
+                  <span className="absolute -top-1.5 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold leading-none text-white">
+                    {formatBadgeCount(unreadNotifications)}
+                  </span>
+                ) : null}
               </span>
-              <span className="hidden sm:inline">{t(item.labelKey)}</span>
+              <span className="max-w-full truncate">{t(item.labelKey)}</span>
               {isActive ? (
                 <span
                   className="absolute inset-x-1 bottom-0 h-0.5 rounded-full bg-nav-active"

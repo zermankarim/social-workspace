@@ -9,6 +9,7 @@ type BrandLogoProps = {
   href?: string | null;
   className?: string;
   priority?: boolean;
+  onClick?: () => void;
   /** Accessible label; defaults to brand name */
   label?: string;
 };
@@ -36,6 +37,7 @@ export function BrandLogo({
   href = "/",
   className = "",
   priority = false,
+  onClick,
   label = BRAND.name,
 }: BrandLogoProps) {
   const size = sizes[variant];
@@ -58,6 +60,7 @@ export function BrandLogo({
   return (
     <Link
       href={href}
+      onClick={onClick}
       className="inline-flex shrink-0 items-center"
       aria-label={label}
     >

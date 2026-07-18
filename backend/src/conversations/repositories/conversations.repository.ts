@@ -254,4 +254,40 @@ export class ConversationsRepository {
       select: userDeviceSelect,
     });
   }
+
+  findMessageById(messageId: string): Promise<MessageSelected | null> {
+    return this.prisma.message.findUnique({
+      where: { id: messageId },
+      select: messageSelect,
+    });
+  }
+
+  async setReaction(
+    messageId: string,
+    userId: string,
+    emoji: string,
+  ): Promise<MessageSelected> {
+    await this.prisma.messageReaction.upsert({
+      where: { messageId_userId: { messageId, userId } },
+      create: { messageId, userId, emoji },
+      update: { emoji },
+    });
+    return this.prisma.message.findUniqueOrThrow({
+      where: { id: messageId },
+      select: messageSelect,
+    });
+  }
+
+  async removeReaction(
+    messageId: string,
+    userId: string,
+  ): Promise<MessageSelected> {
+    await this.prisma.messageReaction.deleteMany({
+      where: { messageId, userId },
+    });
+    return this.prisma.message.findUniqueOrThrow({
+      where: { id: messageId },
+      select: messageSelect,
+    });
+  }
 }

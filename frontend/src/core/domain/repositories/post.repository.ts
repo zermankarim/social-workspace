@@ -12,4 +12,15 @@ export abstract class PostRepository {
   abstract create(dto: CreatePostDto): Promise<Post>;
   abstract update(id: string, dto: UpdatePostDto): Promise<Post>;
   abstract delete(id: string): Promise<void>;
+  abstract repost(id: string, textContent?: string): Promise<Post>;
+  abstract save(id: string): Promise<void>;
+  abstract unsave(id: string): Promise<void>;
+  abstract findSaved(query: PostFeedQueryDto): Promise<PaginatedPosts>;
+  abstract search(
+    q: string,
+    page?: number,
+    limit?: number,
+  ): Promise<PaginatedPosts>;
+  abstract registerImpressions(postIds: string[]): Promise<void>;
+  abstract getImpressionsSummary(): Promise<number>;
 }

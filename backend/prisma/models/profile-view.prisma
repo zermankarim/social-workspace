@@ -1,0 +1,14 @@
+/// One row per (viewer, profile) pair. Repeat visits bump updatedAt so the
+/// "profile viewers" list can be ordered by recency without inflating counts.
+model ProfileView {
+  id        String   @id @default(uuid())
+  viewerId  String
+  viewer    User     @relation("ProfileViewsMade", fields: [viewerId], references: [id], onDelete: Cascade)
+  profileId String
+  profile   User     @relation("ProfileViewsReceived", fields: [profileId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([viewerId, profileId])
+  @@index([profileId, updatedAt])
+}

@@ -1,6 +1,8 @@
 {
   "common": {
     "search": "Search",
+    "menu": "Menu",
+    "profile": "Profile",
     "signOut": "Sign out",
     "signIn": "Sign in",
     "loadMore": "Load more",
@@ -12,7 +14,8 @@
     "language": "Language",
     "adminBadge": "Admin",
     "showMore": "Show more",
-    "showLess": "Show less"
+    "showLess": "Show less",
+    "you": "You"
   },
   "nav": {
     "main": "Main navigation",
@@ -66,7 +69,31 @@
     "edit": "Edit",
     "delete": "Delete",
     "repost": "Repost",
+    "reposted": "reposted this",
+    "repostAction": "Repost",
+    "quoteRepost": "Quote",
+    "quotePlaceholder": "Add your thoughts…",
+    "repostFailed": "Failed to repost",
+    "save": "Save",
+    "unsave": "Remove from saved",
+    "saveFailed": "Failed to update saved posts",
     "send": "Send",
+    "copyLink": "Copy link to post",
+    "linkCopied": "Link copied",
+    "sendInMessage": "Send in a message",
+    "shareMessage": "Check out this post: {url}",
+    "shareHint": "Share via chat or copy a link for anywhere else.",
+    "shareNoConversations": "No conversations yet. Connect with someone first.",
+    "shareCopyFailed": "Could not copy the link",
+    "shareFailed": "Could not send the post",
+    "sharePeerDeviceMissing": "This person needs to open the app once before you can message them.",
+    "profileViewers": "Profile viewers",
+    "postImpressions": "Post impressions",
+    "savedItems": "Saved items",
+    "headlinePlaceholder": "Add a headline to complete your profile",
+    "peopleYouMayKnow": "People you may know",
+    "connect": "Connect",
+    "suggestionsHint": "Suggestions will appear when a recommendations API is available.",
     "reactions": {
       "pickerLabel": "Choose a reaction",
       "like": "Like",
@@ -272,10 +299,75 @@
     "attachImage": "Attach image",
     "removeAttachment": "Remove attachment",
     "emptyMessage": "Write a message or attach an image.",
-    "attachmentPreview": "{count, plural, one {Photo} other {# photos}}"
+    "attachmentPreview": "{count, plural, one {Photo} other {# photos}}",
+    "addReaction": "Add reaction",
+    "reactionCount": "{emoji} · {count}"
   },
   "mentions": {
     "typeToSearch": "Type a name to mention someone",
     "noResults": "No people found"
+  },
+  "search": {
+    "resultsFor": "Results for",
+    "seeAllResults": "See all results for “{query}”",
+    "noResults": "No results",
+    "noResultsTitle": "No results found",
+    "noResultsHint": "Try different keywords or check the spelling.",
+    "emptyQuery": "Type something to start searching.",
+    "postsCount": "{count, plural, one {# post} other {# posts}}",
+    "tabs": {
+      "all": "All",
+      "people": "People",
+      "posts": "Posts",
+      "hashtags": "Hashtags"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "unreadNavBadge": "{count, plural, one {# unread notification} other {# unread notifications}}",
+    "markAllRead": "Mark all as read",
+    "loadFailed": "Failed to load notifications",
+    "emptyTitle": "No notifications yet",
+    "emptyHint": "When people interact with you, you’ll see it here.",
+    "message": {
+      "like": "reacted to your post",
+      "comment": "commented on your post",
+      "repost": "reposted your post",
+      "connectionRequest": "sent you a connection request",
+      "connectionAccepted": "accepted your connection request",
+      "profileView": "viewed your profile"
+    }
+  },
+  "news": {
+    "title": "News",
+    "subtitle": "Top stories",
+    "add": "Add",
+    "titlePlaceholder": "Headline",
+    "summaryPlaceholder": "Short summary (optional)",
+    "bodyPlaceholder": "Full story (at least 40 characters)",
+    "urlPlaceholder": "Source link (optional)",
+    "cancel": "Cancel",
+    "publish": "Publish",
+    "publishFailed": "Could not publish the story. Please try again.",
+    "empty": "No stories yet. Admins can publish the first one.",
+    "readers": "{formatted} readers",
+    "eyebrow": "Network news",
+    "backToFeed": "Back to feed",
+    "viewSource": "View source",
+    "loadFailed": "Failed to load this story",
+    "contentUnavailable": "The full story is not available yet."
+  },
+  "hashtag": {
+    "trending": "Trending hashtags",
+    "postsCount": "{count, plural, one {# post} other {# posts}}",
+    "loadFailed": "Failed to load posts",
+    "emptyTitle": "No posts yet",
+    "emptyHint": "Be the first to post with this hashtag."
+  },
+  "saved": {
+    "title": "Saved posts",
+    "loadFailed": "Failed to load saved posts",
+    "emptyTitle": "No saved posts yet",
+    "emptyHint": "Tap the “…” menu on a post and choose Save to find it here later."
   }
 }

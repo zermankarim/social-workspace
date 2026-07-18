@@ -28,6 +28,10 @@ import { PostsService } from '../services/posts.service';
 import { PaginatedPostsByAuthorQueryDto } from '../dto/paginated-posts-by-author-query.dto';
 import { PaginatedPostsFeedQueryDto } from '../dto/paginated-posts-feed-query.dto';
 import { PaginatedPostsResponseDto } from '../dto/paginated-posts-response.dto';
+import { PostSearchQueryDto } from '../dto/post-search-query.dto';
+import { CreateRepostDto } from '../dto/create-repost.dto';
+import { RegisterImpressionsDto } from '../dto/register-impressions.dto';
+import { ImpressionsSummaryResponseDto } from '../dto/impressions-summary-response.dto';
 import { PaginatedResponseDto } from '../../shared/dto/paginated-response.dto';
 import { PostResponseDto } from '../dto/post.dto';
 import { CreatePostDto } from '../dto/create-post.dto';
@@ -74,6 +78,63 @@ export class PostsController {
     return this.postsService.getPostsByAuthorIdPaginated(query);
   }
 
+  @Get('search')
+  @ApiOperation({
+    summary: 'Search posts by text (paginated)',
+    description:
+      'Case-insensitive search over post text, newest first. ' +
+      'Empty `q` returns an empty page.',
+  })
+  @ApiOkResponse({ type: PaginatedPostsResponseDto })
+  @ApiBadRequestResponse({ description: 'Invalid query parameters (q, page)' })
+  searchPosts(
+    @Query() query: PostSearchQueryDto,
+  ): Promise<PaginatedResponseDto<PostResponseDto>> {
+    return this.postsService.searchPosts(query);
+  }
+
+  @Get('impressions/summary')
+  @ApiOperation({
+    summary: 'Total impressions across my posts',
+    description: 'Sums impressions of every post authored by the current user.',
+  })
+  @ApiOkResponse({ type: ImpressionsSummaryResponseDto })
+  @ApiUnauthorizedResponse({
+    description: 'Missing or invalid access_token cookie',
+  })
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('access_token')
+  async getImpressionsSummary(
+    @Req() req: RequestWithJwtPayload,
+  ): Promise<ImpressionsSummaryResponseDto> {
+    const impressionsCount = await this.postsService.getImpressionsSummary(
+      req.user.userId,
+    );
+    return { impressionsCount };
+  }
+
+  @Post('impressions')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Register post impressions',
+    description:
+      'Counts each (viewer, post) pair at most once and skips the ' +
+      "viewer's own posts. Called when post cards become visible.",
+  })
+  @ApiNoContentResponse({ description: 'Impressions registered' })
+  @ApiBadRequestResponse({ description: 'Invalid request body' })
+  @ApiUnauthorizedResponse({
+    description: 'Missing or invalid access_token cookie',
+  })
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('access_token')
+  registerImpressions(
+    @Req() req: RequestWithJwtPayload,
+    @Body() body: RegisterImpressionsDto,
+  ): Promise<void> {
+    return this.postsService.registerImpressions(req.user.userId, body.postIds);
+  }
+
   @Get(':id')
   @ApiOperation({
     summary: 'Get a post by id',
@@ -111,6 +172,29 @@ export class PostsController {
     @Body() body: CreatePostDto,
   ): Promise<PostResponseDto> {
     return this.postsService.createPost(req.user.userId, body);
+  }
+
+  @Post(':id/repost')
+  @ApiOperation({
+    summary: 'Repost a post (optionally with a quote)',
+    description:
+      'Creates a new post that references the original. Reposting a repost ' +
+      'references the underlying original. Add `textContent` for a quote repost.',
+  })
+  @ApiOkResponse({ type: PostResponseDto })
+  @ApiBadRequestResponse({ description: 'Invalid post id or request body' })
+  @ApiNotFoundResponse({ description: 'Post not found' })
+  @ApiUnauthorizedResponse({
+    description: 'Missing or invalid access_token cookie',
+  })
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('access_token')
+  createRepost(
+    @Req() req: RequestWithJwtPayload,
+    @Param('id', ParseUUIDPipe) postId: string,
+    @Body() body: CreateRepostDto,
+  ): Promise<PostResponseDto> {
+    return this.postsService.createRepost(req.user.userId, postId, body);
   }
 
   @Patch(':id')

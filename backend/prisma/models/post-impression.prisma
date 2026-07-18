@@ -1,0 +1,12 @@
+/// One impression per (viewer, post). Repeat visibility does not inflate counts.
+model PostImpression {
+  id        String   @id @default(uuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  viewerId  String
+  viewer    User     @relation(fields: [viewerId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([viewerId, postId])
+  @@index([postId])
+}

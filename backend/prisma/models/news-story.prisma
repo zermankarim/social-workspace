@@ -1,0 +1,15 @@
+/// Editorial "news" items shown in the feed right rail. Authored by admins;
+/// readersCount increments once per member when they open a story.
+model NewsStory {
+  id           String          @id @default(uuid())
+  title        String
+  summary      String?
+  body         String?
+  url          String?
+  readersCount Int             @default(0)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  reads        NewsStoryRead[]
+
+  @@index([createdAt])
+}

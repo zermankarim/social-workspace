@@ -32,4 +32,33 @@ export class PostService {
   delete(id: string): Promise<void> {
     return this.postRepository.delete(id);
   }
+
+  repost(id: string, textContent?: string): Promise<Post> {
+    return this.postRepository.repost(id, textContent);
+  }
+
+  save(id: string): Promise<void> {
+    return this.postRepository.save(id);
+  }
+
+  unsave(id: string): Promise<void> {
+    return this.postRepository.unsave(id);
+  }
+
+  getSaved(query: PostFeedQueryDto): Promise<PaginatedPosts> {
+    return this.postRepository.findSaved(query);
+  }
+
+  search(q: string, page = 1, limit = 20): Promise<PaginatedPosts> {
+    return this.postRepository.search(q, page, limit);
+  }
+
+  registerImpressions(postIds: string[]): Promise<void> {
+    if (postIds.length === 0) return Promise.resolve();
+    return this.postRepository.registerImpressions(postIds);
+  }
+
+  getImpressionsSummary(): Promise<number> {
+    return this.postRepository.getImpressionsSummary();
+  }
 }

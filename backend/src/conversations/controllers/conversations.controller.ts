@@ -1,12 +1,14 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
   ParseUUIDPipe,
   Post,
+  Put,
   Query,
   Req,
   UseGuards,
@@ -29,7 +31,11 @@ import {
   ConversationResponseDto,
   UnreadTotalResponseDto,
 } from '../dto/conversation.dto';
-import { MessageResponseDto, SendMessageDto } from '../dto/message.dto';
+import {
+  MessageResponseDto,
+  SendMessageDto,
+  SetMessageReactionDto,
+} from '../dto/message.dto';
 import { PaginatedConversationsQueryDto } from '../dto/paginated-conversations-query.dto';
 import { PaginatedConversationsResponseDto } from '../dto/paginated-conversations-response.dto';
 import { PaginatedMessagesQueryDto } from '../dto/paginated-messages-query.dto';
@@ -157,5 +163,44 @@ export class ConversationsController {
     @Body() dto: SendMessageDto,
   ): Promise<MessageResponseDto> {
     return this.conversationsService.sendMessage(req.user.userId, id, dto);
+  }
+
+  @Put(':id/messages/:messageId/reaction')
+  @ApiOperation({
+    summary: 'Set (or replace) my reaction on a message',
+  })
+  @ApiOkResponse({ type: MessageResponseDto })
+  @ApiBadRequestResponse()
+  @ApiNotFoundResponse()
+  @ApiForbiddenResponse()
+  setReaction(
+    @Req() req: RequestWithJwtPayload,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('messageId', ParseUUIDPipe) messageId: string,
+    @Body() dto: SetMessageReactionDto,
+  ): Promise<MessageResponseDto> {
+    return this.conversationsService.setReaction(
+      req.user.userId,
+      id,
+      messageId,
+      dto.emoji,
+    );
+  }
+
+  @Delete(':id/messages/:messageId/reaction')
+  @ApiOperation({ summary: 'Remove my reaction from a message' })
+  @ApiOkResponse({ type: MessageResponseDto })
+  @ApiNotFoundResponse()
+  @ApiForbiddenResponse()
+  removeReaction(
+    @Req() req: RequestWithJwtPayload,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('messageId', ParseUUIDPipe) messageId: string,
+  ): Promise<MessageResponseDto> {
+    return this.conversationsService.removeReaction(
+      req.user.userId,
+      id,
+      messageId,
+    );
   }
 }

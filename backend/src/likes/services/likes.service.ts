@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { NotificationType } from '@prisma/client';
 import { LikesRepository } from '../repositories/likes.repository';
 import { LikeResponseDto } from '../dto/like.dto';
 import { UpsertLikeDto } from '../dto/upsert-like.dto';
@@ -9,10 +10,14 @@ import {
   buildPaginationMeta,
   getPaginationParams,
 } from '../../shared/utils/pagination';
+import { NotificationsService } from '../../notifications/services/notifications.service';
 
 @Injectable()
 export class LikesService {
-  constructor(private readonly likesRepository: LikesRepository) {}
+  constructor(
+    private readonly likesRepository: LikesRepository,
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
   public async getLikesByPostIdPaginated(
     postId: string,
@@ -43,11 +48,19 @@ export class LikesService {
   ): Promise<LikeResponseDto> {
     await this.assertPostExists(postId);
 
-    const like = await this.likesRepository.upsertLike(
+    const { like, created } = await this.likesRepository.upsertLike(
       postId,
       authorId,
       dto.likeType,
     );
+
+    if (created) {
+      await this.notificationsService.notifyPostInteraction(
+        authorId,
+        postId,
+        NotificationType.POST_LIKE,
+      );
+    }
 
     return LikesMapper.toLikeResponseDto(like);
   }

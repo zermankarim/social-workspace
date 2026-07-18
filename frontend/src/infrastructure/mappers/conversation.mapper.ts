@@ -1,12 +1,14 @@
 import { ConversationMember } from "@/core/domain/entities/conversation-member.entity";
 import { Conversation } from "@/core/domain/entities/conversation.entity";
 import { MessageAttachment } from "@/core/domain/entities/message-attachment.entity";
+import { MessageReaction } from "@/core/domain/entities/message-reaction.entity";
 import { Message } from "@/core/domain/entities/message.entity";
 import { MessagingUser } from "@/core/domain/entities/messaging-user.entity";
 import type {
   ConversationMemberResponseDto,
   ConversationResponseDto,
   MessageAttachmentResponseDto,
+  MessageReactionResponseDto,
   MessageResponseDto,
   MessagingUserResponseDto,
 } from "@/infrastructure/api/dto/conversation-response.dto";
@@ -56,6 +58,15 @@ export class ConversationMapper {
     );
   }
 
+  static reactionFromApi(dto: MessageReactionResponseDto): MessageReaction {
+    return new MessageReaction(
+      dto.id,
+      dto.emoji,
+      dto.userId,
+      new Date(dto.createdAt),
+    );
+  }
+
   static messageFromApi(dto: MessageResponseDto): Message {
     return new Message(
       dto.id,
@@ -70,6 +81,7 @@ export class ConversationMapper {
       new Date(dto.createdAt),
       dto.editedAt ? new Date(dto.editedAt) : null,
       dto.deletedAt ? new Date(dto.deletedAt) : null,
+      (dto.reactions ?? []).map((reaction) => this.reactionFromApi(reaction)),
     );
   }
 }

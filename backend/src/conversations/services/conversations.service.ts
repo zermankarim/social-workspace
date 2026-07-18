@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Inject,
   Injectable,
@@ -29,6 +30,7 @@ import { UserPresenceDto } from '../dto/user-presence.dto';
 import {
   ConversationListSelected,
   ConversationSelected,
+  MessageSelected,
 } from '../conversations.select';
 
 @Injectable()
@@ -243,6 +245,76 @@ export class ConversationsService {
 
     this.messagingGateway.emitMessageCreated(
       conversationId,
+      response,
+      recipientUserIds,
+    );
+    return response;
+  }
+
+  async setReaction(
+    userId: string,
+    conversationId: string,
+    messageId: string,
+    emoji: string,
+  ): Promise<MessageResponseDto> {
+    const conversation = await this.getMembershipOrThrow(
+      userId,
+      conversationId,
+    );
+    await this.assertMessageInConversation(messageId, conversationId);
+
+    const updated = await this.conversationsRepository.setReaction(
+      messageId,
+      userId,
+      emoji,
+    );
+    return this.broadcastMessageUpdate(conversation, userId, updated);
+  }
+
+  async removeReaction(
+    userId: string,
+    conversationId: string,
+    messageId: string,
+  ): Promise<MessageResponseDto> {
+    const conversation = await this.getMembershipOrThrow(
+      userId,
+      conversationId,
+    );
+    await this.assertMessageInConversation(messageId, conversationId);
+
+    const updated = await this.conversationsRepository.removeReaction(
+      messageId,
+      userId,
+    );
+    return this.broadcastMessageUpdate(conversation, userId, updated);
+  }
+
+  private async assertMessageInConversation(
+    messageId: string,
+    conversationId: string,
+  ): Promise<void> {
+    const message =
+      await this.conversationsRepository.findMessageById(messageId);
+    if (!message || message.conversationId !== conversationId) {
+      throw new NotFoundException('Message not found in this conversation');
+    }
+    if (message.deletedAt != null) {
+      throw new BadRequestException('Cannot react to a deleted message');
+    }
+  }
+
+  private broadcastMessageUpdate(
+    conversation: ConversationSelected,
+    userId: string,
+    message: MessageSelected,
+  ): MessageResponseDto {
+    const response = ConversationsMapper.toMessageResponse(message);
+    const recipientUserIds = conversation.members
+      .map((member) => member.userId)
+      .filter((id) => id !== userId);
+
+    this.messagingGateway.emitMessageUpdated(
+      conversation.id,
       response,
       recipientUserIds,
     );

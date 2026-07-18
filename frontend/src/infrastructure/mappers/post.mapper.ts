@@ -29,12 +29,15 @@ export class PostMapper {
       dto.attachments.map((attachment) => this.attachmentFromApi(attachment)),
       dto.likesCount,
       dto.commentsCount,
+      dto.repostsCount ?? 0,
+      dto.impressionsCount ?? 0,
       (dto.previewLikes ?? []).map((like) => this.likeFromApi(like)),
       (dto.previewComments ?? []).map((comment) =>
         this.commentFromApi(comment),
       ),
       new Date(dto.createdAt),
       new Date(dto.updatedAt),
+      dto.repostOf ? this.fromApi(dto.repostOf) : null,
     );
   }
 

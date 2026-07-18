@@ -4,6 +4,7 @@ import {
 } from '../dto/conversation.dto';
 import {
   MessageAttachmentResponseDto,
+  MessageReactionResponseDto,
   MessageResponseDto,
 } from '../dto/message.dto';
 import { MessagingUserDto } from '../dto/messaging-user.dto';
@@ -12,6 +13,7 @@ import {
   ConversationMemberSelected,
   ConversationSelected,
   MessageAttachmentSelected,
+  MessageReactionSelected,
   MessageSelected,
   MessagingUserSelected,
 } from '../conversations.select';
@@ -77,6 +79,17 @@ export class ConversationsMapper {
     };
   }
 
+  static toReaction(
+    reaction: MessageReactionSelected,
+  ): MessageReactionResponseDto {
+    return {
+      id: reaction.id,
+      emoji: reaction.emoji,
+      userId: reaction.userId,
+      createdAt: reaction.createdAt,
+    };
+  }
+
   static toMessageResponse(message: MessageSelected): MessageResponseDto {
     return {
       id: message.id,
@@ -88,6 +101,7 @@ export class ConversationsMapper {
       nonce: message.nonce,
       keyVersion: message.keyVersion,
       attachments: message.attachments.map((item) => this.toAttachment(item)),
+      reactions: message.reactions.map((item) => this.toReaction(item)),
       createdAt: message.createdAt,
       editedAt: message.editedAt,
       deletedAt: message.deletedAt,

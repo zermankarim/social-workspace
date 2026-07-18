@@ -178,7 +178,7 @@ export function MessagingPage({ conversationId }: MessagingPageProps) {
 
   return (
     <>
-      <FeedCard className="h-[calc(100dvh-52px-3rem)] overflow-hidden">
+      <FeedCard className="h-[calc(100dvh-52px-3rem)] overflow-hidden md:h-[calc(100dvh-100px-3rem)] xl:h-[calc(100dvh-52px-3rem)]">
         <div className="grid h-full min-h-0 lg:grid-cols-[minmax(280px,360px)_1fr]">
           <aside
             className={`h-full min-h-0 border-border lg:border-r ${

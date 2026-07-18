@@ -24,4 +24,13 @@ export abstract class ConversationRepository {
     conversationId: string,
     input: SendMessageInput,
   ): Promise<Message>;
+  abstract setReaction(
+    conversationId: string,
+    messageId: string,
+    emoji: string,
+  ): Promise<Message>;
+  abstract removeReaction(
+    conversationId: string,
+    messageId: string,
+  ): Promise<Message>;
 }

@@ -129,6 +129,14 @@ export class MessagingSocketClient {
     };
   }
 
+  onMessageUpdated(handler: MessageCreatedHandler): () => void {
+    const socket = this.connect();
+    socket.on("message:updated", handler);
+    return () => {
+      socket.off("message:updated", handler);
+    };
+  }
+
   onConversationRead(handler: ConversationReadHandler): () => void {
     const socket = this.connect();
     socket.on("conversation:read", handler);
