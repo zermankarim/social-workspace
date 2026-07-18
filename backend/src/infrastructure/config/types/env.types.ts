@@ -23,8 +23,9 @@ export type AppEnv = {
     };
   };
   upload: {
-    dir: string;
-    publicUrl: string;
     maxFileSizeBytes: number;
+    supabaseUrl: string;
+    supabaseServiceRoleKey: string;
+    supabaseStorageBucket: string;
   };
 };

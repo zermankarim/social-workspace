@@ -53,9 +53,10 @@ export const envConfig = registerAs(
     },
 
     upload: {
-      dir: process.env.UPLOAD_DIR as string,
-      publicUrl: process.env.PUBLIC_URL as string,
       maxFileSizeBytes: Number(process.env.UPLOAD_MAX_FILE_SIZE_BYTES),
+      supabaseUrl: process.env.SUPABASE_URL as string,
+      supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY as string,
+      supabaseStorageBucket: process.env.SUPABASE_STORAGE_BUCKET as string,
     },
   }),
 );

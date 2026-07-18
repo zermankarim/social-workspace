@@ -48,6 +48,7 @@
     "@nestjs/swagger": "^11.4.4",
     "@nestjs/websockets": "^11.1.28",
     "@prisma/client": "^6.19.3",
+    "@supabase/supabase-js": "^2.109.0",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
@@ -60,7 +61,8 @@
     "prisma": "^6.19.3",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "socket.io": "^4.8.3"
+    "socket.io": "^4.8.3",
+    "ws": "^8.21.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -77,6 +79,7 @@
     "@types/node": "^24.0.0",
     "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "^7.0.0",
+    "@types/ws": "^8.18.1",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",

@@ -72,9 +72,14 @@ export const validationSchema = Joi.object({
     .integer()
     .required()
     .label('Refresh Cookie Max Age MS'),
-  PUBLIC_URL: Joi.string().uri().required().label('Public URL'),
-  UPLOAD_DIR: Joi.string().required().label('Upload Directory'),
   UPLOAD_MAX_FILE_SIZE_BYTES: Joi.number()
     .required()
     .label('Upload Max File Size Bytes'),
+  SUPABASE_URL: Joi.string().uri().required().label('Supabase URL'),
+  SUPABASE_SERVICE_ROLE_KEY: Joi.string()
+    .required()
+    .label('Supabase Service Role Key'),
+  SUPABASE_STORAGE_BUCKET: Joi.string()
+    .required()
+    .label('Supabase Storage Bucket'),
 });

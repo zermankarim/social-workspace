@@ -6,7 +6,6 @@ import cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppConfigService } from './infrastructure/config/services/config.service';
 import { CorsCallback, CorsOrigin } from './shared/validation/types/cors.types';
-import { join } from 'path';
 import { AppExceptionFilter } from './infrastructure/transport/filters/app-exception.filter';
 import { buildAllowedOrigins } from './shared/cors/allowed-origins';
 import { SocketIoAdapter } from './conversations/gateway/socket-io.adapter';
@@ -29,10 +28,6 @@ async function bootstrap() {
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup(`${apiPrefix}/docs`, app, swaggerDocument);
-
-  app.useStaticAssets(join(process.cwd(), appConfig.upload.dir), {
-    prefix: '/files',
-  });
 
   const port = appConfig.app.port ?? 3000;
 

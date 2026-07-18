@@ -1,38 +1,65 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { mkdirSync, writeFileSync } from 'fs';
-import { extname, join } from 'path';
+import {
+  Injectable,
+  InternalServerErrorException,
+  OnModuleInit,
+} from '@nestjs/common';
+import { createClient } from '@supabase/supabase-js';
+import { extname } from 'path';
 import { randomUUID } from 'crypto';
+import ws from 'ws';
 import { AppConfigService } from '../infrastructure/config/services/config.service';
 import { UploadResponseDto } from './dto/upload-response.dto';
 
+type SupabaseStorageClient = ReturnType<typeof createClient>;
+
 @Injectable()
 export class UploadService implements OnModuleInit {
-  private readonly uploadDir: string;
+  private supabase!: SupabaseStorageClient;
+  private bucket!: string;
 
-  constructor(private readonly envConfig: AppConfigService) {
-    this.uploadDir = join(process.cwd(), this.envConfig.upload.dir);
-  }
+  constructor(private readonly envConfig: AppConfigService) {}
 
   onModuleInit(): void {
-    mkdirSync(this.uploadDir, { recursive: true });
+    const { supabaseUrl, supabaseServiceRoleKey, supabaseStorageBucket } =
+      this.envConfig.upload;
+
+    // Node 20 has no global WebSocket; supabase-js Realtime needs `ws`.
+    this.supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+      realtime: {
+        transport: ws as unknown as typeof WebSocket,
+      },
+    });
+    this.bucket = supabaseStorageBucket;
   }
 
-  get filesPath(): string {
-    return this.uploadDir;
-  }
-
-  saveImage(file: Express.Multer.File): UploadResponseDto {
+  async saveImage(file: Express.Multer.File): Promise<UploadResponseDto> {
     const originalName = this.decodeOriginalFileName(file.originalname);
     const extension = extname(originalName).toLowerCase();
     const storedName = `${randomUUID()}${extension}`;
-    const storedPath = join(this.uploadDir, storedName);
 
-    writeFileSync(storedPath, file.buffer);
+    const { error } = await this.supabase.storage
+      .from(this.bucket)
+      .upload(storedName, file.buffer, {
+        contentType: file.mimetype,
+        upsert: false,
+      });
 
-    const publicBase = this.envConfig.upload.publicUrl.replace(/\/$/, '');
+    if (error) {
+      throw new InternalServerErrorException(
+        `Failed to upload file to storage: ${error.message}`,
+      );
+    }
+
+    const { data } = this.supabase.storage
+      .from(this.bucket)
+      .getPublicUrl(storedName);
 
     return {
-      url: `${publicBase}/files/${storedName}`,
+      url: data.publicUrl,
       fileName: originalName,
       mimeType: file.mimetype,
       sizeBytes: file.size,
