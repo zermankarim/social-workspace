@@ -7,7 +7,13 @@ import { useTranslations } from "next-intl";
 import { useHashtagSearch } from "@/presentation/hooks/use-hashtags";
 import { useUserSearch } from "@/presentation/hooks/use-user-search";
 
-export function HeaderSearch() {
+type HeaderSearchProps = {
+  className?: string;
+};
+
+export function HeaderSearch({
+  className = "relative hidden min-w-0 flex-1 md:block md:max-w-[280px]",
+}: HeaderSearchProps) {
   const t = useTranslations("common");
   const tSearch = useTranslations("search");
   const router = useRouter();
@@ -48,10 +54,7 @@ export function HeaderSearch() {
   };
 
   return (
-    <div
-      ref={containerRef}
-      className="relative hidden min-w-0 flex-1 md:block md:max-w-[280px]"
-    >
+    <div ref={containerRef} className={`relative ${className}`}>
       <form
         role="search"
         onSubmit={(event) => {

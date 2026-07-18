@@ -30,14 +30,11 @@ export function FeedPage() {
 
   return (
     <div className="grid items-start gap-2 lg:grid-cols-[225px_minmax(0,1fr)] xl:grid-cols-[225px_minmax(0,1fr)_300px]">
-      <div className="hidden lg:block">
+      <div className="sticky top-[60px] hidden self-start lg:block">
         <FeedLeftRail user={user} />
       </div>
 
       <div className="mx-auto w-full max-w-[552px] space-y-2 lg:mx-0 lg:max-w-none">
-        <div className="lg:hidden">
-          <FeedLeftRail user={user} />
-        </div>
         <PostComposer user={user} />
 
         <div className="flex items-center gap-2 px-1 py-1 text-xs text-muted">
@@ -92,7 +89,7 @@ export function FeedPage() {
         )}
       </div>
 
-      <div className="hidden xl:block">
+      <div className="sticky top-[60px] hidden self-start xl:block">
         <FeedRightRail />
       </div>
     </div>

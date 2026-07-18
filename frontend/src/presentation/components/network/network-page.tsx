@@ -423,29 +423,29 @@ export function NetworkPage() {
 
   return (
     <div className="grid items-start gap-2 lg:grid-cols-[225px_minmax(0,1fr)]">
-      <aside className="space-y-2">
+      <aside className="space-y-2 lg:sticky lg:top-[60px] lg:self-start">
         <FeedCard className="overflow-hidden px-0 py-0">
-          <div className="border-b border-border px-4 py-3">
+          <div className="hidden border-b border-border px-4 py-3 lg:block">
             <h1 className="text-base font-semibold text-foreground">
               {t("manageNetwork")}
             </h1>
           </div>
           <nav aria-label={t("manageNetwork")}>
-            <ul>
+            <ul className="flex gap-1 overflow-x-auto px-2 py-2 lg:block lg:overflow-visible lg:px-0 lg:py-0">
               {navItems.map((item) => {
                 const active = section === item.id;
                 return (
-                  <li key={item.id}>
+                  <li key={item.id} className="shrink-0 lg:shrink">
                     <button
                       type="button"
                       onClick={() => setSection(item.id)}
-                      className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition-colors ${
+                      className={`flex w-full items-center justify-between gap-3 rounded-full px-3 py-2 text-left text-sm transition-colors lg:rounded-none lg:px-4 lg:py-2.5 ${
                         active
-                          ? "border-l-2 border-primary bg-primary-soft/40 font-semibold text-primary"
-                          : "border-l-2 border-transparent text-foreground hover:bg-surface-muted"
+                          ? "bg-primary-soft font-semibold text-primary lg:border-l-2 lg:border-primary lg:bg-primary-soft/40"
+                          : "text-foreground hover:bg-surface-muted lg:border-l-2 lg:border-transparent"
                       }`}
                     >
-                      <span>{item.label}</span>
+                      <span className="whitespace-nowrap">{item.label}</span>
                       <span className="text-muted">{item.count}</span>
                     </button>
                   </li>
@@ -457,7 +457,7 @@ export function NetworkPage() {
       </aside>
 
       <div className="space-y-2">
-        <FeedCard className="px-4 py-4 sm:px-6">
+        <FeedCard className="px-3 py-4 sm:px-6">
           <div className="mb-4 flex items-center gap-2">
             <UserPlus className="h-5 w-5 text-primary" aria-hidden />
             <h2 className="text-lg font-semibold text-foreground">

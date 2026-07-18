@@ -178,8 +178,14 @@ export function MessagingPage({ conversationId }: MessagingPageProps) {
 
   return (
     <>
-      <FeedCard className="h-[calc(100dvh-52px-3rem)] overflow-hidden md:h-[calc(100dvh-100px-3rem)] xl:h-[calc(100dvh-52px-3rem)]">
-        <div className="grid h-full min-h-0 lg:grid-cols-[minmax(280px,360px)_1fr]">
+      <FeedCard
+        className={`overflow-hidden ${
+          conversationId
+            ? "h-[calc(100dvh-52px-1rem)] sm:h-[calc(100dvh-52px-2rem)] lg:h-[calc(100dvh-52px-3rem)]"
+            : "h-[calc(100dvh-52px-1rem-3.75rem-env(safe-area-inset-bottom))] sm:h-[calc(100dvh-52px-2rem-3.75rem-env(safe-area-inset-bottom))] lg:h-[calc(100dvh-52px-3rem)]"
+        }`}
+      >
+        <div className="grid h-full min-h-0 lg:grid-cols-[minmax(260px,340px)_1fr]">
           <aside
             className={`h-full min-h-0 border-border lg:border-r ${
               conversationId ? "hidden lg:block" : "block"

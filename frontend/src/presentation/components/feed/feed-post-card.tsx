@@ -379,7 +379,7 @@ export function FeedPostCard({
 
   return (
     <div ref={impressionRef}>
-      <FeedCard className="px-4 pt-3 pb-2">
+      <FeedCard className="px-3 pt-3 pb-2 sm:px-4">
         {post.isRepost ? (
           <div className="flex items-center gap-1.5 border-b border-border pb-2 text-xs text-muted">
             <Repeat2 className="h-3.5 w-3.5" aria-hidden />
@@ -615,7 +615,7 @@ export function FeedPostCard({
             previewLikes={post.previewLikes}
           />
 
-          <div className="-mx-1 flex items-center py-0.5">
+          <div className="-mx-1 flex items-center gap-0.5 py-0.5">
             <PostReactionButton
               myReaction={myReaction}
               count={likesCount}
@@ -629,7 +629,7 @@ export function FeedPostCard({
               aria-label={t("comments.action")}
               aria-pressed={commentsOpen}
               title={t("comments.action")}
-              className={`inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md px-2 py-2 text-sm font-semibold tabular-nums transition-colors hover:bg-surface-muted disabled:pointer-events-none disabled:opacity-50 ${
+              className={`inline-flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-md px-1 py-2 text-sm font-semibold tabular-nums transition-colors hover:bg-surface-muted disabled:pointer-events-none disabled:opacity-50 sm:gap-1.5 sm:px-2 ${
                 commentsOpen
                   ? "text-primary"
                   : "text-muted hover:text-foreground"
@@ -637,7 +637,7 @@ export function FeedPostCard({
               onClick={() => setCommentsOpen((open) => !open)}
             >
               <MessageCircle
-                className="h-[18px] w-[18px]"
+                className="h-[18px] w-[18px] shrink-0"
                 aria-hidden
                 fill={commentsOpen ? "currentColor" : "none"}
               />
@@ -652,10 +652,10 @@ export function FeedPostCard({
                 aria-label={t("repost")}
                 aria-expanded={repostMenuOpen}
                 title={t("repost")}
-                className="inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md px-2 py-2 text-sm font-semibold tabular-nums text-muted transition-colors hover:bg-surface-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
+                className="inline-flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-md px-1 py-2 text-sm font-semibold tabular-nums text-muted transition-colors hover:bg-surface-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50 sm:gap-1.5 sm:px-2"
                 onClick={() => setRepostMenuOpen((open) => !open)}
               >
-                <Repeat2 className="h-[18px] w-[18px]" aria-hidden />
+                <Repeat2 className="h-[18px] w-[18px] shrink-0" aria-hidden />
                 {post.repostsCount > 0 ? (
                   <span>{formatEngagementCount(post.repostsCount)}</span>
                 ) : null}
@@ -689,10 +689,10 @@ export function FeedPostCard({
               disabled={isEditing || isBusy}
               aria-label={t("send")}
               title={t("send")}
-              className="inline-flex flex-1 cursor-pointer items-center justify-center rounded-md px-2 py-2 text-muted transition-colors hover:bg-surface-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
+              className="inline-flex flex-1 cursor-pointer items-center justify-center rounded-md px-1 py-2 text-muted transition-colors hover:bg-surface-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50 sm:px-2"
               onClick={() => setShareOpen(true)}
             >
-              <Send className="h-[18px] w-[18px]" aria-hidden />
+              <Send className="h-[18px] w-[18px] shrink-0" aria-hidden />
             </button>
           </div>
         </div>

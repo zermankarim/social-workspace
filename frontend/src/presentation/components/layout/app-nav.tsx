@@ -26,6 +26,7 @@ function formatBadgeCount(count: number): string {
   return String(count);
 }
 
+/** Desktop / large-tablet primary navigation in the top header. */
 export function AppNav({ id, role, className = "", onNavigate }: AppNavProps) {
   const pathname = usePathname();
   const t = useTranslations("nav");
@@ -43,7 +44,7 @@ export function AppNav({ id, role, className = "", onNavigate }: AppNavProps) {
   return (
     <nav
       id={id}
-      className={`items-stretch justify-center gap-1 ${className}`}
+      className={`items-stretch justify-center gap-0.5 ${className}`}
       aria-label={t("main")}
     >
       {items.map((item, index) => {
@@ -55,13 +56,10 @@ export function AppNav({ id, role, className = "", onNavigate }: AppNavProps) {
           item.href === "/notifications" && unreadNotifications > 0;
 
         return (
-          <div
-            key={item.href}
-            className="flex min-w-0 items-stretch md:shrink-0"
-          >
+          <div key={item.href} className="flex shrink-0 items-stretch">
             {shouldShowNavDivider(items, index) ? (
               <div
-                className="mx-1 hidden w-px self-center bg-border sm:block"
+                className="mx-1 hidden w-px self-center bg-border xl:block"
                 aria-hidden
                 style={{ height: "1.5rem" }}
               />
@@ -69,11 +67,12 @@ export function AppNav({ id, role, className = "", onNavigate }: AppNavProps) {
             <Link
               href={item.href}
               onClick={onNavigate}
-              className={`relative flex min-h-12 w-full min-w-0 flex-col items-center justify-center gap-0.5 rounded-md px-2 py-1.5 text-[11px] transition-colors md:min-w-20 md:rounded-none ${
+              className={`relative flex min-w-[4.25rem] flex-col items-center justify-center gap-0.5 px-2 py-1.5 text-[11px] transition-colors xl:min-w-[5rem] ${
                 isActive
                   ? "font-semibold text-nav-active"
                   : "font-normal text-nav-foreground hover:text-nav-active"
               }`}
+              aria-current={isActive ? "page" : undefined}
               aria-label={
                 showPendingBadge
                   ? tNetwork("pendingNavBadge", { count: pending })
