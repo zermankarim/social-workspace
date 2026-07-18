@@ -3,7 +3,10 @@ import { fileURLToPath } from "node:url";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
-const apiUrl = process.env.API_URL ?? "http://localhost:8000";
+const apiUrl = (process.env.API_URL ?? "http://localhost:8000").replace(
+  /\/$/,
+  "",
+);
 const apiPath = (process.env.NEXT_PUBLIC_API_URL ?? "/api/v1").replace(
   /^\//,
   "",
