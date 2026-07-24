@@ -35,6 +35,8 @@ const repostOfSelect = {
 export const postSelect = {
   id: true,
   textContent: true,
+  status: true,
+  scheduledFor: true,
   createdAt: true,
   updatedAt: true,
   commentsCount: true,
@@ -45,6 +47,7 @@ export const postSelect = {
   author: { select: postAuthorSelect },
   repostOf: { select: repostOfSelect },
   comments: {
+    where: { parentId: null },
     take: POST_PREVIEW_COMMENTS,
     orderBy: { createdAt: 'desc' as const },
     select: commentSelect,

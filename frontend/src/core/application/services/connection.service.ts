@@ -40,4 +40,12 @@ export class ConnectionService {
   remove(id: string): Promise<void> {
     return this.connectionRepository.remove(id);
   }
+
+  block(userId: string): Promise<Connection> {
+    return this.connectionRepository.block(userId);
+  }
+
+  unblock(userId: string): Promise<void> {
+    return this.connectionRepository.unblock(userId);
+  }
 }

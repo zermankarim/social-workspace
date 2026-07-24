@@ -17,6 +17,7 @@ import { useTranslations } from "next-intl";
 import { ApiError } from "@/core/application/errors/api.error";
 import { isPeerDeviceMissingError } from "@/core/application/errors/peer-device-missing.error";
 import type { Message } from "@/core/domain/entities/message.entity";
+import type { UserDevice } from "@/core/domain/entities/user-device.entity";
 import type { UserDevicePublic } from "@/core/domain/entities/user-device-public.entity";
 import { appContainer } from "@/modules/app.container";
 import { MessageAttachmentsGallery } from "@/presentation/components/messaging/message-attachments-gallery";
@@ -32,7 +33,7 @@ import {
   useSendMessage,
 } from "@/presentation/hooks/use-conversations";
 import { useDecryptedMessageBody } from "@/presentation/hooks/use-decrypted-message";
-import { usePeerDevices } from "@/presentation/hooks/use-devices";
+import { useMyDevices, usePeerDevices } from "@/presentation/hooks/use-devices";
 import { useEmojiInsert } from "@/presentation/hooks/use-emoji-insert";
 import { useMessagingSocket } from "@/presentation/hooks/use-messaging-socket";
 import { getPastedImageFiles } from "@/presentation/lib/clipboard-images";
@@ -63,6 +64,7 @@ function MessageBubble({
   currentUserId,
   conversationId,
   peerDevices,
+  myDevices,
   peerLastReadAt,
 }: {
   message: Message;
@@ -70,6 +72,7 @@ function MessageBubble({
   currentUserId: string;
   conversationId: string;
   peerDevices: UserDevicePublic[] | undefined;
+  myDevices: UserDevice[] | undefined;
   peerLastReadAt: Date | null;
 }) {
   const t = useTranslations("messaging");
@@ -77,6 +80,7 @@ function MessageBubble({
     message,
     currentUserId,
     peerDevices,
+    myDevices,
   );
 
   let statusBody: string | null = null;
@@ -206,6 +210,7 @@ export function ConversationRoom({
   const peerMember = conversationQuery.data?.peerMember(currentUserId);
   const peerUserId = peer?.id ?? "";
   const peerDevicesQuery = usePeerDevices(peer?.id);
+  const myDevicesQuery = useMyDevices();
   const sendMessage = useSendMessage(conversationId, peerUserId);
   useMessagingSocket(conversationId);
 
@@ -438,6 +443,7 @@ export function ConversationRoom({
               currentUserId={currentUserId}
               conversationId={conversationId}
               peerDevices={peerDevicesQuery.data}
+              myDevices={myDevicesQuery.data}
               peerLastReadAt={peerMember?.lastReadAt ?? null}
             />
           ))
@@ -526,7 +532,7 @@ export function ConversationRoom({
               maxLength={MESSAGE_TEXT_MAX_LENGTH}
               placeholder={t("messagePlaceholder")}
               disabled={busy}
-              className="max-h-28 min-h-9 w-full resize-none bg-transparent px-1.5 py-2 text-sm leading-snug text-foreground outline-none placeholder:text-muted disabled:opacity-60"
+              className="max-h-28 min-h-9 w-full resize-none bg-transparent px-1.5 py-2 text-base leading-snug text-foreground outline-none placeholder:text-muted disabled:opacity-60"
               onPaste={(event) => {
                 const files = getPastedImageFiles(event.clipboardData);
                 if (!files) return;

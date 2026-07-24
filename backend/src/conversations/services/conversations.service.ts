@@ -218,15 +218,34 @@ export class ConversationsService {
       throw new ForbiddenException('Sender device not found for this user');
     }
 
+    // Defense in depth: a client must only fan out ciphertext to devices that
+    // actually belong to this conversation's members (itself or the peer).
+    const memberUserIds = conversation.members.map((member) => member.userId);
+    const validDeviceIds =
+      await this.conversationsRepository.findDeviceIdsForUsers(memberUserIds);
+    const targetsOutsideConversation = dto.recipientKeys.some(
+      (key) => !validDeviceIds.has(key.deviceId),
+    );
+    if (targetsOutsideConversation) {
+      throw new BadRequestException(
+        'recipientKeys must only target devices belonging to conversation members',
+      );
+    }
+
     const created = await this.conversationsRepository.createMessageAndTouch(
       conversationId,
       {
         conversation: { connect: { id: conversationId } },
         sender: { connect: { id: userId } },
         senderDevice: { connect: { id: dto.senderDeviceId } },
-        ciphertext: dto.ciphertext,
-        nonce: dto.nonce,
-        keyVersion: dto.keyVersion ?? 1,
+        recipientKeys: {
+          create: dto.recipientKeys.map((key) => ({
+            device: { connect: { id: key.deviceId } },
+            ciphertext: key.ciphertext,
+            nonce: key.nonce,
+            keyVersion: key.keyVersion ?? 1,
+          })),
+        },
         attachments: dto.attachments?.length
           ? {
               create: dto.attachments.map((attachment) => ({

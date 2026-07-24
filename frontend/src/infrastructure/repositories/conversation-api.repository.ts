@@ -97,10 +97,8 @@ export class ConversationApiRepository extends ConversationRepository {
     input: SendMessageInput,
   ): Promise<Message> {
     const body: SendMessageRequestDto = {
-      ciphertext: input.ciphertext,
-      nonce: input.nonce,
       senderDeviceId: input.senderDeviceId,
-      keyVersion: input.keyVersion,
+      recipientKeys: input.recipientKeys,
       attachments: input.attachments,
     };
     const response = await this.httpClient.request<MessageResponseDto>(

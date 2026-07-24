@@ -5,6 +5,7 @@ import {
 import {
   MessageAttachmentResponseDto,
   MessageReactionResponseDto,
+  MessageRecipientKeyResponseDto,
   MessageResponseDto,
 } from '../dto/message.dto';
 import { MessagingUserDto } from '../dto/messaging-user.dto';
@@ -14,6 +15,7 @@ import {
   ConversationSelected,
   MessageAttachmentSelected,
   MessageReactionSelected,
+  MessageRecipientKeySelected,
   MessageSelected,
   MessagingUserSelected,
 } from '../conversations.select';
@@ -90,6 +92,17 @@ export class ConversationsMapper {
     };
   }
 
+  static toRecipientKey(
+    key: MessageRecipientKeySelected,
+  ): MessageRecipientKeyResponseDto {
+    return {
+      deviceId: key.deviceId,
+      ciphertext: key.ciphertext,
+      nonce: key.nonce,
+      keyVersion: key.keyVersion,
+    };
+  }
+
   static toMessageResponse(message: MessageSelected): MessageResponseDto {
     return {
       id: message.id,
@@ -100,6 +113,9 @@ export class ConversationsMapper {
       ciphertext: message.ciphertext,
       nonce: message.nonce,
       keyVersion: message.keyVersion,
+      recipientKeys: message.recipientKeys.map((item) =>
+        this.toRecipientKey(item),
+      ),
       attachments: message.attachments.map((item) => this.toAttachment(item)),
       reactions: message.reactions.map((item) => this.toReaction(item)),
       createdAt: message.createdAt,

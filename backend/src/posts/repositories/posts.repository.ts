@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, PostStatus } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { postSelect, PostSelected } from '../post.select';
 
@@ -37,11 +37,56 @@ export class PostsRepository {
     skip: number,
     take: number,
   ): Promise<PostSelected[]> {
-    return this.findMany({ authorId }, skip, take);
+    return this.findMany(
+      { authorId, status: PostStatus.PUBLISHED },
+      skip,
+      take,
+    );
   }
 
   countByAuthorId(authorId: string): Promise<number> {
-    return this.count({ authorId });
+    return this.count({ authorId, status: PostStatus.PUBLISHED });
+  }
+
+  findManyUnpublishedByAuthorId(
+    authorId: string,
+    skip: number,
+    take: number,
+  ): Promise<PostSelected[]> {
+    return this.prisma.post.findMany({
+      where: {
+        authorId,
+        status: { in: [PostStatus.DRAFT, PostStatus.SCHEDULED] },
+      },
+      select: postSelect,
+      orderBy: [{ scheduledFor: 'asc' }, { createdAt: 'desc' }],
+      skip,
+      take,
+    });
+  }
+
+  countUnpublishedByAuthorId(authorId: string): Promise<number> {
+    return this.prisma.post.count({
+      where: {
+        authorId,
+        status: { in: [PostStatus.DRAFT, PostStatus.SCHEDULED] },
+      },
+    });
+  }
+
+  findDueScheduledPosts(now: Date): Promise<PostSelected[]> {
+    return this.prisma.post.findMany({
+      where: { status: PostStatus.SCHEDULED, scheduledFor: { lte: now } },
+      select: postSelect,
+    });
+  }
+
+  publishPost(id: string): Promise<PostSelected> {
+    return this.prisma.post.update({
+      where: { id },
+      data: { status: PostStatus.PUBLISHED, scheduledFor: null },
+      select: postSelect,
+    });
   }
 
   createPost(data: Prisma.PostCreateInput): Promise<PostSelected> {

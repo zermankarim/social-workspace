@@ -33,13 +33,17 @@ model Message {
   senderDeviceId String?
   senderDevice   UserDevice?  @relation(fields: [senderDeviceId], references: [id], onDelete: SetNull)
 
-  /// Encrypted payload (e.g. JSON: { text, attachmentMeta[] }) base64
-  ciphertext String
-  nonce      String
-  keyVersion Int    @default(1)
+  /// Legacy single-target payload (base64). Null on messages created after the
+  /// per-device fan-out migration — those live entirely in `recipientKeys`.
+  ciphertext String?
+  nonce      String?
+  keyVersion Int      @default(1)
 
-  attachments MessageAttachment[]
-  reactions   MessageReaction[]
+  /// One encrypted copy per target device (every device of both conversation
+  /// members), so any of them can decrypt regardless of who was online at send time.
+  recipientKeys MessageRecipientKey[]
+  attachments   MessageAttachment[]
+  reactions     MessageReaction[]
 
   createdAt DateTime  @default(now())
   editedAt  DateTime?
@@ -48,6 +52,25 @@ model Message {
   @@index([conversationId, createdAt])
   @@index([senderId])
   @@index([senderDeviceId])
+}
+
+/// Per-device fan-out of a message's encrypted payload — one row per target
+/// UserDevice (all of the recipient's devices + all of the sender's own other
+/// devices), so multi-device users can always decrypt regardless of which
+/// device was "most recently seen" at send time.
+model MessageRecipientKey {
+  id         String     @id @default(uuid())
+  messageId  String
+  message    Message    @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  deviceId   String
+  device     UserDevice @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  ciphertext String
+  nonce      String
+  keyVersion Int        @default(1)
+  createdAt  DateTime   @default(now())
+
+  @@unique([messageId, deviceId])
+  @@index([deviceId])
 }
 
 model MessageAttachment {
@@ -74,6 +97,7 @@ model UserDevice {
   createdAt       DateTime  @default(now())
   lastSeenAt      DateTime  @default(now())
   messages        Message[]
+  recipientKeys   MessageRecipientKey[]
 
   @@unique([userId, deviceId])
   @@index([userId])

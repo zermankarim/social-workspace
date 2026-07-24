@@ -64,6 +64,8 @@ export class PostApiRepository extends PostRepository {
         mimeType: attachment.mimeType,
         sizeBytes: attachment.sizeBytes,
       })),
+      status: dto.status,
+      scheduledFor: dto.scheduledFor,
     };
 
     const response = await this.httpClient.request<PostResponseDto>("/posts", {
@@ -83,6 +85,8 @@ export class PostApiRepository extends PostRepository {
         mimeType: attachment.mimeType,
         sizeBytes: attachment.sizeBytes,
       })),
+      status: dto.status,
+      scheduledFor: dto.scheduledFor,
     };
 
     const response = await this.httpClient.request<PostResponseDto>(

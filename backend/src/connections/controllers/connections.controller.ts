@@ -154,6 +154,36 @@ export class ConnectionsController {
     return this.connectionsService.rejectConnection(req.user.userId, id);
   }
 
+  @Post('block/:userId')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Block a user',
+    description:
+      'Replaces any existing connection between the two users with a BLOCKED one. ' +
+      'A blocked user cannot send connection requests or message the blocker.',
+  })
+  @ApiCreatedResponse({ type: ConnectionResponseDto })
+  @ApiBadRequestResponse({ description: 'Cannot block yourself' })
+  @ApiNotFoundResponse({ description: 'User not found' })
+  blockUser(
+    @Req() req: RequestWithJwtPayload,
+    @Param('userId', ParseUUIDPipe) userId: string,
+  ): Promise<ConnectionResponseDto> {
+    return this.connectionsService.blockUser(req.user.userId, userId);
+  }
+
+  @Delete('block/:userId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Unblock a user' })
+  @ApiNoContentResponse({ description: 'Unblocked' })
+  @ApiNotFoundResponse({ description: 'You have not blocked this user' })
+  unblockUser(
+    @Req() req: RequestWithJwtPayload,
+    @Param('userId', ParseUUIDPipe) userId: string,
+  ): Promise<void> {
+    return this.connectionsService.unblockUser(req.user.userId, userId);
+  }
+
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({

@@ -51,3 +51,34 @@ export class SignupDto extends AuthDto {
   @Type(() => LocationInputDto)
   public location?: LocationInputDto;
 }
+
+export class MessageResponseDto {
+  @ApiProperty()
+  public message: string;
+}
+
+export class ForgotPasswordDto {
+  @ApiProperty({ example: 'someemail@gmail.com' })
+  @IsNotEmpty()
+  @IsString()
+  @IsEmail()
+  public email: string;
+}
+
+export class ResetPasswordDto {
+  @ApiProperty({ description: 'Raw token from the reset-password email link' })
+  @IsNotEmpty()
+  @IsString()
+  public token: string;
+
+  @ApiProperty({
+    example: 'newSecurePassword123',
+    minimum: 8,
+    maximum: 20,
+    description: 'Password must be between 8 and 20 chars',
+  })
+  @IsNotEmpty()
+  @IsString()
+  @Length(8, 20, { message: 'Password must be between 8 and 20 chars' })
+  public newPassword: string;
+}

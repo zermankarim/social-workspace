@@ -11,12 +11,19 @@ import { Response } from 'express';
 import { UserMapper } from '../../users/mappers/user.mapper';
 import { clearAuthCookies, setAuthCookies } from '../utils/cookie';
 import { JwtPayload } from '../types/jwt-payload';
-import { SessionService } from './session.service';
-import { randomUUID } from 'crypto';
+import { SessionService, hashToken } from './session.service';
+import { randomBytes, randomUUID } from 'crypto';
 import { AppConfigService } from '../../infrastructure/config/services/config.service';
-import { SignupDto } from '../dto/auth.dto';
+import {
+  ForgotPasswordDto,
+  ResetPasswordDto,
+  SignupDto,
+} from '../dto/auth.dto';
 import { Prisma, ProfileRole } from '@prisma/client';
 import { userPublicSelect } from '../../users/user.select';
+import { MailService } from '../../mail/services/mail.service';
+
+const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
 
 @Injectable()
 export class AuthService {
@@ -25,6 +32,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly sessionService: SessionService,
     private readonly envConfig: AppConfigService,
+    private readonly mailService: MailService,
   ) {}
 
   async signup(dto: SignupDto) {
@@ -113,6 +121,66 @@ export class AuthService {
 
     clearAuthCookies(res, this.envConfig.cookies);
     return { message: 'Logged out' };
+  }
+
+  /** Always returns a generic message — never reveals whether the email exists. */
+  async requestPasswordReset(
+    dto: ForgotPasswordDto,
+  ): Promise<{ message: string }> {
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+      select: { id: true, email: true, firstName: true },
+    });
+
+    if (user) {
+      const rawToken = randomBytes(32).toString('hex');
+      await this.prisma.passwordResetToken.create({
+        data: {
+          userId: user.id,
+          tokenHash: hashToken(rawToken),
+          expiresAt: new Date(Date.now() + PASSWORD_RESET_TTL_MS),
+        },
+      });
+
+      const resetUrl = `${this.envConfig.url.front}/reset-password?token=${rawToken}`;
+      await this.mailService.send(
+        user.email,
+        'Reset your password',
+        `<p>Hi ${user.firstName},</p>` +
+          `<p>Click the link below to reset your password. This link expires in 1 hour and can be used once.</p>` +
+          `<p><a href="${resetUrl}">${resetUrl}</a></p>` +
+          `<p>If you didn't request this, you can safely ignore this email.</p>`,
+      );
+    }
+
+    return { message: 'If that email exists, a reset link has been sent.' };
+  }
+
+  async resetPassword(dto: ResetPasswordDto): Promise<{ message: string }> {
+    const record = await this.prisma.passwordResetToken.findUnique({
+      where: { tokenHash: hashToken(dto.token) },
+    });
+
+    if (!record || record.usedAt || record.expiresAt < new Date()) {
+      throw new BadRequestException('Invalid or expired reset link');
+    }
+
+    const passwordHash = await bcrypt.hash(dto.newPassword, 10);
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: record.userId },
+        data: { passwordHash },
+      }),
+      this.prisma.passwordResetToken.update({
+        where: { id: record.id },
+        data: { usedAt: new Date() },
+      }),
+    ]);
+
+    // Force re-authentication everywhere after a password reset.
+    await this.sessionService.revokeAllUserSessions(record.userId);
+
+    return { message: 'Password has been reset. Please sign in.' };
   }
 
   private issueTokens(payload: JwtPayload) {

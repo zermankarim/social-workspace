@@ -1,0 +1,17 @@
+/// Minimal job board: post a listing, browse, apply via an external link.
+/// No applications/ATS tracking in v1 — `applyUrl` is where candidates go.
+model Job {
+  id          String   @id @default(uuid())
+  posterId    String
+  poster      User     @relation(fields: [posterId], references: [id], onDelete: Cascade)
+  title       String
+  companyName String
+  location    String?
+  description String
+  applyUrl    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([posterId])
+}

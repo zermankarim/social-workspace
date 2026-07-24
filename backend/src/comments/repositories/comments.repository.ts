@@ -26,7 +26,7 @@ export class CommentsRepository {
     take: number,
   ): Promise<CommentSelected[]> {
     return this.prisma.postComment.findMany({
-      where: { postId },
+      where: { postId, parentId: null },
       select: commentSelect,
       orderBy: { createdAt: 'desc' },
       skip,
@@ -35,7 +35,19 @@ export class CommentsRepository {
   }
 
   countByPostId(postId: string): Promise<number> {
-    return this.prisma.postComment.count({ where: { postId } });
+    return this.prisma.postComment.count({ where: { postId, parentId: null } });
+  }
+
+  findParentForReply(parentId: string): Promise<{
+    id: string;
+    postId: string;
+    parentId: string | null;
+    authorId: string;
+  } | null> {
+    return this.prisma.postComment.findUnique({
+      where: { id: parentId },
+      select: { id: true, postId: true, parentId: true, authorId: true },
+    });
   }
 
   async createComment(
@@ -44,6 +56,7 @@ export class CommentsRepository {
     data: {
       textContent?: string | null;
       attachments?: Prisma.PostCommentAttachmentCreateWithoutCommentInput[];
+      parentId?: string | null;
     },
   ): Promise<CommentSelected> {
     const [comment] = await this.prisma.$transaction([
@@ -54,6 +67,9 @@ export class CommentsRepository {
           textContent: data.textContent,
           attachments: data.attachments?.length
             ? { create: data.attachments }
+            : undefined,
+          parent: data.parentId
+            ? { connect: { id: data.parentId } }
             : undefined,
         },
         select: commentSelect,
@@ -79,11 +95,15 @@ export class CommentsRepository {
   }
 
   async deleteCommentById(commentId: string, postId: string): Promise<void> {
+    // Replies cascade-delete in the DB; count them first so commentsCount stays accurate.
+    const repliesCount = await this.prisma.postComment.count({
+      where: { parentId: commentId },
+    });
     await this.prisma.$transaction([
       this.prisma.postComment.delete({ where: { id: commentId } }),
       this.prisma.post.update({
         where: { id: postId },
-        data: { commentsCount: { decrement: 1 } },
+        data: { commentsCount: { decrement: 1 + repliesCount } },
       }),
     ]);
   }

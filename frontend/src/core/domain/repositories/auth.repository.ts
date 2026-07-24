@@ -7,4 +7,6 @@ export abstract class AuthRepository {
   abstract signin(credentials: AuthCredentials): Promise<User>;
   abstract signout(): Promise<void>;
   abstract refresh(): Promise<User>;
+  abstract forgotPassword(email: string): Promise<string>;
+  abstract resetPassword(token: string, newPassword: string): Promise<string>;
 }

@@ -13,6 +13,8 @@ import { ProfileLanguagesSection } from "@/presentation/components/profile/profi
 import { ProfileSkillsSection } from "@/presentation/components/profile/profile-skills-section";
 import { FeedCard } from "@/presentation/components/feed/feed-card";
 import { ProfileConnectActions } from "@/presentation/components/network/profile-connect-actions";
+import { ProfileDevicesSection } from "@/presentation/components/profile/profile-devices-section";
+import { GamificationWidget } from "@/presentation/components/profile/gamification-widget";
 import { LocaleSwitcher } from "@/presentation/components/ui/locale-switcher";
 import {
   useMyProfile,
@@ -132,12 +134,16 @@ export function ProfilePage({ userId }: ProfilePageProps) {
               </div>
             </FeedCard>
           ) : null}
-          <FeedCard className="hidden px-4 py-4 lg:block">
-            <h2 className="text-sm font-semibold text-foreground">
-              {t("profileInsights")}
-            </h2>
-            <p className="mt-2 text-xs text-muted">{t("insightsComingSoon")}</p>
-          </FeedCard>
+          {canEdit ? (
+            <FeedCard className="px-4 py-4">
+              <ProfileDevicesSection />
+            </FeedCard>
+          ) : null}
+          {canEdit ? (
+            <FeedCard className="px-4 py-4">
+              <GamificationWidget />
+            </FeedCard>
+          ) : null}
         </aside>
       </div>
 

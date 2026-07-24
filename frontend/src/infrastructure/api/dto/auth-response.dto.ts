@@ -45,3 +45,7 @@ export interface RefreshResponseDto {
 export interface UserByIdResponseDto {
   user: UserResponseDto;
 }
+
+export interface MessageResponseDto {
+  message: string;
+}

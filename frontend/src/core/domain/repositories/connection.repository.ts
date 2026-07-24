@@ -23,4 +23,6 @@ export abstract class ConnectionRepository {
   abstract accept(id: string): Promise<Connection>;
   abstract reject(id: string): Promise<Connection>;
   abstract remove(id: string): Promise<void>;
+  abstract block(userId: string): Promise<Connection>;
+  abstract unblock(userId: string): Promise<void>;
 }

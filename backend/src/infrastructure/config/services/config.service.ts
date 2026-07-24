@@ -33,4 +33,8 @@ export class AppConfigService {
   get upload(): AppEnv['upload'] {
     return this.config.getOrThrow<AppEnv['upload']>('env.upload');
   }
+
+  get mail(): AppEnv['mail'] {
+    return this.config.getOrThrow<AppEnv['mail']>('env.mail');
+  }
 }

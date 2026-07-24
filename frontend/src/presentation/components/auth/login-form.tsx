@@ -50,6 +50,15 @@ export function LoginForm() {
         {...register("password")}
       />
 
+      <p className="-mt-2 text-right text-sm">
+        <Link
+          href="/forgot-password"
+          className="font-medium text-primary hover:underline"
+        >
+          {t("forgotPasswordLink")}
+        </Link>
+      </p>
+
       {errorMessage ? (
         <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">
           {errorMessage}

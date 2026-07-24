@@ -3,6 +3,7 @@ import type { AuthCredentials } from "@/core/domain/value-objects/auth-credentia
 import type { SignupData } from "@/core/domain/value-objects/signup-data.vo";
 import { AuthRepository } from "@/core/domain/repositories/auth.repository";
 import type {
+  MessageResponseDto,
   RefreshResponseDto,
   SigninResponseDto,
   SignupResponseDto,
@@ -71,5 +72,21 @@ export class AuthApiRepository extends AuthRepository {
       },
     );
     return UserMapper.fromApi(response.user);
+  }
+
+  async forgotPassword(email: string): Promise<string> {
+    const response = await this.httpClient.request<MessageResponseDto>(
+      "/auth/forgot-password",
+      { method: "POST", body: { email }, skipRefresh: true },
+    );
+    return response.message;
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<string> {
+    const response = await this.httpClient.request<MessageResponseDto>(
+      "/auth/reset-password",
+      { method: "POST", body: { token, newPassword }, skipRefresh: true },
+    );
+    return response.message;
   }
 }

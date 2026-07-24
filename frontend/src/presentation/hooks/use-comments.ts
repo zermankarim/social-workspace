@@ -63,12 +63,14 @@ export function useCreateComment(postId: string) {
     mutationFn: (input: {
       textContent?: string;
       attachments?: CommentAttachmentInput[];
+      parentId?: string;
     }) =>
       appContainer.commentService.create(
         postId,
         new CreateCommentDto(
           input.textContent,
           toAttachmentDtos(input.attachments),
+          input.parentId,
         ),
       ),
     onSuccess: () => {

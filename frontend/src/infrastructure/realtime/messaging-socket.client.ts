@@ -1,5 +1,6 @@
 import { io, type Socket } from "socket.io-client";
 import type { MessageResponseDto } from "@/infrastructure/api/dto/conversation-response.dto";
+import type { NotificationResponseDto } from "@/infrastructure/api/dto/notification-response.dto";
 import { WsConfig } from "@/infrastructure/config/ws.config";
 
 export type ConversationReadPayload = {
@@ -19,6 +20,9 @@ export type ConversationReadHandler = (
   payload: ConversationReadPayload,
 ) => void;
 export type UserPresenceHandler = (payload: UserPresencePayload) => void;
+export type NotificationCreatedHandler = (
+  notification: NotificationResponseDto,
+) => void;
 
 /**
  * Singleton Socket.IO client for `/ws`. Auth via access_token cookie
@@ -150,6 +154,14 @@ export class MessagingSocketClient {
     socket.on("user:presence", handler);
     return () => {
       socket.off("user:presence", handler);
+    };
+  }
+
+  onNotificationCreated(handler: NotificationCreatedHandler): () => void {
+    const socket = this.connect();
+    socket.on("notification:created", handler);
+    return () => {
+      socket.off("notification:created", handler);
     };
   }
 }

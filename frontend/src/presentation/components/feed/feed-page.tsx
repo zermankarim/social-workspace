@@ -6,6 +6,7 @@ import { ApiError } from "@/core/application/errors/api.error";
 import { FeedLeftRail } from "@/presentation/components/feed/feed-left-rail";
 import { FeedPostCard } from "@/presentation/components/feed/feed-post-card";
 import { FeedRightRail } from "@/presentation/components/feed/feed-right-rail";
+import { OnboardingChecklist } from "@/presentation/components/feed/onboarding-checklist";
 import { PostComposer } from "@/presentation/components/feed/post-composer";
 import { Button } from "@/presentation/components/ui/button";
 import { useFeedPosts } from "@/presentation/hooks/use-posts";
@@ -35,6 +36,7 @@ export function FeedPage() {
       </div>
 
       <div className="mx-auto w-full max-w-[552px] space-y-2 lg:mx-0 lg:max-w-none">
+        <OnboardingChecklist />
         <PostComposer user={user} />
 
         <div className="flex items-center gap-2 px-1 py-1 text-xs text-muted">

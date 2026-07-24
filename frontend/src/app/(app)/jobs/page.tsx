@@ -1,12 +1,5 @@
-import { Briefcase } from "lucide-react";
-import { ComingSoonPage } from "@/presentation/components/placeholders/coming-soon-page";
+import { JobsPage as JobsPageComponent } from "@/presentation/components/jobs/jobs-page";
 
 export default function JobsPage() {
-  return (
-    <ComingSoonPage
-      title="Jobs"
-      description="Job recommendations and applications will show up here."
-      icon={Briefcase}
-    />
-  );
+  return <JobsPageComponent />;
 }

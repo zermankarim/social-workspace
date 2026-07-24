@@ -70,19 +70,32 @@ export function SharePostDialog({ post, onClose }: SharePostDialogProps) {
 
   const sendEncrypted = async (conversationId: string, peerUserId: string) => {
     const senderDeviceId = await ensureRegisteredDeviceId();
-    const peerDevices =
-      await appContainer.deviceService.getPublicByUserId(peerUserId);
-    const peerDevice = peerDevices[0];
-    if (!peerDevice) throw new PeerDeviceMissingError();
-    const encrypted = await MessagingCrypto.encryptForPeerDevice(
-      shareText,
-      peerDevice,
+    // Fan out to every device of both conversation members (see useSendMessage).
+    const [peerDevices, myDevices] = await Promise.all([
+      appContainer.deviceService.getPublicByUserId(peerUserId),
+      appContainer.deviceService.getMine(),
+    ]);
+    const targetDevices = [...peerDevices, ...myDevices];
+    if (targetDevices.length === 0) throw new PeerDeviceMissingError();
+
+    const recipientKeys = await Promise.all(
+      targetDevices.map(async (device) => {
+        const encrypted = await MessagingCrypto.encryptForPeerDevice(
+          shareText,
+          device,
+        );
+        return {
+          deviceId: device.id,
+          ciphertext: encrypted.ciphertext,
+          nonce: encrypted.nonce,
+          keyVersion: encrypted.keyVersion,
+        };
+      }),
     );
+
     await appContainer.conversationService.sendMessage(conversationId, {
-      ciphertext: encrypted.ciphertext,
-      nonce: encrypted.nonce,
       senderDeviceId,
-      keyVersion: encrypted.keyVersion,
+      recipientKeys,
     });
   };
 

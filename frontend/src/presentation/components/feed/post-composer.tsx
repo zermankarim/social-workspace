@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { Image as ImageIcon, Loader2, X } from "lucide-react";
+import { Clock, Image as ImageIcon, Loader2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ApiError } from "@/core/application/errors/api.error";
 import type { User } from "@/core/domain/entities/user.entity";
+import { PostStatus } from "@/core/domain/enums/post-status.enum";
 import { appContainer } from "@/modules/app.container";
 import { FeedCard } from "@/presentation/components/feed/feed-card";
 import { PostAttachmentsEditor } from "@/presentation/components/feed/post-attachments-editor";
@@ -76,6 +77,8 @@ export function PostComposer({ user }: PostComposerProps) {
   const [attachments, setAttachments] = useState<PendingAttachment[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [scheduledFor, setScheduledFor] = useState("");
+  const [showSchedulePicker, setShowSchedulePicker] = useState(false);
   const openWithMediaRef = useRef(false);
 
   const isBusy = createPost.isPending || isUploading;
@@ -103,6 +106,8 @@ export function PostComposer({ user }: PostComposerProps) {
     clearAttachments();
     setError(null);
     setIsOpen(false);
+    setScheduledFor("");
+    setShowSchedulePicker(false);
     openWithMediaRef.current = false;
   };
 
@@ -219,8 +224,14 @@ export function PostComposer({ user }: PostComposerProps) {
     setAttachments((current) => moveArrayItem(current, fromIndex, toIndex));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (status?: PostStatus) => {
     if (!canSubmit) return;
+    const effectiveStatus =
+      status ?? (scheduledFor ? PostStatus.SCHEDULED : undefined);
+    if (effectiveStatus === PostStatus.SCHEDULED && !scheduledFor) {
+      setError(t("scheduleRequired"));
+      return;
+    }
 
     setError(null);
     try {
@@ -234,6 +245,11 @@ export function PostComposer({ user }: PostComposerProps) {
                 mimeType: attachment.mimeType,
                 sizeBytes: attachment.sizeBytes,
               }))
+            : undefined,
+        status: effectiveStatus,
+        scheduledFor:
+          effectiveStatus === PostStatus.SCHEDULED
+            ? new Date(scheduledFor).toISOString()
             : undefined,
       });
       reset();
@@ -347,6 +363,30 @@ export function PostComposer({ user }: PostComposerProps) {
                 </div>
               ) : null}
 
+              {showSchedulePicker ? (
+                <div className="mt-3 flex items-center gap-2">
+                  <Clock className="h-4 w-4 shrink-0 text-muted" aria-hidden />
+                  <input
+                    type="datetime-local"
+                    value={scheduledFor}
+                    disabled={isBusy}
+                    onChange={(event) => setScheduledFor(event.target.value)}
+                    className="rounded-md border border-border-strong bg-surface px-2 py-1.5 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  />
+                  <button
+                    type="button"
+                    disabled={isBusy}
+                    onClick={() => {
+                      setShowSchedulePicker(false);
+                      setScheduledFor("");
+                    }}
+                    className="text-xs font-semibold text-muted hover:text-foreground disabled:opacity-50"
+                  >
+                    {tCommon("cancel")}
+                  </button>
+                </div>
+              ) : null}
+
               {error ? (
                 <p className="mt-3 text-sm text-danger">{error}</p>
               ) : null}
@@ -386,6 +426,20 @@ export function PostComposer({ user }: PostComposerProps) {
                   {tCommon("media")}
                 </Button>
                 <EmojiPickerButton disabled={isBusy} onSelect={insertEmoji} />
+                <button
+                  type="button"
+                  disabled={isBusy}
+                  onClick={() => setShowSchedulePicker((current) => !current)}
+                  aria-label={t("schedulePost")}
+                  aria-pressed={showSchedulePicker}
+                  className={`inline-flex cursor-pointer items-center justify-center rounded-md p-2 transition-colors hover:bg-surface-muted disabled:pointer-events-none disabled:opacity-50 ${
+                    showSchedulePicker
+                      ? "text-primary"
+                      : "text-muted hover:text-foreground"
+                  }`}
+                >
+                  <Clock className="h-5 w-5" aria-hidden />
+                </button>
                 {showCharCount ? (
                   <span className="ml-1 text-xs text-muted">
                     {text.length}/{POST_TEXT_MAX_LENGTH}
@@ -393,17 +447,28 @@ export function PostComposer({ user }: PostComposerProps) {
                 ) : null}
               </div>
 
-              <Button
-                type="button"
-                disabled={!canSubmit}
-                onClick={() => void handleSubmit()}
-                className="min-w-[88px] gap-1.5"
-              >
-                {createPost.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                ) : null}
-                {tCommon("post")}
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={!canSubmit}
+                  onClick={() => void handleSubmit(PostStatus.DRAFT)}
+                  className="gap-1.5 text-xs font-semibold"
+                >
+                  {tCommon("saveDraft")}
+                </Button>
+                <Button
+                  type="button"
+                  disabled={!canSubmit}
+                  onClick={() => void handleSubmit()}
+                  className="min-w-[88px] gap-1.5"
+                >
+                  {createPost.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                  ) : null}
+                  {scheduledFor ? t("schedulePost") : tCommon("post")}
+                </Button>
+              </div>
             </div>
           </div>
         </div>

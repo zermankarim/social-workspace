@@ -2,6 +2,7 @@ import type { PostAttachment } from "@/core/domain/entities/post-attachment.enti
 import type { PostAuthor } from "@/core/domain/entities/post-author.entity";
 import type { PostComment } from "@/core/domain/entities/post-comment.entity";
 import type { PostLike } from "@/core/domain/entities/post-like.entity";
+import { PostStatus } from "@/core/domain/enums/post-status.enum";
 
 export class Post {
   constructor(
@@ -19,10 +20,20 @@ export class Post {
     public readonly updatedAt: Date,
     /** Original post when this entry is a repost (optional quote in textContent). */
     public readonly repostOf: Post | null = null,
+    public readonly status: PostStatus = PostStatus.PUBLISHED,
+    public readonly scheduledFor: Date | null = null,
   ) {}
 
   isAuthoredBy(userId: string): boolean {
     return this.author.id === userId;
+  }
+
+  get isDraft(): boolean {
+    return this.status === PostStatus.DRAFT;
+  }
+
+  get isScheduled(): boolean {
+    return this.status === PostStatus.SCHEDULED;
   }
 
   findLikeByAuthor(userId: string): PostLike | null {

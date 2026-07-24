@@ -7,10 +7,12 @@ import {
   Eye,
   Loader2,
   MessageCircle,
+  Reply,
   Repeat2,
   ThumbsUp,
   UserCheck,
   UserPlus,
+  UserRoundPlus,
 } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -51,6 +53,11 @@ const TYPE_META: Record<
     className: "bg-primary-soft text-primary",
     key: "repost",
   },
+  [NotificationType.COMMENT_REPLY]: {
+    icon: Reply,
+    className: "bg-primary-soft text-primary",
+    key: "commentReply",
+  },
   [NotificationType.CONNECTION_REQUEST]: {
     icon: UserPlus,
     className: "bg-primary-soft text-primary",
@@ -66,6 +73,12 @@ const TYPE_META: Record<
     icon: Eye,
     className: "bg-primary-soft text-primary",
     key: "profileView",
+  },
+  [NotificationType.NEW_FOLLOWER]: {
+    icon: UserRoundPlus,
+    className:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+    key: "newFollower",
   },
 };
 

@@ -9,6 +9,7 @@
     "cancel": "Отмена",
     "save": "Сохранить",
     "post": "Опубликовать",
+    "saveDraft": "Сохранить черновик",
     "media": "Медиа",
     "close": "Закрыть",
     "language": "Язык",
@@ -39,6 +40,15 @@
     "location": "Локация (необязательно)",
     "signingIn": "Входим…",
     "creatingAccount": "Создаём аккаунт…",
+    "forgotPasswordLink": "Забыли пароль?",
+    "forgotPasswordTitle": "Восстановление пароля",
+    "forgotPasswordHint": "Введите email от аккаунта — пришлём ссылку для сброса пароля.",
+    "sendResetLink": "Отправить ссылку",
+    "backToSignIn": "Назад ко входу",
+    "resetPasswordTitle": "Новый пароль",
+    "resetPasswordInvalidLink": "Ссылка недействительна. Запросите новую.",
+    "resetPasswordSubmit": "Сохранить пароль",
+    "newPassword": "Новый пароль",
     "noAccount": "Нет аккаунта?",
     "createOne": "Создать",
     "haveAccount": "Уже есть аккаунт?"
@@ -56,6 +66,8 @@
     "uploadFailed": "Не удалось загрузить изображения",
     "createFailed": "Не удалось создать пост",
     "updateFailed": "Не удалось обновить пост",
+    "schedulePost": "Запланировать",
+    "scheduleRequired": "Выберите дату и время публикации.",
     "deleteFailed": "Не удалось удалить пост",
     "deleteConfirm": "Удалить этот пост?",
     "postNeedsContent": "В посте нужен текст или хотя бы одно изображение.",
@@ -120,7 +132,9 @@
       "actions": "Действия с комментарием",
       "edit": "Редактировать",
       "delete": "Удалить",
-      "attachmentsLimit": "Можно прикрепить не больше {count} изображений."
+      "attachmentsLimit": "Можно прикрепить не больше {count} изображений.",
+      "reply": "Ответить",
+      "replyPlaceholder": "Написать ответ…"
     }
   },
   "locale": {
@@ -210,6 +224,26 @@
     "insightsComingSoon": "Скоро появится.",
     "languageSettings": "Язык",
     "languageSettingsHint": "Язык интерфейса. Сохраняется в профиле.",
+    "yourActivity": "Ваша активность",
+    "points": "Очки",
+    "streak": "Серия",
+    "streakDays": "{count, plural, =0 {Пока нет серии} one {# день} few {# дня} many {# дней} other {# дней}}",
+    "profileComplete": "Профиль заполнен",
+    "badges": "Значки",
+    "badge": {
+      "streak_7": "Серия 7 дней",
+      "streak_30": "Серия 30 дней",
+      "connections_50": "50 контактов",
+      "connections_100": "100 контактов",
+      "followers_100": "100 подписчиков"
+    },
+    "devices": "Устройства",
+    "devicesHint": "Устройства, которые могут расшифровывать ваши сообщения. Удалите те, что не узнаёте.",
+    "deviceThisDevice": "Это устройство",
+    "deviceRemove": "Удалить",
+    "deviceRemoveConfirm": "Удалить это устройство? Оно больше не сможет расшифровывать новые сообщения.",
+    "deviceRemoveFailed": "Не удалось удалить устройство",
+    "devicesEmpty": "Другие устройства не зарегистрированы.",
     "employmentType": {
       "FULL_TIME": "Полная занятость",
       "PART_TIME": "Частичная занятость",
@@ -264,7 +298,12 @@
     "pending": "Ожидание",
     "pendingNavBadge": "{count, plural, one {# входящее приглашение} few {# входящих приглашения} many {# входящих приглашений} other {# входящих приглашений}}",
     "loadFailed": "Не удалось загрузить сеть",
-    "actionFailed": "Что-то пошло не так. Попробуйте ещё раз."
+    "actionFailed": "Что-то пошло не так. Попробуйте ещё раз.",
+    "follow": "Подписаться",
+    "following": "Вы подписаны",
+    "unfollow": "Отписаться",
+    "followersCount": "{count, plural, one {# подписчик} few {# подписчика} many {# подписчиков} other {# подписчиков}}",
+    "followingCount": "{count, plural, one {# подписка} few {# подписки} many {# подписок} other {# подписок}}"
   },
   "messaging": {
     "title": "Сообщения",
@@ -335,7 +374,9 @@
       "repost": "сделал(а) репост вашего поста",
       "connectionRequest": "отправил(а) вам запрос на добавление в сеть",
       "connectionAccepted": "принял(а) ваш запрос на добавление в сеть",
-      "profileView": "смотрел(а) ваш профиль"
+      "profileView": "смотрел(а) ваш профиль",
+      "commentReply": "ответил(а) на ваш комментарий",
+      "newFollower": "подписался(лась) на вас"
     }
   },
   "news": {
@@ -369,5 +410,52 @@
     "loadFailed": "Не удалось загрузить сохранённые посты",
     "emptyTitle": "Пока нет сохранённых постов",
     "emptyHint": "Откройте меню «…» у поста и выберите «Сохранить», чтобы вернуться к нему позже."
+  },
+  "companies": {
+    "loadFailed": "Не удалось загрузить компанию",
+    "employeesCount": "{count, plural, one {# человек} few {# человека} many {# человек} other {# человек}}",
+    "currentEmployeesCount": "{count, plural, one {# сейчас} few {# сейчас} many {# сейчас} other {# сейчас}}",
+    "noEmployees": "Пока никто не указал эту компанию.",
+    "current": "Сейчас",
+    "past": "Ранее"
+  },
+  "jobs": {
+    "title": "Вакансии",
+    "postJob": "Разместить вакансию",
+    "postJobFailed": "Не удалось разместить вакансию",
+    "loadFailed": "Не удалось загрузить вакансии",
+    "emptyTitle": "Пока нет вакансий",
+    "emptyHint": "Станьте первым, кто разместит вакансию.",
+    "jobTitle": "Название должности",
+    "companyName": "Компания",
+    "location": "Локация (необязательно)",
+    "description": "Описание",
+    "applyUrl": "Ссылка для отклика",
+    "apply": "Откликнуться",
+    "deleteJob": "Удалить вакансию",
+    "deleteJobConfirm": "Удалить эту вакансию?"
+  },
+  "onboarding": {
+    "title": "Заполните профиль",
+    "progress": "Готово {done} из {total}",
+    "dismiss": "Скрыть",
+    "steps": {
+      "avatar": "Добавьте фото профиля",
+      "headline": "Добавьте заголовок",
+      "skills": "Добавьте минимум 3 навыка"
+    }
+  },
+  "moderation": {
+    "moreActions": "Ещё действия",
+    "report": "Пожаловаться",
+    "reportTitle": "Жалоба",
+    "reportReasonLabel": "Причина",
+    "reportReasonPlaceholder": "Что не так?",
+    "reportSubmit": "Отправить жалобу",
+    "reportSuccess": "Спасибо — жалоба получена.",
+    "reportFailed": "Не удалось отправить жалобу",
+    "block": "Заблокировать",
+    "blockConfirm": "Заблокировать этого пользователя? Он не сможет добавить вас в контакты или написать вам.",
+    "blockFailed": "Не удалось заблокировать пользователя"
   }
 }

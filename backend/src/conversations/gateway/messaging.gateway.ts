@@ -9,7 +9,10 @@ import {
   WsException,
 } from '@nestjs/websockets';
 import { Inject, UsePipes, ValidationPipe, forwardRef } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
 import { JwtService } from '@nestjs/jwt';
+import type { NotificationCreatedEvent } from '../../notifications/services/notifications.service';
+import { NOTIFICATION_CREATED_EVENT } from '../../notifications/services/notifications.service';
 import { ConversationsService } from '../services/conversations.service';
 import { PresenceService } from '../services/presence.service';
 import { ConnectionsService } from '../../connections/services/connections.service';
@@ -170,6 +173,24 @@ export class MessagingGateway
     for (const userId of peerUserIds) {
       this.server.to(this.userRoom(userId)).emit('conversation:read', payload);
     }
+  }
+
+  /** Generic push to a user's personal room — reused by cross-module realtime events (e.g. notifications). */
+  emitToUser(userId: string, event: string, payload: unknown) {
+    this.server.to(this.userRoom(userId)).emit(event, payload);
+  }
+
+  /**
+   * Decoupled from NotificationsModule via EventEmitter2 (not a direct import) to avoid a
+   * module cycle: Notifications -> Conversations -> Connections -> Notifications.
+   */
+  @OnEvent(NOTIFICATION_CREATED_EVENT)
+  handleNotificationCreated(payload: NotificationCreatedEvent) {
+    this.emitToUser(
+      payload.recipientId,
+      'notification:created',
+      payload.notification,
+    );
   }
 
   private async broadcastPresence(userId: string, online: boolean) {

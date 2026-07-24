@@ -64,7 +64,7 @@ export function LocaleSwitcher({
             className={`rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 disabled:opacity-50 ${
               isFull
                 ? "h-9 flex-1 px-3 text-sm"
-                : "h-7 min-w-[2.25rem] px-2.5 text-xs tracking-wide"
+                : "h-9 min-w-11 px-2.5 text-xs tracking-wide"
             } ${
               isActive
                 ? "bg-surface text-foreground shadow-sm"

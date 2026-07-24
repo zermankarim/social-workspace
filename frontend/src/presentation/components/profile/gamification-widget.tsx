@@ -1,0 +1,93 @@
+"use client";
+
+import { Award, Coins, Flame } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useGamificationState } from "@/presentation/hooks/use-gamification";
+
+const BADGE_ICONS: Record<string, string> = {
+  streak_7: "🔥",
+  streak_30: "🔥",
+  connections_50: "🤝",
+  connections_100: "🤝",
+  followers_100: "⭐",
+};
+
+export function GamificationWidget() {
+  const t = useTranslations("profile");
+  const stateQuery = useGamificationState();
+  const state = stateQuery.data;
+
+  if (!state) return null;
+
+  return (
+    <div>
+      <h2 className="text-sm font-semibold text-foreground">
+        {t("yourActivity")}
+      </h2>
+
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <div className="rounded-md bg-surface-muted px-3 py-2">
+          <div className="flex items-center gap-1.5 text-muted">
+            <Coins className="h-3.5 w-3.5" aria-hidden />
+            <span className="text-[11px] font-medium uppercase tracking-wide">
+              {t("points")}
+            </span>
+          </div>
+          <p className="mt-0.5 text-lg font-semibold text-foreground">
+            {state.pointsBalance}
+          </p>
+        </div>
+
+        <div className="rounded-md bg-surface-muted px-3 py-2">
+          <div className="flex items-center gap-1.5 text-muted">
+            <Flame
+              className={`h-3.5 w-3.5 ${state.currentStreak > 0 ? "text-orange-500" : ""}`}
+              aria-hidden
+            />
+            <span className="text-[11px] font-medium uppercase tracking-wide">
+              {t("streak")}
+            </span>
+          </div>
+          <p className="mt-0.5 text-lg font-semibold text-foreground">
+            {t("streakDays", { count: state.currentStreak })}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-3">
+        <div className="flex items-center justify-between text-xs text-muted">
+          <span>{t("profileComplete")}</span>
+          <span>{state.profileCompletionPercent}%</span>
+        </div>
+        <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-surface-muted">
+          <div
+            className="h-full rounded-full bg-primary transition-all"
+            style={{ width: `${state.profileCompletionPercent}%` }}
+          />
+        </div>
+      </div>
+
+      {state.badges.length > 0 ? (
+        <div className="mt-3">
+          <div className="mb-1.5 flex items-center gap-1.5 text-muted">
+            <Award className="h-3.5 w-3.5" aria-hidden />
+            <span className="text-[11px] font-medium uppercase tracking-wide">
+              {t("badges")}
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {state.badges.map((badge) => (
+              <span
+                key={badge}
+                className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-xs font-medium text-primary"
+              >
+                <span aria-hidden>{BADGE_ICONS[badge] ?? "🏅"}</span>
+                {t(`badge.${badge}`)}
+              </span>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}

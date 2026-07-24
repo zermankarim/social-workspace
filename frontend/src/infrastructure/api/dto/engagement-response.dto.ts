@@ -17,10 +17,12 @@ export interface CommentResponseDto {
   id: string;
   textContent: string | null;
   postId: string;
+  parentId: string | null;
   createdAt: string;
   updatedAt: string;
   author: PostAuthorResponseDto;
   attachments: PostAttachmentResponseDto[];
+  replies: CommentResponseDto[];
 }
 
 export interface PaginatedLikesResponseDto {
@@ -45,6 +47,7 @@ export interface CreateCommentRequestDto {
     mimeType?: string | null;
     sizeBytes?: number | null;
   }[];
+  parentId?: string;
 }
 
 export interface UpdateCommentRequestDto {

@@ -10,9 +10,15 @@ export class PostComment {
     public readonly attachments: PostAttachment[],
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
+    public readonly parentId: string | null = null,
+    public readonly replies: PostComment[] = [],
   ) {}
 
   isAuthoredBy(userId: string): boolean {
     return this.author.id === userId;
+  }
+
+  isReply(): boolean {
+    return this.parentId !== null;
   }
 }

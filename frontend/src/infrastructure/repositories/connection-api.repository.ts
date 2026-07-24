@@ -72,6 +72,20 @@ export class ConnectionApiRepository extends ConnectionRepository {
     });
   }
 
+  async block(userId: string): Promise<Connection> {
+    const response = await this.httpClient.request<ConnectionResponseDto>(
+      `/connections/block/${userId}`,
+      { method: "POST" },
+    );
+    return ConnectionMapper.fromApi(response);
+  }
+
+  async unblock(userId: string): Promise<void> {
+    await this.httpClient.request<void>(`/connections/block/${userId}`, {
+      method: "DELETE",
+    });
+  }
+
   private async fetchList(
     path: string,
     page: number,

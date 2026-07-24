@@ -4,6 +4,7 @@ import {
   ArrayMaxSize,
   IsArray,
   IsOptional,
+  IsUUID,
   Validate,
   ValidateNested,
   ValidationArguments,
@@ -73,4 +74,13 @@ export class CreateCommentDto {
   @ValidateNested({ each: true })
   @Type(() => CommentAttachmentInputDto)
   public attachments?: CommentAttachmentInputDto[];
+
+  @ApiPropertyOptional({
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    description:
+      'Reply to this top-level comment. Replying to a reply is not allowed.',
+  })
+  @IsOptional()
+  @IsUUID()
+  public parentId?: string;
 }

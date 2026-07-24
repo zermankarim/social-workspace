@@ -5,6 +5,8 @@ import { Loader2, UserMinus, UserPlus, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ApiError } from "@/core/application/errors/api.error";
 import { MessageUserButton } from "@/presentation/components/messaging/message-user-button";
+import { FollowButton } from "@/presentation/components/network/follow-button";
+import { ProfileMoreActionsMenu } from "@/presentation/components/network/profile-more-actions-menu";
 import { Button } from "@/presentation/components/ui/button";
 import {
   useAcceptConnection,
@@ -77,10 +79,15 @@ export function ConnectActions({
     <div
       className={
         compact
-          ? "flex shrink-0 flex-col items-end gap-1"
+          ? "flex shrink-0 items-start gap-1.5"
           : "flex flex-col items-stretch gap-1 sm:items-end"
       }
     >
+      <div className="flex items-start gap-1">
+        <FollowButton userId={otherUserId} variant={variant} />
+        {!compact ? <ProfileMoreActionsMenu userId={otherUserId} /> : null}
+      </div>
+
       {relation.kind === "none" ? (
         <Button
           type="button"

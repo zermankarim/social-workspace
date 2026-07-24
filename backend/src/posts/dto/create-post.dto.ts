@@ -1,8 +1,11 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { PostStatus } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   IsArray,
+  IsEnum,
+  IsISO8601,
   IsOptional,
   Validate,
   ValidateNested,
@@ -73,4 +76,23 @@ export class CreatePostDto {
   @ValidateNested({ each: true })
   @Type(() => PostAttachmentInputDto)
   public attachments?: PostAttachmentInputDto[];
+
+  @ApiPropertyOptional({
+    enum: PostStatus,
+    default: PostStatus.PUBLISHED,
+    description:
+      'PUBLISHED (default) is visible immediately. DRAFT is visible only to the author. ' +
+      'SCHEDULED auto-publishes at `scheduledFor`.',
+  })
+  @IsOptional()
+  @IsEnum(PostStatus)
+  public status?: PostStatus;
+
+  @ApiPropertyOptional({
+    example: '2026-08-01T12:00:00.000Z',
+    description: 'Required future date-time when status is SCHEDULED.',
+  })
+  @IsOptional()
+  @IsISO8601()
+  public scheduledFor?: string;
 }

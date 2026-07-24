@@ -1,6 +1,12 @@
 import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
-import { AuthDto, SignupDto } from '../dto/auth.dto';
+import {
+  AuthDto,
+  ForgotPasswordDto,
+  MessageResponseDto,
+  ResetPasswordDto,
+  SignupDto,
+} from '../dto/auth.dto';
 import type { Request, Response } from 'express';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { SignupResponseDto } from '../dto/signup-response.dto copy';
@@ -39,5 +45,25 @@ export class AuthController {
   @Post('refresh')
   refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     return this.authService.refresh(getCookie(req, 'refresh_token'), res);
+  }
+
+  @ApiOperation({
+    summary: 'Request a password reset email',
+    description:
+      'Always returns a generic success message, whether or not the email exists.',
+  })
+  @ApiResponse({ type: MessageResponseDto })
+  @Post('forgot-password')
+  forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.authService.requestPasswordReset(dto);
+  }
+
+  @ApiOperation({
+    summary: 'Reset password using a token from the forgot-password email',
+  })
+  @ApiResponse({ type: MessageResponseDto })
+  @Post('reset-password')
+  resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto);
   }
 }

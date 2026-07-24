@@ -60,9 +60,12 @@ export function EmojiPickerButton({
     window.addEventListener("resize", updatePosition);
     // Capture scroll from nested overflow containers (chat list, etc.)
     window.addEventListener("scroll", updatePosition, true);
+    // On-screen keyboard opening shrinks the visual viewport without firing `resize`.
+    window.visualViewport?.addEventListener("resize", updatePosition);
     return () => {
       window.removeEventListener("resize", updatePosition);
       window.removeEventListener("scroll", updatePosition, true);
+      window.visualViewport?.removeEventListener("resize", updatePosition);
     };
   }, [open]);
 

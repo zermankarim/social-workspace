@@ -58,5 +58,11 @@ export const envConfig = registerAs(
       supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY as string,
       supabaseStorageBucket: process.env.SUPABASE_STORAGE_BUCKET as string,
     },
+
+    mail: {
+      resendApiKey: (process.env.RESEND_API_KEY as string) ?? '',
+      fromAddress:
+        (process.env.MAIL_FROM_ADDRESS as string) || 'onboarding@resend.dev',
+    },
   }),
 );

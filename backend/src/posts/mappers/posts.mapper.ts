@@ -1,3 +1,4 @@
+import { PostStatus } from '@prisma/client';
 import { PostResponseDto } from '../dto/post.dto';
 import { PostSelected, RepostOfSelected } from '../post.select';
 import { PostAttachmentsMapper } from './post-attachments.mapper';
@@ -9,6 +10,8 @@ export class PostsMapper {
     return {
       id: post.id,
       textContent: post.textContent,
+      status: post.status,
+      scheduledFor: post.scheduledFor,
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
       author: post.author,
@@ -37,6 +40,8 @@ export class PostsMapper {
     return {
       id: post.id,
       textContent: post.textContent,
+      status: PostStatus.PUBLISHED,
+      scheduledFor: null,
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
       author: post.author,

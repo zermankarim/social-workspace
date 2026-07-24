@@ -104,6 +104,30 @@ export function useSignout() {
   });
 }
 
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: (email: string) =>
+      appContainer.authService.forgotPassword(email),
+  });
+}
+
+export function useResetPassword() {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: ({
+      token,
+      newPassword,
+    }: {
+      token: string;
+      newPassword: string;
+    }) => appContainer.authService.resetPassword(token, newPassword),
+    onSuccess: () => {
+      router.replace("/login");
+    },
+  });
+}
+
 export function useRefreshSession() {
   const router = useRouter();
   const setUser = useAuthStore((s) => s.setUser);

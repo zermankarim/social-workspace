@@ -82,4 +82,14 @@ export const validationSchema = Joi.object({
   SUPABASE_STORAGE_BUCKET: Joi.string()
     .required()
     .label('Supabase Storage Bucket'),
+  // Optional: password-reset emails are logged instead of sent when unset.
+  RESEND_API_KEY: Joi.string()
+    .allow('')
+    .optional()
+    .default('')
+    .label('Resend API Key'),
+  MAIL_FROM_ADDRESS: Joi.string()
+    .optional()
+    .default('onboarding@resend.dev')
+    .label('Mail From Address'),
 });

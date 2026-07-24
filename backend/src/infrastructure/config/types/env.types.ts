@@ -28,4 +28,9 @@ export type AppEnv = {
     supabaseServiceRoleKey: string;
     supabaseStorageBucket: string;
   };
+  mail: {
+    /** Empty when not configured — MailService then logs instead of sending. */
+    resendApiKey: string;
+    fromAddress: string;
+  };
 };

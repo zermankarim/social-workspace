@@ -13,6 +13,7 @@ import {
   type LightboxImage,
 } from "@/presentation/components/ui/image-lightbox";
 import { UserNameWithBadge } from "@/presentation/components/ui/user-name-with-badge";
+import { useFollowCounts } from "@/presentation/hooks/use-follows";
 
 type ProfileHeroProps = {
   profile: UserProfile;
@@ -42,6 +43,8 @@ export function ProfileHero({
   connectActions,
 }: ProfileHeroProps) {
   const t = useTranslations("profile");
+  const tNetwork = useTranslations("network");
+  const followCountsQuery = useFollowCounts(profile.id);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -230,6 +233,20 @@ export function ProfileHero({
                 {t("connectionsCount", { count: profile.connectionsCount })}
               </Link>
             </p>
+            {followCountsQuery.data ? (
+              <p className="flex gap-3 text-sm text-muted">
+                <span>
+                  {tNetwork("followersCount", {
+                    count: followCountsQuery.data.followersCount,
+                  })}
+                </span>
+                <span>
+                  {tNetwork("followingCount", {
+                    count: followCountsQuery.data.followingCount,
+                  })}
+                </span>
+              </p>
+            ) : null}
           </div>
 
           {(profile.website ||

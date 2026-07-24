@@ -225,21 +225,36 @@ export function useSendMessage(conversationId: string, peerUserId: string) {
       }
 
       const senderDeviceId = await ensureRegisteredDeviceId();
-      const peerDevices =
-        await appContainer.deviceService.getPublicByUserId(peerUserId);
-      const peerDevice = peerDevices[0];
-      if (!peerDevice) {
+      // Fan out to every device of both conversation members — including the
+      // sender's own other devices — so anyone can decrypt regardless of which
+      // device was "most recently seen" at send time.
+      const [peerDevices, myDevices] = await Promise.all([
+        appContainer.deviceService.getPublicByUserId(peerUserId),
+        appContainer.deviceService.getMine(),
+      ]);
+      const targetDevices = [...peerDevices, ...myDevices];
+      if (targetDevices.length === 0) {
         throw new PeerDeviceMissingError();
       }
-      const encrypted = await MessagingCrypto.encryptForPeerDevice(
-        text,
-        peerDevice,
+
+      const recipientKeys = await Promise.all(
+        targetDevices.map(async (device) => {
+          const encrypted = await MessagingCrypto.encryptForPeerDevice(
+            text,
+            device,
+          );
+          return {
+            deviceId: device.id,
+            ciphertext: encrypted.ciphertext,
+            nonce: encrypted.nonce,
+            keyVersion: encrypted.keyVersion,
+          };
+        }),
       );
+
       return appContainer.conversationService.sendMessage(conversationId, {
-        ciphertext: encrypted.ciphertext,
-        nonce: encrypted.nonce,
         senderDeviceId,
-        keyVersion: encrypted.keyVersion,
+        recipientKeys,
         attachments: attachments.length > 0 ? attachments : undefined,
       });
     },

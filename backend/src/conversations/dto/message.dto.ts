@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   ArrayMaxSize,
+  ArrayMinSize,
   IsArray,
   IsInt,
   IsNotEmpty,
@@ -60,48 +61,13 @@ export class MessageReactionResponseDto {
   createdAt: Date;
 }
 
-export class MessageResponseDto {
-  @ApiProperty()
-  id: string;
+export class MessageRecipientKeyInputDto {
+  @ApiProperty({
+    description: 'UserDevice.id this copy of the ciphertext is encrypted for',
+  })
+  @IsUUID()
+  deviceId: string;
 
-  @ApiProperty()
-  conversationId: string;
-
-  @ApiProperty()
-  senderId: string;
-
-  @ApiProperty({ type: MessagingUserDto })
-  sender: MessagingUserDto;
-
-  @ApiPropertyOptional({ nullable: true })
-  senderDeviceId: string | null;
-
-  @ApiProperty({ description: 'Base64 encrypted payload' })
-  ciphertext: string;
-
-  @ApiProperty()
-  nonce: string;
-
-  @ApiProperty()
-  keyVersion: number;
-
-  @ApiProperty({ type: [MessageAttachmentResponseDto] })
-  attachments: MessageAttachmentResponseDto[];
-
-  @ApiProperty({ type: [MessageReactionResponseDto] })
-  reactions: MessageReactionResponseDto[];
-
-  @ApiProperty()
-  createdAt: Date;
-
-  @ApiPropertyOptional({ nullable: true })
-  editedAt: Date | null;
-
-  @ApiPropertyOptional({ nullable: true })
-  deletedAt: Date | null;
-}
-
-export class SendMessageDto {
   @ApiProperty({ description: 'Base64 encrypted payload' })
   @IsString()
   @IsNotEmpty()
@@ -120,12 +86,91 @@ export class SendMessageDto {
   @IsInt()
   @Min(1)
   keyVersion?: number;
+}
 
+export class MessageRecipientKeyResponseDto {
+  @ApiProperty()
+  deviceId: string;
+
+  @ApiProperty({ description: 'Base64 encrypted payload' })
+  ciphertext: string;
+
+  @ApiProperty()
+  nonce: string;
+
+  @ApiProperty()
+  keyVersion: number;
+}
+
+export class MessageResponseDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  conversationId: string;
+
+  @ApiProperty()
+  senderId: string;
+
+  @ApiProperty({ type: MessagingUserDto })
+  sender: MessagingUserDto;
+
+  @ApiPropertyOptional({ nullable: true })
+  senderDeviceId: string | null;
+
+  @ApiPropertyOptional({
+    nullable: true,
+    description: 'Legacy single-target payload — null on new messages.',
+  })
+  ciphertext: string | null;
+
+  @ApiPropertyOptional({ nullable: true })
+  nonce: string | null;
+
+  @ApiProperty()
+  keyVersion: number;
+
+  @ApiProperty({
+    type: [MessageRecipientKeyResponseDto],
+    description:
+      'Per-device encrypted copies. Empty on legacy pre-migration messages.',
+  })
+  recipientKeys: MessageRecipientKeyResponseDto[];
+
+  @ApiProperty({ type: [MessageAttachmentResponseDto] })
+  attachments: MessageAttachmentResponseDto[];
+
+  @ApiProperty({ type: [MessageReactionResponseDto] })
+  reactions: MessageReactionResponseDto[];
+
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiPropertyOptional({ nullable: true })
+  editedAt: Date | null;
+
+  @ApiPropertyOptional({ nullable: true })
+  deletedAt: Date | null;
+}
+
+export class SendMessageDto {
   @ApiProperty({
     description: 'UserDevice.id of the sending device (required for E2EE)',
   })
   @IsUUID()
   senderDeviceId: string;
+
+  @ApiProperty({
+    type: [MessageRecipientKeyInputDto],
+    description:
+      'One encrypted copy per target device — every device of both conversation members.',
+  })
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(50)
+  @ValidateNested({ each: true })
+  @Type(() => MessageRecipientKeyInputDto)
+  recipientKeys: MessageRecipientKeyInputDto[];
 
   @ApiPropertyOptional({ type: [MessageAttachmentInputDto] })
   @IsOptional()

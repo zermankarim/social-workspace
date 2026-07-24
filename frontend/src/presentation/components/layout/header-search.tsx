@@ -77,7 +77,7 @@ export function HeaderSearch({
               setOpen(true);
             }}
             onFocus={() => setOpen(true)}
-            className="h-8 w-full rounded border-0 bg-surface-muted py-1.5 pr-3 pl-8 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-ring"
+            className="h-9 w-full rounded border-0 bg-surface-muted py-1.5 pr-3 pl-8 text-base text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </label>
       </form>

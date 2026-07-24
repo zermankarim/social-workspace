@@ -45,6 +45,25 @@ export const registerSchema = authSchema
     },
   );
 
+export const forgotPasswordSchema = z.object({
+  email: z.email("Enter a valid email"),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .max(20, "Password must be at most 20 characters"),
+    confirmPassword: z.string().min(1, "Confirm your password"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
 export type AuthFormValues = z.infer<typeof authSchema>;
 export type RegisterFormValues = z.infer<typeof registerSchema>;
 export type LocationInputValues = z.infer<typeof locationInputSchema>;
+export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;

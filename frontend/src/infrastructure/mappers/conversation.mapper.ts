@@ -2,6 +2,7 @@ import { ConversationMember } from "@/core/domain/entities/conversation-member.e
 import { Conversation } from "@/core/domain/entities/conversation.entity";
 import { MessageAttachment } from "@/core/domain/entities/message-attachment.entity";
 import { MessageReaction } from "@/core/domain/entities/message-reaction.entity";
+import { MessageRecipientKey } from "@/core/domain/entities/message-recipient-key.entity";
 import { Message } from "@/core/domain/entities/message.entity";
 import { MessagingUser } from "@/core/domain/entities/messaging-user.entity";
 import type {
@@ -9,6 +10,7 @@ import type {
   ConversationResponseDto,
   MessageAttachmentResponseDto,
   MessageReactionResponseDto,
+  MessageRecipientKeyResponseDto,
   MessageResponseDto,
   MessagingUserResponseDto,
 } from "@/infrastructure/api/dto/conversation-response.dto";
@@ -67,6 +69,17 @@ export class ConversationMapper {
     );
   }
 
+  static recipientKeyFromApi(
+    dto: MessageRecipientKeyResponseDto,
+  ): MessageRecipientKey {
+    return new MessageRecipientKey(
+      dto.deviceId,
+      dto.ciphertext,
+      dto.nonce,
+      dto.keyVersion,
+    );
+  }
+
   static messageFromApi(dto: MessageResponseDto): Message {
     return new Message(
       dto.id,
@@ -77,6 +90,7 @@ export class ConversationMapper {
       dto.ciphertext,
       dto.nonce,
       dto.keyVersion,
+      dto.recipientKeys.map((key) => this.recipientKeyFromApi(key)),
       dto.attachments.map((attachment) => this.attachmentFromApi(attachment)),
       new Date(dto.createdAt),
       dto.editedAt ? new Date(dto.editedAt) : null,

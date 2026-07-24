@@ -7,7 +7,7 @@ import type { Conversation } from "@/core/domain/entities/conversation.entity";
 import type { Message } from "@/core/domain/entities/message.entity";
 import type { MessagingUser } from "@/core/domain/entities/messaging-user.entity";
 import { useDecryptedMessageBody } from "@/presentation/hooks/use-decrypted-message";
-import { usePeerDevices } from "@/presentation/hooks/use-devices";
+import { useMyDevices, usePeerDevices } from "@/presentation/hooks/use-devices";
 import { formatMentionsForPreview } from "@/presentation/lib/mentions";
 import { usePresenceStore } from "@/presentation/stores/presence.store";
 
@@ -53,10 +53,12 @@ function LastMessagePreview({
 }) {
   const t = useTranslations("messaging");
   const peerDevices = usePeerDevices(peerUserId);
+  const myDevices = useMyDevices();
   const decrypted = useDecryptedMessageBody(
     message,
     currentUserId,
     peerDevices.data,
+    myDevices.data,
   );
 
   if (message.isDeleted) {

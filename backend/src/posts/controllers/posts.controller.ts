@@ -26,6 +26,7 @@ import {
 } from '@nestjs/swagger';
 import { PostsService } from '../services/posts.service';
 import { PaginatedPostsByAuthorQueryDto } from '../dto/paginated-posts-by-author-query.dto';
+import { PaginatedPostsDraftsQueryDto } from '../dto/paginated-posts-drafts-query.dto';
 import { PaginatedPostsFeedQueryDto } from '../dto/paginated-posts-feed-query.dto';
 import { PaginatedPostsResponseDto } from '../dto/paginated-posts-response.dto';
 import { PostSearchQueryDto } from '../dto/post-search-query.dto';
@@ -133,6 +134,25 @@ export class PostsController {
     @Body() body: RegisterImpressionsDto,
   ): Promise<void> {
     return this.postsService.registerImpressions(req.user.userId, body.postIds);
+  }
+
+  @Get('mine/drafts')
+  @ApiOperation({
+    summary: 'List my own drafts and scheduled posts (paginated)',
+    description:
+      'DRAFT and SCHEDULED posts authored by the current user — never visible to anyone else.',
+  })
+  @ApiOkResponse({ type: PaginatedPostsResponseDto })
+  @ApiUnauthorizedResponse({
+    description: 'Missing or invalid access_token cookie',
+  })
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('access_token')
+  getMyDraftsPaginated(
+    @Req() req: RequestWithJwtPayload,
+    @Query() query: PaginatedPostsDraftsQueryDto,
+  ): Promise<PaginatedResponseDto<PostResponseDto>> {
+    return this.postsService.getMyDraftsPaginated(req.user.userId, query);
   }
 
   @Get(':id')

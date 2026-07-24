@@ -1,0 +1,26 @@
+enum ReportTargetType {
+  USER
+  POST
+  COMMENT
+}
+
+enum ReportStatus {
+  PENDING
+  RESOLVED
+  DISMISSED
+}
+
+model Report {
+  id         String           @id @default(uuid())
+  reporterId String
+  reporter   User             @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  targetType ReportTargetType
+  targetId   String
+  reason     String
+  status     ReportStatus     @default(PENDING)
+  createdAt  DateTime         @default(now())
+  resolvedAt DateTime?
+
+  @@index([status, createdAt])
+  @@index([targetType, targetId])
+}

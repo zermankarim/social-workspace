@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Loader2, Pencil, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import type { WorkExperience } from "@/core/domain/entities/work-experience.entity";
@@ -272,7 +273,12 @@ export function ProfileExperienceSection({
                     {experience.title}
                   </h3>
                   <p className="text-sm text-foreground">
-                    {experience.companyName}
+                    <Link
+                      href={`/companies/${encodeURIComponent(experience.companyName)}`}
+                      className="hover:text-primary hover:underline"
+                    >
+                      {experience.companyName}
+                    </Link>
                   </p>
                   <p className="text-sm text-muted">
                     {formatProfileDateRange(

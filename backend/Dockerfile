@@ -39,4 +39,7 @@ COPY --from=build /app/dist ./dist
 
 EXPOSE 8000
 
-CMD ["node", "dist/src/main.js"]
+# Applies any pending migrations against the real DATABASE_URL (injected by
+# Railway at runtime) before serving traffic — safe to run on every boot,
+# `migrate deploy` is a no-op when the DB is already up to date.
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main.js"]

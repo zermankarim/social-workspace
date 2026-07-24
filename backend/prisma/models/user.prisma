@@ -38,6 +38,16 @@ model User {
   // Connections
   sentConnections       Connection[]         @relation("ConnectionRequester")
   receivedConnections   Connection[]         @relation("ConnectionAddressee")
+  // Follow (one-way)
+  following             Follow[]             @relation("FollowFollower")
+  followers             Follow[]             @relation("FollowFollowing")
+  // Moderation
+  reportsFiled          Report[]
+  // Gamification
+  gamification          UserGamification?
+  pointsTransactions    PointsTransaction[]
+  // Jobs
+  jobsPosted             Job[]
   // Conversations
   conversations         ConversationMember[]
   messages              Message[]
@@ -53,6 +63,7 @@ model User {
   newsStoryReads        NewsStoryRead[]
   // Internal data
   sessions              Session[]
+  passwordResetTokens   PasswordResetToken[]
   createdAt             DateTime             @default(now())
   updatedAt             DateTime             @updatedAt
 }

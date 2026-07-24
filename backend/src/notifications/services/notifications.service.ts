@@ -1,8 +1,10 @@
 import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { NotificationType } from '@prisma/client';
 import { NotificationsRepository } from '../repositories/notifications.repository';
 import { NotificationsMapper } from '../mappers/notifications.mapper';
 import { NotificationResponseDto } from '../dto/notification.dto';
+import { NotificationSelected } from '../notification.select';
 import { PaginatedResponseDto } from '../../shared/dto/paginated-response.dto';
 import {
   buildPaginationMeta,
@@ -10,12 +12,21 @@ import {
 } from '../../shared/utils/pagination';
 import { PaginationQueryDto } from '../../shared/dto/pagination-query.dto';
 
+/** Consumed by MessagingGateway to push over the existing `/ws` socket — decoupled via events to avoid a module import cycle (Notifications -> Conversations -> Connections -> Notifications). */
+export const NOTIFICATION_CREATED_EVENT = 'notification.created';
+
+export type NotificationCreatedEvent = {
+  recipientId: string;
+  notification: NotificationResponseDto;
+};
+
 @Injectable()
 export class NotificationsService {
   private readonly logger = new Logger(NotificationsService.name);
 
   constructor(
     private readonly notificationsRepository: NotificationsRepository,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   public async list(
@@ -73,12 +84,13 @@ export class NotificationsService {
       const recipientId =
         await this.notificationsRepository.findPostAuthorId(postId);
       if (!recipientId || recipientId === actorId) return;
-      await this.notificationsRepository.create({
+      const created = await this.notificationsRepository.create({
         recipientId,
         actorId,
         type,
         postId,
       });
+      this.emitCreated(recipientId, created);
     } catch (error) {
       this.logger.warn(
         `Failed to create ${type} notification for post ${postId}: ${String(error)}`,
@@ -108,6 +120,30 @@ export class NotificationsService {
     });
   }
 
+  public async notifyCommentReply(
+    actorId: string,
+    commentAuthorId: string,
+    postId: string,
+  ): Promise<void> {
+    await this.safeCreate({
+      recipientId: commentAuthorId,
+      actorId,
+      type: NotificationType.COMMENT_REPLY,
+      postId,
+    });
+  }
+
+  public async notifyNewFollower(
+    followerId: string,
+    followingId: string,
+  ): Promise<void> {
+    await this.safeCreate({
+      recipientId: followingId,
+      actorId: followerId,
+      type: NotificationType.NEW_FOLLOWER,
+    });
+  }
+
   public async notifyProfileView(
     viewerId: string,
     profileOwnerId: string,
@@ -127,11 +163,23 @@ export class NotificationsService {
   }): Promise<void> {
     if (input.recipientId === input.actorId) return;
     try {
-      await this.notificationsRepository.create(input);
+      const created = await this.notificationsRepository.create(input);
+      this.emitCreated(input.recipientId, created);
     } catch (error) {
       this.logger.warn(
         `Failed to create ${input.type} notification: ${String(error)}`,
       );
     }
+  }
+
+  private emitCreated(
+    recipientId: string,
+    notification: NotificationSelected,
+  ): void {
+    const event: NotificationCreatedEvent = {
+      recipientId,
+      notification: NotificationsMapper.toResponseDto(notification),
+    };
+    this.eventEmitter.emit(NOTIFICATION_CREATED_EVENT, event);
   }
 }

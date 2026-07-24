@@ -3,10 +3,15 @@ export type SendMessageAttachmentInput = {
   ciphertextSize?: number | null;
 };
 
-export type SendMessageInput = {
+export type SendMessageRecipientKeyInput = {
+  deviceId: string;
   ciphertext: string;
   nonce: string;
-  senderDeviceId: string;
   keyVersion?: number;
+};
+
+export type SendMessageInput = {
+  senderDeviceId: string;
+  recipientKeys: SendMessageRecipientKeyInput[];
   attachments?: SendMessageAttachmentInput[];
 };

@@ -1,5 +1,6 @@
 import type { MessageAttachment } from "@/core/domain/entities/message-attachment.entity";
 import type { MessageReaction } from "@/core/domain/entities/message-reaction.entity";
+import type { MessageRecipientKey } from "@/core/domain/entities/message-recipient-key.entity";
 import type { MessagingUser } from "@/core/domain/entities/messaging-user.entity";
 
 export class Message {
@@ -9,9 +10,11 @@ export class Message {
     public readonly senderId: string,
     public readonly sender: MessagingUser,
     public readonly senderDeviceId: string | null,
-    public readonly ciphertext: string,
-    public readonly nonce: string,
+    /** Legacy single-target payload — null on messages sent after the fan-out migration. */
+    public readonly ciphertext: string | null,
+    public readonly nonce: string | null,
     public readonly keyVersion: number,
+    public readonly recipientKeys: MessageRecipientKey[],
     public readonly attachments: MessageAttachment[],
     public readonly createdAt: Date,
     public readonly editedAt: Date | null,
@@ -31,5 +34,9 @@ export class Message {
     return (
       this.reactions.find((reaction) => reaction.userId === userId) ?? null
     );
+  }
+
+  recipientKeyFor(deviceId: string): MessageRecipientKey | null {
+    return this.recipientKeys.find((key) => key.deviceId === deviceId) ?? null;
   }
 }

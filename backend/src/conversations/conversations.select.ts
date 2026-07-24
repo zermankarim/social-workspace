@@ -76,6 +76,17 @@ export type MessageReactionSelected = Prisma.MessageReactionGetPayload<{
   select: typeof messageReactionSelect;
 }>;
 
+export const messageRecipientKeySelect = {
+  deviceId: true,
+  ciphertext: true,
+  nonce: true,
+  keyVersion: true,
+} as const satisfies Prisma.MessageRecipientKeySelect;
+
+export type MessageRecipientKeySelected = Prisma.MessageRecipientKeyGetPayload<{
+  select: typeof messageRecipientKeySelect;
+}>;
+
 export const messageSelect = {
   id: true,
   conversationId: true,
@@ -95,6 +106,9 @@ export const messageSelect = {
   reactions: {
     select: messageReactionSelect,
     orderBy: { createdAt: 'asc' as const },
+  },
+  recipientKeys: {
+    select: messageRecipientKeySelect,
   },
 } as const satisfies Prisma.MessageSelect;
 

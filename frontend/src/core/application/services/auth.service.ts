@@ -28,4 +28,12 @@ export class AuthService {
       new AuthCredentials(data.email, data.password),
     );
   }
+
+  forgotPassword(email: string): Promise<string> {
+    return this.authRepository.forgotPassword(email);
+  }
+
+  resetPassword(token: string, newPassword: string): Promise<string> {
+    return this.authRepository.resetPassword(token, newPassword);
+  }
 }

@@ -73,6 +73,16 @@ export function useRegisterDevice() {
   });
 }
 
+export function useRemoveDevice() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => appContainer.deviceService.remove(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: devicesQueryKey });
+    },
+  });
+}
+
 export async function ensureRegisteredDeviceId(): Promise<string> {
   const existing = MessagingDeviceStorage.getServerDeviceId();
   if (existing) return existing;

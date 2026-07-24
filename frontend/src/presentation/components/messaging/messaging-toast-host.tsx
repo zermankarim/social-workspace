@@ -28,7 +28,7 @@ export function MessagingToastHost() {
 
   return (
     <div
-      className="pointer-events-none fixed right-3 bottom-3 z-[60] flex w-[min(22rem,calc(100vw-1.5rem))] flex-col gap-2"
+      className="pointer-events-none fixed right-3 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-60 flex w-[min(22rem,calc(100vw-1.5rem))] flex-col gap-2 lg:bottom-3"
       aria-live="polite"
     >
       {toasts.map((toast) => (

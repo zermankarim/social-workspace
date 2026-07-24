@@ -69,15 +69,24 @@ export interface MessageReactionResponseDto {
   createdAt: string;
 }
 
+export interface MessageRecipientKeyResponseDto {
+  deviceId: string;
+  ciphertext: string;
+  nonce: string;
+  keyVersion: number;
+}
+
 export interface MessageResponseDto {
   id: string;
   conversationId: string;
   senderId: string;
   sender: MessagingUserResponseDto;
   senderDeviceId: string | null;
-  ciphertext: string;
-  nonce: string;
+  /** Legacy single-target payload — null on messages sent after the fan-out migration. */
+  ciphertext: string | null;
+  nonce: string | null;
   keyVersion: number;
+  recipientKeys: MessageRecipientKeyResponseDto[];
   attachments: MessageAttachmentResponseDto[];
   reactions?: MessageReactionResponseDto[];
   createdAt: string;
@@ -97,11 +106,16 @@ export interface PaginatedMessagesResponseDto {
   };
 }
 
-export interface SendMessageRequestDto {
+export interface MessageRecipientKeyRequestDto {
+  deviceId: string;
   ciphertext: string;
   nonce: string;
   keyVersion?: number;
+}
+
+export interface SendMessageRequestDto {
   senderDeviceId: string;
+  recipientKeys: MessageRecipientKeyRequestDto[];
   attachments?: Array<{
     url: string;
     ciphertextSize?: number | null;

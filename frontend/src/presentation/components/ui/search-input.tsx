@@ -32,7 +32,7 @@ export function SearchInput({
         onChange={(event) => onChange(event.target.value)}
         disabled={disabled}
         placeholder={placeholder}
-        className={`h-10 w-full rounded-lg border border-sky-200/90 bg-white/90 py-2 pl-9 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-200/80 disabled:cursor-not-allowed disabled:bg-white/60 disabled:text-zinc-400 dark:border-sky-800/80 dark:bg-zinc-900/80 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-sky-600 dark:focus:ring-sky-900/50 dark:disabled:bg-zinc-900/60 ${
+        className={`h-10 w-full rounded-lg border border-sky-200/90 bg-white/90 py-2 pl-9 text-base text-zinc-900 placeholder:text-zinc-400 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-200/80 disabled:cursor-not-allowed disabled:bg-white/60 disabled:text-zinc-400 dark:border-sky-800/80 dark:bg-zinc-900/80 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-sky-600 dark:focus:ring-sky-900/50 dark:disabled:bg-zinc-900/60 ${
           value ? "pr-10" : "pr-3"
         }`}
       />

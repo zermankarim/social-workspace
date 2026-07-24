@@ -198,12 +198,21 @@ function revokeLocalPreviews(attachments: PendingAttachment[]) {
   });
 }
 
+function getUserInitials(user: { firstName: string; lastName: string }) {
+  return (
+    `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`
+      .trim()
+      .toUpperCase() || "?"
+  );
+}
+
 function CommentItem({
   comment,
   currentUser,
   disabled,
   onEdit,
   onDelete,
+  onReply,
 }: {
   comment: PostComment;
   currentUser: User;
@@ -213,6 +222,7 @@ function CommentItem({
     input: { textContent?: string; attachments?: CommentAttachmentInput[] },
   ) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
+  onReply: (parentId: string, textContent: string) => Promise<void>;
 }) {
   const t = useTranslations("feed.comments");
   const tCommon = useTranslations("common");
@@ -221,6 +231,7 @@ function CommentItem({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -228,12 +239,41 @@ function CommentItem({
   const [attachments, setAttachments] = useState<PendingAttachment[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isReplying, setIsReplying] = useState(false);
+  const [replyText, setReplyText] = useState("");
+  const [replyBusy, setReplyBusy] = useState(false);
+  const [replyError, setReplyError] = useState<string | null>(null);
   const insertEmoji = useEmojiInsert(
     textareaRef,
     text,
     setText,
     COMMENT_TEXT_MAX_LENGTH,
   );
+  const insertReplyEmoji = useEmojiInsert(
+    replyTextareaRef,
+    replyText,
+    setReplyText,
+    COMMENT_TEXT_MAX_LENGTH,
+  );
+
+  const handleReplySubmit = async () => {
+    if (!replyText.trim()) return;
+    setReplyError(null);
+    setReplyBusy(true);
+    try {
+      await onReply(comment.id, replyText.trim());
+      setReplyText("");
+      setIsReplying(false);
+    } catch (submitError) {
+      setReplyError(
+        submitError instanceof ApiError
+          ? submitError.message
+          : t("createFailed"),
+      );
+    } finally {
+      setReplyBusy(false);
+    }
+  };
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -415,7 +455,7 @@ function CommentItem({
                 maxLength={COMMENT_TEXT_MAX_LENGTH}
                 rows={2}
                 disabled={editBusy}
-                className="w-full resize-y rounded-md border border-border-strong bg-surface px-2 py-1.5 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="w-full resize-y rounded-md border border-border-strong bg-surface px-2 py-1.5 text-base text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
               <CommentAttachmentThumbs
                 attachments={attachments.map((attachment) => ({
@@ -501,6 +541,102 @@ function CommentItem({
             </>
           )}
         </div>
+
+        {!comment.isReply() && !isEditing ? (
+          <button
+            type="button"
+            className="mt-1 pl-3 text-xs font-semibold text-muted hover:text-primary"
+            onClick={() => setIsReplying((current) => !current)}
+          >
+            {t("reply")}
+          </button>
+        ) : null}
+
+        {isReplying ? (
+          <div className="mt-1.5 flex gap-2 pl-3">
+            <AuthorAvatar
+              avatarUrl={currentUser.avatarUrl}
+              initials={getUserInitials(currentUser)}
+              sizeClass="h-6 w-6"
+            />
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <div className="rounded-2xl border border-border-strong bg-surface px-3 py-1.5 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+                <MentionTextarea
+                  ref={replyTextareaRef}
+                  value={replyText}
+                  onChange={setReplyText}
+                  maxLength={COMMENT_TEXT_MAX_LENGTH}
+                  rows={1}
+                  placeholder={t("replyPlaceholder")}
+                  disabled={replyBusy}
+                  className="w-full resize-none bg-transparent text-base text-foreground placeholder:text-muted focus:outline-none"
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" && !event.shiftKey) {
+                      event.preventDefault();
+                      if (replyText.trim()) void handleReplySubmit();
+                    }
+                  }}
+                />
+                <div className="mt-1 flex items-center justify-between gap-2">
+                  <EmojiPickerButton
+                    disabled={replyBusy}
+                    onSelect={insertReplyEmoji}
+                    className="[&_button]:p-1 [&_svg]:h-3.5 [&_svg]:w-3.5"
+                  />
+                  <div className="flex gap-1.5">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="px-2 py-1 text-xs"
+                      disabled={replyBusy}
+                      onClick={() => {
+                        setIsReplying(false);
+                        setReplyText("");
+                        setReplyError(null);
+                      }}
+                    >
+                      {tCommon("cancel")}
+                    </Button>
+                    <Button
+                      type="button"
+                      className="px-2 py-1 text-xs"
+                      disabled={replyBusy || !replyText.trim()}
+                      onClick={() => void handleReplySubmit()}
+                    >
+                      {replyBusy ? (
+                        <Loader2
+                          className="h-3.5 w-3.5 animate-spin"
+                          aria-hidden
+                        />
+                      ) : (
+                        t("submit")
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              {replyError ? (
+                <p className="text-xs text-danger">{replyError}</p>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
+
+        {comment.replies.length > 0 ? (
+          <div className="mt-2 space-y-2 border-l border-border pl-3">
+            {comment.replies.map((reply) => (
+              <CommentItem
+                key={reply.id}
+                comment={reply}
+                currentUser={currentUser}
+                disabled={disabled}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onReply={onReply}
+              />
+            ))}
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -658,15 +794,17 @@ export function PostCommentsPanel({
     }
   };
 
+  const handleReply = async (parentId: string, textContent: string) => {
+    await createComment.mutateAsync({ textContent, parentId });
+    onCommentsCountDelta(1);
+  };
+
   const handleStartLoadMore = () => {
     setLoadMore(true);
     onRequestComposer?.();
   };
 
-  const userInitials =
-    `${currentUser.firstName[0] ?? ""}${currentUser.lastName[0] ?? ""}`
-      .trim()
-      .toUpperCase() || "?";
+  const userInitials = getUserInitials(currentUser);
 
   const canSubmit = hasCommentContent(draft, attachments.length) && !isBusy;
 
@@ -689,7 +827,7 @@ export function PostCommentsPanel({
                 rows={1}
                 placeholder={t("placeholder")}
                 disabled={isBusy}
-                className="w-full resize-none bg-transparent text-sm text-foreground placeholder:text-muted focus:outline-none"
+                className="w-full resize-none bg-transparent text-base text-foreground placeholder:text-muted focus:outline-none"
                 onKeyDown={(event) => {
                   if (event.key === "Enter" && !event.shiftKey) {
                     event.preventDefault();
@@ -782,6 +920,7 @@ export function PostCommentsPanel({
               disabled={isBusy}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              onReply={handleReply}
             />
           ))}
         </div>

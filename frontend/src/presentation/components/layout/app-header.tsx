@@ -78,7 +78,7 @@ export function AppHeader() {
         <div className="flex shrink-0 items-center justify-end gap-0.5 sm:gap-1">
           <Link
             href="/messaging"
-            className={`relative inline-flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-surface-muted lg:hidden ${
+            className={`relative inline-flex h-10 w-10 items-center justify-center rounded-md transition-colors hover:bg-surface-muted lg:hidden ${
               messagingActive
                 ? "text-nav-active"
                 : "text-muted hover:text-foreground"
@@ -101,7 +101,7 @@ export function AppHeader() {
 
           <Link
             href="/profile"
-            className="flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-surface-muted"
+            className="flex h-10 w-10 items-center justify-center rounded-md transition-colors hover:bg-surface-muted"
             aria-label={t("profile")}
           >
             {user.avatarUrl ? (

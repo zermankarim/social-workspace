@@ -49,6 +49,21 @@ export class ConnectionsRepository {
     });
   }
 
+  /** `requesterId` is the blocker by convention on a BLOCKED row. */
+  createBlocked(
+    blockerId: string,
+    blockedId: string,
+  ): Promise<ConnectionSelected> {
+    return this.prisma.connection.create({
+      data: {
+        requesterId: blockerId,
+        addresseeId: blockedId,
+        status: ConnectionStatus.BLOCKED,
+      },
+      select: connectionSelect,
+    });
+  }
+
   updateStatus(
     id: string,
     status: ConnectionStatus,

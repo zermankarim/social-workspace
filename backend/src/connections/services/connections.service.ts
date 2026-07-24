@@ -219,6 +219,53 @@ export class ConnectionsService {
     return ConnectionsMapper.toConnectionResponseDto(updated);
   }
 
+  public async blockUser(
+    blockerId: string,
+    blockedId: string,
+  ): Promise<ConnectionResponseDto> {
+    if (blockerId === blockedId) {
+      throw new BadRequestException('Cannot block yourself');
+    }
+
+    const blockedExists =
+      await this.connectionsRepository.userExists(blockedId);
+    if (!blockedExists) {
+      throw new NotFoundException('User not found');
+    }
+
+    const existing = await this.connectionsRepository.findBetweenUsers(
+      blockerId,
+      blockedId,
+    );
+    if (existing) {
+      await this.connectionsRepository.deleteById(existing.id);
+    }
+
+    const blocked = await this.connectionsRepository.createBlocked(
+      blockerId,
+      blockedId,
+    );
+    return ConnectionsMapper.toConnectionResponseDto(blocked);
+  }
+
+  public async unblockUser(
+    blockerId: string,
+    blockedId: string,
+  ): Promise<void> {
+    const existing = await this.connectionsRepository.findBetweenUsers(
+      blockerId,
+      blockedId,
+    );
+    if (
+      !existing ||
+      existing.status !== ConnectionStatus.BLOCKED ||
+      existing.requester.id !== blockerId
+    ) {
+      throw new NotFoundException('You have not blocked this user');
+    }
+    await this.connectionsRepository.deleteById(existing.id);
+  }
+
   public async deleteConnection(
     userId: string,
     connectionId: string,

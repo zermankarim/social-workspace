@@ -255,6 +255,15 @@ export class ConversationsRepository {
     });
   }
 
+  /** Valid fan-out targets: every device belonging to any of these users. */
+  async findDeviceIdsForUsers(userIds: string[]): Promise<Set<string>> {
+    const devices = await this.prisma.userDevice.findMany({
+      where: { userId: { in: userIds } },
+      select: { id: true },
+    });
+    return new Set(devices.map((device) => device.id));
+  }
+
   findMessageById(messageId: string): Promise<MessageSelected | null> {
     return this.prisma.message.findUnique({
       where: { id: messageId },

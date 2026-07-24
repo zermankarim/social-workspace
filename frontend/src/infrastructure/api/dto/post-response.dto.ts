@@ -25,6 +25,8 @@ export interface PostAttachmentResponseDto {
 export interface PostResponseDto {
   id: string;
   textContent: string | null;
+  status: string;
+  scheduledFor: string | null;
   createdAt: string;
   updatedAt: string;
   author: PostAuthorResponseDto;
@@ -52,11 +54,15 @@ export interface CreatePostAttachmentRequestDto {
 export interface CreatePostRequestDto {
   textContent?: string;
   attachments?: CreatePostAttachmentRequestDto[];
+  status?: string;
+  scheduledFor?: string;
 }
 
 export interface UpdatePostRequestDto {
   textContent?: string;
   attachments?: CreatePostAttachmentRequestDto[];
+  status?: string;
+  scheduledFor?: string;
 }
 
 export interface PaginatedPostsResponseDto {

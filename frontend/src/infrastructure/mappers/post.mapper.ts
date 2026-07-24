@@ -4,6 +4,7 @@ import { PostComment } from "@/core/domain/entities/post-comment.entity";
 import { PostLike } from "@/core/domain/entities/post-like.entity";
 import { Post } from "@/core/domain/entities/post.entity";
 import { PostLikeType } from "@/core/domain/enums/post-like-type.enum";
+import { PostStatus } from "@/core/domain/enums/post-status.enum";
 import { ProfileRole } from "@/core/domain/enums/profile-role.enum";
 import type {
   CommentResponseDto,
@@ -18,6 +19,12 @@ import type {
 function parseAuthorRole(role: string): ProfileRole {
   if (role === ProfileRole.ADMIN || role === ProfileRole.USER) return role;
   return ProfileRole.USER;
+}
+
+function parsePostStatus(status: string): PostStatus {
+  return (Object.values(PostStatus) as string[]).includes(status)
+    ? (status as PostStatus)
+    : PostStatus.PUBLISHED;
 }
 
 export class PostMapper {
@@ -38,6 +45,8 @@ export class PostMapper {
       new Date(dto.createdAt),
       new Date(dto.updatedAt),
       dto.repostOf ? this.fromApi(dto.repostOf) : null,
+      parsePostStatus(dto.status),
+      dto.scheduledFor ? new Date(dto.scheduledFor) : null,
     );
   }
 
@@ -82,6 +91,8 @@ export class PostMapper {
       dto.attachments.map((attachment) => this.attachmentFromApi(attachment)),
       new Date(dto.createdAt),
       new Date(dto.updatedAt),
+      dto.parentId,
+      dto.replies.map((reply) => this.commentFromApi(reply)),
     );
   }
 }

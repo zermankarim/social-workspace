@@ -12,6 +12,7 @@ import { CreatePostDto } from "@/core/application/dtos/create-post.dto";
 import { PostFeedQueryDto } from "@/core/application/dtos/post-feed-query.dto";
 import { PostsByAuthorQueryDto } from "@/core/application/dtos/posts-by-author-query.dto";
 import { UpdatePostDto } from "@/core/application/dtos/update-post.dto";
+import type { PostStatus } from "@/core/domain/enums/post-status.enum";
 import { appContainer } from "@/modules/app.container";
 
 export const postsQueryKey = ["posts"] as const;
@@ -64,12 +65,16 @@ export type PostAttachmentInput = {
 type CreatePostInput = {
   textContent?: string;
   attachments?: PostAttachmentInput[];
+  status?: PostStatus;
+  scheduledFor?: string;
 };
 
 type UpdatePostInput = {
   id: string;
   textContent?: string;
   attachments?: PostAttachmentInput[];
+  status?: PostStatus;
+  scheduledFor?: string;
 };
 
 function toAttachmentDtos(attachments?: PostAttachmentInput[]) {
@@ -93,6 +98,8 @@ export function useCreatePost() {
         new CreatePostDto(
           input.textContent,
           toAttachmentDtos(input.attachments),
+          input.status,
+          input.scheduledFor,
         ),
       ),
     onSuccess: () => {
@@ -105,10 +112,21 @@ export function useUpdatePost() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, textContent, attachments }: UpdatePostInput) =>
+    mutationFn: ({
+      id,
+      textContent,
+      attachments,
+      status,
+      scheduledFor,
+    }: UpdatePostInput) =>
       appContainer.postService.update(
         id,
-        new UpdatePostDto(textContent, toAttachmentDtos(attachments)),
+        new UpdatePostDto(
+          textContent,
+          toAttachmentDtos(attachments),
+          status,
+          scheduledFor,
+        ),
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: postsQueryKey });

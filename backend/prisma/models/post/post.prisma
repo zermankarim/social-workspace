@@ -1,13 +1,22 @@
+enum PostStatus {
+  PUBLISHED
+  DRAFT
+  SCHEDULED
+}
+
 model Post {
-  id          String           @id @default(uuid())
-  textContent String?
-  authorId    String
-  author      User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  comments    PostComment[]
-  attachments PostAttachment[]
-  postLikes   PostLike[]
+  id           String           @id @default(uuid())
+  textContent  String?
+  authorId     String
+  author       User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  status       PostStatus       @default(PUBLISHED)
+  /// Only meaningful when status is SCHEDULED — when the post auto-publishes.
+  scheduledFor DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  comments     PostComment[]
+  attachments  PostAttachment[]
+  postLikes    PostLike[]
 
   // Repost / quote: a repost is a Post pointing to the original via repostOfId.
   repostOfId String?
@@ -25,6 +34,8 @@ model Post {
   impressionsCount Int @default(0)
 
   @@index([authorId])
+  @@index([authorId, status])
+  @@index([status, scheduledFor])
   @@index([createdAt])
   @@index([repostOfId])
 }

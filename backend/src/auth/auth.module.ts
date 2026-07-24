@@ -8,11 +8,13 @@ import { JwtAuthGuard } from './guards/jwt.guard';
 import { SessionService } from './services/session.service';
 import { RolesGuard } from './guards/roles.guard';
 import { SessionRepository } from './repositories/session.repository';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({}),
+    MailModule,
   ],
   controllers: [AuthController],
   providers: [

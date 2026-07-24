@@ -43,6 +43,7 @@ export class CommentApiRepository extends CommentRepository {
         mimeType: attachment.mimeType,
         sizeBytes: attachment.sizeBytes,
       })),
+      parentId: dto.parentId,
     };
     const response = await this.httpClient.request<CommentResponseDto>(
       `/posts/${postId}/comments`,

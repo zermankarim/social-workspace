@@ -57,20 +57,41 @@ export class CommentsService {
   ): Promise<CommentResponseDto> {
     await this.assertPostExists(postId);
 
+    let parent: Awaited<ReturnType<CommentsRepository['findParentForReply']>> =
+      null;
+    if (dto.parentId) {
+      parent = await this.commentsRepository.findParentForReply(dto.parentId);
+      if (!parent || parent.postId !== postId) {
+        throw new NotFoundException('Parent comment not found');
+      }
+      if (parent.parentId !== null) {
+        throw new BadRequestException('Cannot reply to a reply');
+      }
+    }
+
     const comment = await this.commentsRepository.createComment(
       postId,
       authorId,
       {
         textContent: dto.textContent,
         attachments: dto.attachments,
+        parentId: dto.parentId,
       },
     );
 
-    await this.notificationsService.notifyPostInteraction(
-      authorId,
-      postId,
-      NotificationType.POST_COMMENT,
-    );
+    if (parent) {
+      await this.notificationsService.notifyCommentReply(
+        authorId,
+        parent.authorId,
+        postId,
+      );
+    } else {
+      await this.notificationsService.notifyPostInteraction(
+        authorId,
+        postId,
+        NotificationType.POST_COMMENT,
+      );
+    }
 
     return CommentsMapper.toCommentResponseDto(comment);
   }

@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { PostStatus } from '@prisma/client';
 import { PostAttachmentResponseDto } from './post-attachment.dto';
 import { PostAuthorDto } from './post-author.dto';
 import { CommentResponseDto } from '../../comments/dto/comment.dto';
@@ -14,6 +15,15 @@ export class PostResponseDto {
     description: 'Post text. Null when the post is attachments-only.',
   })
   public textContent: string | null;
+
+  @ApiProperty({ enum: PostStatus, example: PostStatus.PUBLISHED })
+  public status: PostStatus;
+
+  @ApiPropertyOptional({
+    nullable: true,
+    description: 'When a SCHEDULED post will auto-publish.',
+  })
+  public scheduledFor: Date | null;
 
   @ApiProperty({ example: '2026-07-11T12:00:00.000Z' })
   public createdAt: Date;

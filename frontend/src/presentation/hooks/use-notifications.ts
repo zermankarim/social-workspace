@@ -5,7 +5,11 @@ import {
   useMutation,
   useQuery,
   useQueryClient,
+  type InfiniteData,
 } from "@tanstack/react-query";
+import type { NotificationResponseDto } from "@/infrastructure/api/dto/notification-response.dto";
+import { NotificationMapper } from "@/infrastructure/mappers/notification.mapper";
+import type { PaginatedNotifications } from "@/core/domain/entities/paginated-notifications.entity";
 import { appContainer } from "@/modules/app.container";
 
 export const notificationsQueryKey = ["notifications"] as const;
@@ -32,8 +36,45 @@ export function useUnreadNotificationsCount(enabled = true) {
     queryKey: notificationsUnreadQueryKey,
     queryFn: () => appContainer.notificationService.getUnreadCount(),
     enabled,
-    refetchInterval: 60_000,
+    // Realtime push (see upsertNotificationFromSocket) delivers instantly; this is just a safety net.
+    refetchInterval: 300_000,
   });
+}
+
+/** Applied when `notification:created` arrives over the existing messaging socket. */
+export function upsertNotificationFromSocket(
+  queryClient: ReturnType<typeof useQueryClient>,
+  dto: NotificationResponseDto,
+) {
+  const notification = NotificationMapper.fromApi(dto);
+
+  queryClient.setQueryData<InfiniteData<PaginatedNotifications>>(
+    [...notificationsQueryKey, "list", DEFAULT_NOTIFICATIONS_PAGE_SIZE],
+    (current) => {
+      if (!current) return current;
+      const [first, ...rest] = current.pages;
+      if (!first) return current;
+      if (first.data.some((item) => item.id === notification.id)) {
+        return current;
+      }
+      return {
+        ...current,
+        pages: [
+          {
+            ...first,
+            data: [notification, ...first.data],
+            meta: { ...first.meta, total: first.meta.total + 1 },
+          },
+          ...rest,
+        ],
+      };
+    },
+  );
+
+  queryClient.setQueryData<number>(
+    notificationsUnreadQueryKey,
+    (current) => (current ?? 0) + 1,
+  );
 }
 
 export function useMarkNotificationRead() {

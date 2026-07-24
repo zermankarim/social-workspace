@@ -61,7 +61,7 @@ export function BrandLogo({
     <Link
       href={href}
       onClick={onClick}
-      className="inline-flex shrink-0 items-center"
+      className="inline-flex shrink-0 items-center p-1"
       aria-label={label}
     >
       {image}

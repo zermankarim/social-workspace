@@ -4,10 +4,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { NotificationType, Prisma } from '@prisma/client';
+import { NotificationType, PostStatus, Prisma } from '@prisma/client';
 import { PostsRepository } from '../repositories/posts.repository';
 import { PostResponseDto } from '../dto/post.dto';
 import { PaginatedPostsByAuthorQueryDto } from '../dto/paginated-posts-by-author-query.dto';
+import { PaginatedPostsDraftsQueryDto } from '../dto/paginated-posts-drafts-query.dto';
 import { PaginatedPostsFeedQueryDto } from '../dto/paginated-posts-feed-query.dto';
 import { PostSearchQueryDto } from '../dto/post-search-query.dto';
 import { CreateRepostDto } from '../dto/create-repost.dto';
@@ -47,9 +48,30 @@ export class PostsService {
       query.limit,
     );
 
+    const where: Prisma.PostWhereInput = { status: PostStatus.PUBLISHED };
     const [posts, total] = await Promise.all([
-      this.postsRepository.findMany({}, skip, take),
-      this.postsRepository.count({}),
+      this.postsRepository.findMany(where, skip, take),
+      this.postsRepository.count(where),
+    ]);
+
+    return {
+      data: posts.map((post) => PostsMapper.toPostResponseDto(post)),
+      meta: buildPaginationMeta(page, limit, total),
+    };
+  }
+
+  public async getMyDraftsPaginated(
+    authorId: string,
+    query: PaginatedPostsDraftsQueryDto,
+  ): Promise<PaginatedResponseDto<PostResponseDto>> {
+    const { page, limit, skip, take } = getPaginationParams(
+      query.page,
+      query.limit,
+    );
+
+    const [posts, total] = await Promise.all([
+      this.postsRepository.findManyUnpublishedByAuthorId(authorId, skip, take),
+      this.postsRepository.countUnpublishedByAuthorId(authorId),
     ]);
 
     return {
@@ -91,6 +113,7 @@ export class PostsService {
 
     const where: Prisma.PostWhereInput = {
       textContent: { contains: q, mode: 'insensitive' },
+      status: PostStatus.PUBLISHED,
     };
 
     const [posts, total] = await Promise.all([
@@ -108,15 +131,23 @@ export class PostsService {
     authorId: string,
     dto: CreatePostDto,
   ): Promise<PostResponseDto> {
+    const status = dto.status ?? PostStatus.PUBLISHED;
+    const scheduledFor = this.assertValidSchedule(status, dto.scheduledFor);
+
     const data: Prisma.PostCreateInput = {
       author: { connect: { id: authorId } },
       textContent: dto.textContent,
+      status,
+      scheduledFor,
       attachments: dto.attachments?.length
         ? { create: dto.attachments }
         : undefined,
     };
     const post = await this.postsRepository.createPost(data);
-    await this.hashtagsService.syncPostHashtags(post.id, post.textContent);
+    // Drafts/scheduled posts don't count toward trending hashtags until published.
+    if (status === PostStatus.PUBLISHED) {
+      await this.hashtagsService.syncPostHashtags(post.id, post.textContent);
+    }
     return PostsMapper.toPostResponseDto(post);
   }
 
@@ -178,6 +209,13 @@ export class PostsService {
       this.assertPostHasContent(nextTextContent, nextAttachments.length);
     }
 
+    const wasUnpublished = post.status !== PostStatus.PUBLISHED;
+    const nextStatus = dto.status ?? post.status;
+    const scheduledFor =
+      dto.status !== undefined || dto.scheduledFor !== undefined
+        ? this.assertValidSchedule(nextStatus, dto.scheduledFor)
+        : undefined;
+
     const data: Prisma.PostUpdateInput = {
       ...(dto.textContent !== undefined && { textContent: dto.textContent }),
       ...(dto.attachments !== undefined && {
@@ -186,16 +224,52 @@ export class PostsService {
           create: dto.attachments,
         },
       }),
+      ...(dto.status !== undefined && { status: dto.status }),
+      ...(scheduledFor !== undefined && { scheduledFor }),
     };
 
     const updatedPost = await this.postsRepository.updatePostById(postId, data);
-    if (dto.textContent !== undefined) {
+    const justPublished =
+      wasUnpublished && updatedPost.status === PostStatus.PUBLISHED;
+    if (dto.textContent !== undefined || justPublished) {
       await this.hashtagsService.syncPostHashtags(
         updatedPost.id,
         updatedPost.textContent,
       );
     }
     return PostsMapper.toPostResponseDto(updatedPost);
+  }
+
+  /** Runs on a schedule (see PostSchedulerService) — publishes any due SCHEDULED posts. */
+  public async publishDuePosts(): Promise<number> {
+    const due = await this.postsRepository.findDueScheduledPosts(new Date());
+    for (const post of due) {
+      const published = await this.postsRepository.publishPost(post.id);
+      await this.hashtagsService.syncPostHashtags(
+        published.id,
+        published.textContent,
+      );
+    }
+    return due.length;
+  }
+
+  private assertValidSchedule(
+    status: PostStatus,
+    scheduledFor: string | undefined,
+  ): Date | null {
+    if (status !== PostStatus.SCHEDULED) {
+      return null;
+    }
+    if (!scheduledFor) {
+      throw new BadRequestException(
+        'scheduledFor is required when status is SCHEDULED',
+      );
+    }
+    const when = new Date(scheduledFor);
+    if (Number.isNaN(when.getTime()) || when.getTime() <= Date.now()) {
+      throw new BadRequestException('scheduledFor must be a future date');
+    }
+    return when;
   }
 
   async registerImpressions(
