@@ -65,6 +65,10 @@ export class FollowsService {
     }
   }
 
+  public findFollowingIds(userId: string): Promise<string[]> {
+    return this.followsRepository.findFollowingIds(userId);
+  }
+
   public async getCounts(userId: string): Promise<FollowCountsResponseDto> {
     const [followersCount, followingCount] = await Promise.all([
       this.followsRepository.countFollowers(userId),

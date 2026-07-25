@@ -1,6 +1,7 @@
 import { Education } from "@/core/domain/entities/education.entity";
 import { Language } from "@/core/domain/entities/language.entity";
 import { Skill } from "@/core/domain/entities/skill.entity";
+import { SkillEndorser } from "@/core/domain/entities/skill-endorser.entity";
 import { UserLanguage } from "@/core/domain/entities/user-language.entity";
 import { UserProfile } from "@/core/domain/entities/user-profile.entity";
 import { WorkExperience } from "@/core/domain/entities/work-experience.entity";
@@ -11,6 +12,7 @@ import type {
   LanguageResponseDto,
   PrivateUserProfileResponseDto,
   PublicUserProfileResponseDto,
+  SkillEndorserResponseDto,
   SkillResponseDto,
   UserLanguageResponseDto,
   WorkExperienceResponseDto,
@@ -28,6 +30,17 @@ export class ProfileMapper {
       dto.name,
       new Date(dto.createdAt),
       new Date(dto.updatedAt),
+      dto.endorsementsCount ?? 0,
+    );
+  }
+
+  static skillEndorserFromApi(dto: SkillEndorserResponseDto): SkillEndorser {
+    return new SkillEndorser(
+      dto.id,
+      dto.firstName,
+      dto.lastName,
+      dto.avatarUrl,
+      dto.headline,
     );
   }
 

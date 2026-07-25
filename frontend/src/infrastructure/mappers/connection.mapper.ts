@@ -1,8 +1,10 @@
 import { Connection } from "@/core/domain/entities/connection.entity";
 import { ConnectionUser } from "@/core/domain/entities/connection-user.entity";
+import { ConnectionSuggestion } from "@/core/domain/entities/connection-suggestion.entity";
 import { ConnectionStatus } from "@/core/domain/enums/connection-status.enum";
 import type {
   ConnectionResponseDto,
+  ConnectionSuggestionResponseDto,
   ConnectionUserResponseDto,
 } from "@/infrastructure/api/dto/connection-response.dto";
 
@@ -37,6 +39,19 @@ export class ConnectionMapper {
       this.userFromApi(dto.addressee),
       new Date(dto.createdAt),
       new Date(dto.updatedAt),
+    );
+  }
+
+  static suggestionFromApi(
+    dto: ConnectionSuggestionResponseDto,
+  ): ConnectionSuggestion {
+    return new ConnectionSuggestion(
+      dto.userId,
+      dto.firstName,
+      dto.lastName,
+      dto.avatarUrl,
+      dto.headline,
+      dto.mutualConnectionsCount,
     );
   }
 }

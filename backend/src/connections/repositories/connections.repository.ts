@@ -165,6 +165,81 @@ export class ConnectionsRepository {
     });
   }
 
+  /** Every user with ANY connection row with me — pending/accepted/rejected/blocked, both directions. Used to exclude from suggestions. */
+  async findRelatedUserIds(userId: string): Promise<string[]> {
+    const rows = await this.prisma.connection.findMany({
+      where: { OR: [{ requesterId: userId }, { addresseeId: userId }] },
+      select: { requesterId: true, addresseeId: true },
+    });
+    return rows.map((row) =>
+      row.requesterId === userId ? row.addresseeId : row.requesterId,
+    );
+  }
+
+  /** ACCEPTED connections touching any of `userIds` — used to compute 2nd-degree mutual-connection counts. */
+  findConnectionsAmong(
+    userIds: string[],
+  ): Promise<{ requesterId: string; addresseeId: string }[]> {
+    if (userIds.length === 0) return Promise.resolve([]);
+    return this.prisma.connection.findMany({
+      where: {
+        status: ConnectionStatus.ACCEPTED,
+        OR: [
+          { requesterId: { in: userIds } },
+          { addresseeId: { in: userIds } },
+        ],
+      },
+      select: { requesterId: true, addresseeId: true },
+    });
+  }
+
+  findRecentUsersExcluding(
+    excludeIds: string[],
+    limit: number,
+  ): Promise<
+    {
+      id: string;
+      firstName: string;
+      lastName: string;
+      avatarUrl: string | null;
+      headline: string | null;
+    }[]
+  > {
+    return this.prisma.user.findMany({
+      where: { id: { notIn: excludeIds } },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        avatarUrl: true,
+        headline: true,
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+    });
+  }
+
+  getUsersBasicInfo(userIds: string[]): Promise<
+    {
+      id: string;
+      firstName: string;
+      lastName: string;
+      avatarUrl: string | null;
+      headline: string | null;
+    }[]
+  > {
+    return this.prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        avatarUrl: true,
+        headline: true,
+      },
+    });
+  }
+
   private findMany(
     where: Prisma.ConnectionWhereInput,
     skip: number,

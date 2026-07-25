@@ -194,6 +194,14 @@ export function useRemoveConnection() {
   });
 }
 
+export function useSuggestedConnections(limit = 5) {
+  return useQuery({
+    queryKey: [...connectionsQueryKey, "suggestions", limit],
+    queryFn: () => appContainer.connectionService.getSuggestions(limit),
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
 /** Summary totals for network sidebar (first page meta.total). */
 export function useConnectionCounts() {
   const accepted = useQuery({

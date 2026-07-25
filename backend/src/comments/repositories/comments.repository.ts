@@ -7,6 +7,14 @@ import { commentSelect, CommentSelected } from '../comment.select';
 export class CommentsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async findPostAuthorId(postId: string): Promise<string | null> {
+    const post = await this.prisma.post.findUnique({
+      where: { id: postId },
+      select: { authorId: true },
+    });
+    return post?.authorId ?? null;
+  }
+
   postExists(postId: string): Promise<boolean> {
     return this.prisma.post
       .findUnique({ where: { id: postId }, select: { id: true } })

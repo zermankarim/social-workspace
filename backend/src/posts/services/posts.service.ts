@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { NotificationType, PostStatus, Prisma } from '@prisma/client';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PostsRepository } from '../repositories/posts.repository';
 import { PostResponseDto } from '../dto/post.dto';
 import { PaginatedPostsByAuthorQueryDto } from '../dto/paginated-posts-by-author-query.dto';
@@ -23,6 +24,7 @@ import { UpdatePostDto } from '../dto/update-post.dto';
 import { PostSelected } from '../post.select';
 import { HashtagsService } from '../../hashtags/services/hashtags.service';
 import { NotificationsService } from '../../notifications/services/notifications.service';
+import { POST_PUBLISHED_EVENT } from '../../gamification/events/gamification.events';
 
 @Injectable()
 export class PostsService {
@@ -30,6 +32,7 @@ export class PostsService {
     private readonly postsRepository: PostsRepository,
     private readonly hashtagsService: HashtagsService,
     private readonly notificationsService: NotificationsService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   public async getPostById(id: string): Promise<PostResponseDto> {
@@ -147,6 +150,10 @@ export class PostsService {
     // Drafts/scheduled posts don't count toward trending hashtags until published.
     if (status === PostStatus.PUBLISHED) {
       await this.hashtagsService.syncPostHashtags(post.id, post.textContent);
+      this.eventEmitter.emit(POST_PUBLISHED_EVENT, {
+        authorId,
+        postId: post.id,
+      });
     }
     return PostsMapper.toPostResponseDto(post);
   }
@@ -237,6 +244,12 @@ export class PostsService {
         updatedPost.textContent,
       );
     }
+    if (justPublished) {
+      this.eventEmitter.emit(POST_PUBLISHED_EVENT, {
+        authorId: userId,
+        postId: updatedPost.id,
+      });
+    }
     return PostsMapper.toPostResponseDto(updatedPost);
   }
 
@@ -249,6 +262,10 @@ export class PostsService {
         published.id,
         published.textContent,
       );
+      this.eventEmitter.emit(POST_PUBLISHED_EVENT, {
+        authorId: published.author.id,
+        postId: published.id,
+      });
     }
     return due.length;
   }

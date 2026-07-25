@@ -23,3 +23,17 @@ model PointsTransaction {
 
   @@index([userId, createdAt])
 }
+
+/// Persisted, awarded-once-per-key achievement unlocks. `badgeKey` matches a
+/// key in the backend badge catalog (BADGE_DEFINITIONS) — kept as a free-form
+/// string rather than an enum so the catalog can grow without a migration.
+model UserBadge {
+  id       String   @id @default(uuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeKey String
+  earnedAt DateTime @default(now())
+
+  @@unique([userId, badgeKey])
+  @@index([userId])
+}

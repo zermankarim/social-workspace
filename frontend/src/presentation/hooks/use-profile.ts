@@ -172,6 +172,60 @@ export function useSyncUserSkills() {
   });
 }
 
+export function useSkillEndorsers(
+  userId: string | undefined,
+  skillId: string | undefined,
+  enabled = true,
+) {
+  return useQuery({
+    queryKey: ["profile", "skill-endorsers", userId, skillId],
+    queryFn: () =>
+      appContainer.profileService.listSkillEndorsers(userId!, skillId!),
+    enabled: enabled && Boolean(userId) && Boolean(skillId),
+  });
+}
+
+export function useEndorseSkill() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { userId: string; skillId: string }) =>
+      appContainer.profileService.endorseSkill(input.userId, input.skillId),
+    onSuccess: (_data, variables) => {
+      invalidateProfiles(queryClient);
+      void queryClient.invalidateQueries({
+        queryKey: [
+          "profile",
+          "skill-endorsers",
+          variables.userId,
+          variables.skillId,
+        ],
+      });
+    },
+  });
+}
+
+export function useRemoveSkillEndorsement() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { userId: string; skillId: string }) =>
+      appContainer.profileService.removeSkillEndorsement(
+        input.userId,
+        input.skillId,
+      ),
+    onSuccess: (_data, variables) => {
+      invalidateProfiles(queryClient);
+      void queryClient.invalidateQueries({
+        queryKey: [
+          "profile",
+          "skill-endorsers",
+          variables.userId,
+          variables.skillId,
+        ],
+      });
+    },
+  });
+}
+
 export function useLanguageSearch(query: string, enabled = true) {
   const debounced = useDebouncedValue(query, 250);
   return useQuery({

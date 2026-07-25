@@ -3,6 +3,7 @@
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { BrandLogo } from "@/presentation/components/brand/brand-logo";
+import { AchievementToastHost } from "@/presentation/components/gamification/achievement-toast-host";
 import { MessagingToastHost } from "@/presentation/components/messaging/messaging-toast-host";
 import { GamificationBootstrap } from "@/presentation/components/providers/gamification-bootstrap";
 import { MessagingDeviceBootstrap } from "@/presentation/components/providers/messaging-device-bootstrap";
@@ -49,6 +50,7 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
       <MessagingRealtimeBootstrap />
       <GamificationBootstrap />
       <MessagingToastHost />
+      <AchievementToastHost />
       {children}
     </>
   );

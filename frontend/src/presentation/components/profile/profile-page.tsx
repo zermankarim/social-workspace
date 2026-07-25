@@ -113,7 +113,11 @@ export function ProfilePage({ userId }: ProfilePageProps) {
             educations={profile.educations}
             canEdit={canEdit}
           />
-          <ProfileSkillsSection skills={profile.skills} canEdit={canEdit} />
+          <ProfileSkillsSection
+            skills={profile.skills}
+            canEdit={canEdit}
+            profileUserId={profile.id}
+          />
           <ProfileLanguagesSection
             languages={profile.languages}
             canEdit={canEdit}

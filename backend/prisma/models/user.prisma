@@ -44,8 +44,10 @@ model User {
   // Moderation
   reportsFiled          Report[]
   // Gamification
-  gamification          UserGamification?
-  pointsTransactions    PointsTransaction[]
+  gamification           UserGamification?
+  pointsTransactions     PointsTransaction[]
+  badges                 UserBadge[]
+  skillEndorsementsGiven SkillEndorsement[]   @relation("SkillEndorser")
   // Jobs
   jobsPosted             Job[]
   // Conversations

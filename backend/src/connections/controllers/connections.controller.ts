@@ -28,6 +28,7 @@ import {
 import { ConnectionsService } from '../services/connections.service';
 import { CreateConnectionDto } from '../dto/create-connection.dto';
 import { ConnectionResponseDto } from '../dto/connection.dto';
+import { ConnectionSuggestionDto } from '../dto/connection-suggestion.dto';
 import { PaginatedConnectionsQueryDto } from '../dto/paginated-connections-query.dto';
 import { PaginatedConnectionsResponseDto } from '../dto/paginated-connections-response.dto';
 import { PaginatedResponseDto } from '../../shared/dto/paginated-response.dto';
@@ -120,6 +121,21 @@ export class ConnectionsController {
       req.user.userId,
       query,
     );
+  }
+
+  @Get('suggestions')
+  @ApiOperation({
+    summary: '"People you may know" — ranked by mutual connections',
+    description:
+      'Falls back to recently joined users when there is no mutual-connection signal yet.',
+  })
+  @ApiOkResponse({ type: [ConnectionSuggestionDto] })
+  getSuggestions(
+    @Req() req: RequestWithJwtPayload,
+    @Query('limit') limit?: string,
+  ): Promise<ConnectionSuggestionDto[]> {
+    const parsedLimit = Math.min(Math.max(Number(limit) || 10, 1), 50);
+    return this.connectionsService.getSuggestions(req.user.userId, parsedLimit);
   }
 
   @Post(':id/accept')

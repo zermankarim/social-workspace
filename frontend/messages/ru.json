@@ -105,7 +105,6 @@
     "headlinePlaceholder": "Добавьте заголовок, чтобы заполнить профиль",
     "peopleYouMayKnow": "Возможные знакомства",
     "connect": "Добавить",
-    "suggestionsHint": "Рекомендации появятся, когда будет доступен API.",
     "reactions": {
       "pickerLabel": "Выберите реакцию",
       "like": "Нравится",
@@ -135,7 +134,12 @@
       "attachmentsLimit": "Можно прикрепить не больше {count} изображений.",
       "reply": "Ответить",
       "replyPlaceholder": "Написать ответ…"
-    }
+    },
+    "achievements": "Достижения",
+    "leaderboard": "Лидерборд",
+    "requestSent": "Заявка отправлена",
+    "mutualConnections": "{count, plural, one {# общий контакт} few {# общих контакта} many {# общих контактов} other {# общих контакта}}",
+    "noSuggestions": "Пока нет предложений — загляните позже, когда добавите больше контактов."
   },
   "locale": {
     "en": "English",
@@ -230,13 +234,6 @@
     "streakDays": "{count, plural, =0 {Пока нет серии} one {# день} few {# дня} many {# дней} other {# дней}}",
     "profileComplete": "Профиль заполнен",
     "badges": "Значки",
-    "badge": {
-      "streak_7": "Серия 7 дней",
-      "streak_30": "Серия 30 дней",
-      "connections_50": "50 контактов",
-      "connections_100": "100 контактов",
-      "followers_100": "100 подписчиков"
-    },
     "streakInfoLabel": "Об огоньках серии",
     "streakInfoTitle": "Огонёк серии",
     "streakInfoIntro": "Заходите в приложение хотя бы раз в день, чтобы наращивать серию. Пропустите день — и она обнулится. Огонёк меняется по мере роста серии.",
@@ -306,7 +303,9 @@
       "PROFESSIONAL": "Профессиональный",
       "FULL_PROFESSIONAL": "Свободный",
       "NATIVE_OR_BILINGUAL": "Родной / двуязычный"
-    }
+    },
+    "endorseSkill": "Одобрить навык",
+    "noEndorsersYet": "Пока нет одобрений"
   },
   "network": {
     "manageNetwork": "Управление сетью",
@@ -406,7 +405,9 @@
       "connectionAccepted": "принял(а) ваш запрос на добавление в сеть",
       "profileView": "смотрел(а) ваш профиль",
       "commentReply": "ответил(а) на ваш комментарий",
-      "newFollower": "подписался(лась) на вас"
+      "newFollower": "подписался(лась) на вас",
+      "badgeEarned": "получил(а) новую награду",
+      "skillEndorsed": "одобрил(а) один из ваших навыков"
     }
   },
   "news": {
@@ -487,5 +488,84 @@
     "block": "Заблокировать",
     "blockConfirm": "Заблокировать этого пользователя? Он не сможет добавить вас в контакты или написать вам.",
     "blockFailed": "Не удалось заблокировать пользователя"
+  },
+  "achievements": {
+    "title": "Достижения",
+    "earnedSummary": "Получено {earned} из {total} наград",
+    "viewAll": "Все награды",
+    "noneYet": "Пока нет наград — оставайтесь активны, чтобы получить первую",
+    "unlockedToastTitle": "Новая награда!",
+    "progress": "{current}/{target}",
+    "leaderboardTitle": "Лидерборд",
+    "leaderboardEmpty": "Пока нет активности для этого фильтра",
+    "pointsValue": "{points} очк.",
+    "pointsToNextLevel": "{points} очк. до уровня «{nextLevel}»",
+    "maxLevel": "Максимальный уровень",
+    "leaderboardScope": {
+      "network": "Ваша сеть",
+      "global": "Глобально"
+    },
+    "leaderboardPeriod": {
+      "week": "За неделю",
+      "month": "За месяц",
+      "all": "За всё время"
+    },
+    "level": {
+      "novice": "Новичок",
+      "contributor": "Участник",
+      "active_member": "Активный участник",
+      "expert": "Эксперт",
+      "influencer": "Инфлюенсер",
+      "legend": "Легенда"
+    },
+    "tier": {
+      "bronze": "Бронза",
+      "silver": "Серебро",
+      "gold": "Золото",
+      "platinum": "Платина"
+    },
+    "category": {
+      "streak": "Серии",
+      "connections": "Контакты",
+      "followers": "Подписчики",
+      "posts": "Посты",
+      "likesReceived": "Полученные лайки",
+      "commentsReceived": "Полученные комментарии",
+      "endorsementsReceived": "Одобрения навыков",
+      "points": "Очковые рубежи",
+      "profile": "Профиль"
+    },
+    "badge": {
+      "streak_7": "Серия 7 дней",
+      "streak_30": "Серия 30 дней",
+      "streak_100": "Серия 100 дней",
+      "streak_365": "Серия 365 дней",
+      "connections_10": "10 контактов",
+      "connections_50": "50 контактов",
+      "connections_100": "100 контактов",
+      "connections_500": "500 контактов",
+      "followers_10": "10 подписчиков",
+      "followers_100": "100 подписчиков",
+      "followers_1000": "1 000 подписчиков",
+      "followers_10000": "10 000 подписчиков",
+      "posts_1": "Первый пост",
+      "posts_10": "10 постов",
+      "posts_50": "50 постов",
+      "posts_200": "200 постов",
+      "likes_received_50": "50 лайков получено",
+      "likes_received_500": "500 лайков получено",
+      "likes_received_5000": "5 000 лайков получено",
+      "comments_received_25": "25 комментариев получено",
+      "comments_received_250": "250 комментариев получено",
+      "comments_received_2500": "2 500 комментариев получено",
+      "endorsements_5": "5 одобрений навыков",
+      "endorsements_25": "25 одобрений навыков",
+      "endorsements_100": "100 одобрений навыков",
+      "points_100": "100 очков",
+      "points_1000": "1 000 очков",
+      "points_10000": "10 000 очков",
+      "points_50000": "50 000 очков",
+      "profile_complete": "Идеальный профиль"
+    }
   }
 }

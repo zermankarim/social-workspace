@@ -35,6 +35,18 @@ export type SkillSelected = Prisma.SkillGetPayload<{
   select: typeof skillSelect;
 }>;
 
+export const skillEndorserSelect = {
+  id: true,
+  firstName: true,
+  lastName: true,
+  avatarUrl: true,
+  headline: true,
+} as const satisfies Prisma.UserSelect;
+
+export type SkillEndorserSelected = Prisma.UserGetPayload<{
+  select: typeof skillEndorserSelect;
+}>;
+
 export const languageSelect = {
   id: true,
   code: true,

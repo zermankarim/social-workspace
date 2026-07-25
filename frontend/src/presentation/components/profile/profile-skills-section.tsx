@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Plus, X } from "lucide-react";
+import { Check, ChevronDown, Loader2, Plus, ThumbsUp, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ApiError } from "@/core/application/errors/api.error";
 import type { Skill } from "@/core/domain/entities/skill.entity";
@@ -9,6 +9,8 @@ import { ProfileModal } from "@/presentation/components/profile/profile-modal";
 import { ProfileSection } from "@/presentation/components/profile/profile-section";
 import { Button } from "@/presentation/components/ui/button";
 import {
+  useEndorseSkill,
+  useSkillEndorsers,
   useSkillSearch,
   useSyncUserSkills,
 } from "@/presentation/hooks/use-profile";
@@ -18,7 +20,129 @@ const SKILLS_MAX_COUNT = 50;
 type ProfileSkillsSectionProps = {
   skills: Skill[];
   canEdit: boolean;
+  profileUserId: string;
 };
+
+function SkillEndorsersList({
+  profileUserId,
+  skillId,
+}: {
+  profileUserId: string;
+  skillId: string;
+}) {
+  const t = useTranslations("profile");
+  const { data: endorsers, isLoading } = useSkillEndorsers(
+    profileUserId,
+    skillId,
+  );
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-2">
+        <Loader2
+          className="h-3.5 w-3.5 animate-spin text-primary"
+          aria-hidden
+        />
+      </div>
+    );
+  }
+
+  if (!endorsers || endorsers.length === 0) {
+    return <p className="py-1 text-xs text-muted">{t("noEndorsersYet")}</p>;
+  }
+
+  return (
+    <ul className="space-y-1 py-1">
+      {endorsers.map((endorser) => (
+        <li key={endorser.id} className="flex items-center gap-2">
+          {endorser.avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={endorser.avatarUrl}
+              alt=""
+              className="h-5 w-5 rounded-full object-cover"
+            />
+          ) : (
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-soft text-[9px] font-semibold text-primary">
+              {endorser.initials}
+            </span>
+          )}
+          <span className="truncate text-xs text-foreground">
+            {endorser.displayName}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function SkillPill({
+  skill,
+  canEndorse,
+  profileUserId,
+}: {
+  skill: Skill;
+  canEndorse: boolean;
+  profileUserId: string;
+}) {
+  const t = useTranslations("profile");
+  const [expanded, setExpanded] = useState(false);
+  const [endorsedThisSession, setEndorsedThisSession] = useState(false);
+  const endorseSkill = useEndorseSkill();
+
+  const handleEndorse = () => {
+    if (endorsedThisSession) return;
+    setEndorsedThisSession(true);
+    endorseSkill.mutate({ userId: profileUserId, skillId: skill.id });
+  };
+
+  return (
+    <div className="rounded-lg bg-surface-muted">
+      <div className="flex items-center gap-1.5 px-3 py-1.5">
+        <span className="text-sm text-foreground">{skill.name}</span>
+        <button
+          type="button"
+          onClick={() => setExpanded((value) => !value)}
+          className="inline-flex items-center gap-0.5 text-xs text-muted hover:text-foreground"
+        >
+          {skill.endorsementsCount + (endorsedThisSession ? 1 : 0)}
+          <ChevronDown
+            className={`h-3 w-3 transition-transform ${expanded ? "rotate-180" : ""}`}
+            aria-hidden
+          />
+        </button>
+        {canEndorse ? (
+          <button
+            type="button"
+            onClick={handleEndorse}
+            disabled={endorsedThisSession || endorseSkill.isPending}
+            aria-label={t("endorseSkill")}
+            title={t("endorseSkill")}
+            className={`ml-1 inline-flex h-6 w-6 items-center justify-center rounded-full transition-colors ${
+              endorsedThisSession
+                ? "bg-primary text-white"
+                : "text-muted hover:bg-surface hover:text-primary"
+            }`}
+          >
+            {endorsedThisSession ? (
+              <Check className="h-3.5 w-3.5" aria-hidden />
+            ) : (
+              <ThumbsUp className="h-3.5 w-3.5" aria-hidden />
+            )}
+          </button>
+        ) : null}
+      </div>
+      {expanded ? (
+        <div className="border-t border-border px-3">
+          <SkillEndorsersList
+            profileUserId={profileUserId}
+            skillId={skill.id}
+          />
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 type DraftSkill = {
   key: string;
@@ -244,6 +368,7 @@ function SkillsEditorModal({ open, skills, onClose }: SkillsEditorModalProps) {
 export function ProfileSkillsSection({
   skills,
   canEdit,
+  profileUserId,
 }: ProfileSkillsSectionProps) {
   const t = useTranslations("profile");
   const [modalOpen, setModalOpen] = useState(false);
@@ -265,9 +390,11 @@ export function ProfileSkillsSection({
         <ul className="flex flex-wrap gap-2">
           {skills.map((skill) => (
             <li key={skill.id}>
-              <span className="rounded-full bg-surface-muted px-3 py-1.5 text-sm text-foreground">
-                {skill.name}
-              </span>
+              <SkillPill
+                skill={skill}
+                canEndorse={!canEdit}
+                profileUserId={profileUserId}
+              />
             </li>
           ))}
         </ul>

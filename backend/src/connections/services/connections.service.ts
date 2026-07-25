@@ -6,10 +6,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConnectionStatus } from '@prisma/client';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ConnectionsRepository } from '../repositories/connections.repository';
 import { CreateConnectionDto } from '../dto/create-connection.dto';
 import { ConnectionResponseDto } from '../dto/connection.dto';
 import { ConnectionsMapper } from '../mappers/connections.mapper';
+import { ConnectionSuggestionDto } from '../dto/connection-suggestion.dto';
 import { ConnectionSelected } from '../connections.select';
 import { PaginatedConnectionsQueryDto } from '../dto/paginated-connections-query.dto';
 import { PaginatedResponseDto } from '../../shared/dto/paginated-response.dto';
@@ -18,12 +20,14 @@ import {
   getPaginationParams,
 } from '../../shared/utils/pagination';
 import { NotificationsService } from '../../notifications/services/notifications.service';
+import { CONNECTION_ACCEPTED_EVENT } from '../../gamification/events/gamification.events';
 
 @Injectable()
 export class ConnectionsService {
   constructor(
     private readonly connectionsRepository: ConnectionsRepository,
     private readonly notificationsService: NotificationsService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   public async createConnection(
@@ -201,6 +205,9 @@ export class ConnectionsService {
       userId,
       connection.requester.id,
     );
+    this.eventEmitter.emit(CONNECTION_ACCEPTED_EVENT, {
+      userIds: [userId, connection.requester.id],
+    });
     return ConnectionsMapper.toConnectionResponseDto(updated);
   }
 
@@ -291,6 +298,73 @@ export class ConnectionsService {
     }
 
     await this.connectionsRepository.deleteById(connectionId);
+  }
+
+  /**
+   * "People you may know" — ranked by mutual accepted-connection count among
+   * your own accepted connections (2nd degree). Falls back to recently
+   * joined users (mutualConnectionsCount: 0) when there's no mutual signal
+   * yet, e.g. for a brand-new account.
+   */
+  public async getSuggestions(
+    userId: string,
+    limit: number,
+  ): Promise<ConnectionSuggestionDto[]> {
+    const [peerIds, relatedIds] = await Promise.all([
+      this.connectionsRepository.findAcceptedPeerUserIds(userId),
+      this.connectionsRepository.findRelatedUserIds(userId),
+    ]);
+    const excluded = new Set([userId, ...relatedIds]);
+
+    const rows = await this.connectionsRepository.findConnectionsAmong(peerIds);
+    const peerIdSet = new Set(peerIds);
+    const mutualCounts = new Map<string, number>();
+    for (const row of rows) {
+      const candidateId = peerIdSet.has(row.requesterId)
+        ? row.addresseeId
+        : row.requesterId;
+      if (excluded.has(candidateId)) continue;
+      mutualCounts.set(candidateId, (mutualCounts.get(candidateId) ?? 0) + 1);
+    }
+
+    const rankedIds = Array.from(mutualCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, limit)
+      .map(([id]) => id);
+
+    if (rankedIds.length > 0) {
+      const users =
+        await this.connectionsRepository.getUsersBasicInfo(rankedIds);
+      const userById = new Map(users.map((user) => [user.id, user]));
+      return rankedIds
+        .map((id) => {
+          const user = userById.get(id);
+          if (!user) return null;
+          return {
+            userId: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            avatarUrl: user.avatarUrl,
+            headline: user.headline,
+            mutualConnectionsCount: mutualCounts.get(id) ?? 0,
+          };
+        })
+        .filter((entry): entry is ConnectionSuggestionDto => entry !== null);
+    }
+
+    const fallbackUsers =
+      await this.connectionsRepository.findRecentUsersExcluding(
+        Array.from(excluded),
+        limit,
+      );
+    return fallbackUsers.map((user) => ({
+      userId: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avatarUrl: user.avatarUrl,
+      headline: user.headline,
+      mutualConnectionsCount: 0,
+    }));
   }
 
   private async getPendingForAddresseeOrThrow(

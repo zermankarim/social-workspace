@@ -4,5 +4,6 @@ export class Skill {
     public readonly name: string,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
+    public readonly endorsementsCount: number = 0,
   ) {}
 }

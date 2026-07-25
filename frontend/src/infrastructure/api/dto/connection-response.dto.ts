@@ -32,3 +32,12 @@ export interface PaginatedConnectionsResponseDto {
 export interface CreateConnectionRequestDto {
   addresseeId: string;
 }
+
+export interface ConnectionSuggestionResponseDto {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string | null;
+  headline: string | null;
+  mutualConnectionsCount: number;
+}

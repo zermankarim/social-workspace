@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { NotificationType } from '@prisma/client';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LikesRepository } from '../repositories/likes.repository';
 import { LikeResponseDto } from '../dto/like.dto';
 import { UpsertLikeDto } from '../dto/upsert-like.dto';
@@ -11,12 +12,14 @@ import {
   getPaginationParams,
 } from '../../shared/utils/pagination';
 import { NotificationsService } from '../../notifications/services/notifications.service';
+import { POST_LIKE_RECEIVED_EVENT } from '../../gamification/events/gamification.events';
 
 @Injectable()
 export class LikesService {
   constructor(
     private readonly likesRepository: LikesRepository,
     private readonly notificationsService: NotificationsService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   public async getLikesByPostIdPaginated(
@@ -48,11 +51,8 @@ export class LikesService {
   ): Promise<LikeResponseDto> {
     await this.assertPostExists(postId);
 
-    const { like, created } = await this.likesRepository.upsertLike(
-      postId,
-      authorId,
-      dto.likeType,
-    );
+    const { like, created, postAuthorId } =
+      await this.likesRepository.upsertLike(postId, authorId, dto.likeType);
 
     if (created) {
       await this.notificationsService.notifyPostInteraction(
@@ -60,6 +60,13 @@ export class LikesService {
         postId,
         NotificationType.POST_LIKE,
       );
+      if (postAuthorId) {
+        this.eventEmitter.emit(POST_LIKE_RECEIVED_EVENT, {
+          recipientId: postAuthorId,
+          actorId: authorId,
+          postId,
+        });
+      }
     }
 
     return LikesMapper.toLikeResponseDto(like);

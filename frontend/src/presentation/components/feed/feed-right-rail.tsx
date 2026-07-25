@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Plus } from "lucide-react";
+import { Check, Loader2, Plus } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { ProfileRole } from "@/core/domain/enums/profile-role.enum";
@@ -9,11 +9,14 @@ import { FeedCard } from "@/presentation/components/feed/feed-card";
 import { TrendingHashtagsCard } from "@/presentation/components/feed/trending-hashtags-card";
 import { Button } from "@/presentation/components/ui/button";
 import {
+  useCreateConnection,
+  useSuggestedConnections,
+} from "@/presentation/hooks/use-connections";
+import {
   useCreateNewsStory,
   useNewsStories,
 } from "@/presentation/hooks/use-news";
 import { formatEngagementCount } from "@/presentation/lib/format-engagement-count";
-import { MOCK_SUGGESTIONS } from "@/presentation/mocks/feed.mock";
 import { useAuthStore } from "@/presentation/stores/auth.store";
 
 function NewsCard() {
@@ -179,44 +182,92 @@ function NewsCard() {
   );
 }
 
-export function FeedRightRail() {
+function PeopleYouMayKnowCard() {
   const t = useTranslations("feed");
+  const { data: suggestions, isLoading } = useSuggestedConnections(5);
+  const createConnection = useCreateConnection();
+  const [sentIds, setSentIds] = useState<Set<string>>(new Set());
 
+  return (
+    <FeedCard className="px-3 py-3">
+      <h2 className="text-sm font-semibold text-foreground">
+        {t("peopleYouMayKnow")}
+      </h2>
+      {isLoading ? (
+        <div className="mt-3 flex justify-center py-2">
+          <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden />
+        </div>
+      ) : !suggestions || suggestions.length === 0 ? (
+        <p className="mt-3 text-[11px] text-muted">{t("noSuggestions")}</p>
+      ) : (
+        <ul className="mt-3 space-y-3">
+          {suggestions!.map((person) => {
+            const sent = sentIds.has(person.userId);
+            return (
+              <li key={person.userId} className="flex items-start gap-2">
+                <Link href={`/users/${person.userId}`} className="shrink-0">
+                  {person.avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={person.avatarUrl}
+                      alt=""
+                      className="h-10 w-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-xs font-semibold text-primary">
+                      {person.initials}
+                    </div>
+                  )}
+                </Link>
+                <div className="min-w-0 flex-1">
+                  <Link
+                    href={`/users/${person.userId}`}
+                    className="truncate text-xs font-semibold text-foreground hover:underline"
+                  >
+                    {person.displayName}
+                  </Link>
+                  <p className="truncate text-[11px] text-muted">
+                    {person.headline}
+                  </p>
+                  {person.mutualConnectionsCount > 0 ? (
+                    <p className="truncate text-[10px] text-muted">
+                      {t("mutualConnections", {
+                        count: person.mutualConnectionsCount,
+                      })}
+                    </p>
+                  ) : null}
+                  <Button
+                    variant="secondary"
+                    disabled={sent || createConnection.isPending}
+                    onClick={() => {
+                      setSentIds((prev) => new Set(prev).add(person.userId));
+                      createConnection.mutate(person.userId);
+                    }}
+                    className="mt-1.5 h-7 px-3 text-xs"
+                  >
+                    {sent ? (
+                      <Check className="h-3.5 w-3.5" aria-hidden />
+                    ) : (
+                      <Plus className="h-3.5 w-3.5" aria-hidden />
+                    )}
+                    {sent ? t("requestSent") : t("connect")}
+                  </Button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </FeedCard>
+  );
+}
+
+export function FeedRightRail() {
   return (
     <aside className="space-y-2">
       <TrendingHashtagsCard />
       <NewsCard />
-
-      <FeedCard className="px-3 py-3">
-        <h2 className="text-sm font-semibold text-foreground">
-          {t("peopleYouMayKnow")}
-        </h2>
-        <ul className="mt-3 space-y-3">
-          {MOCK_SUGGESTIONS.map((person) => (
-            <li key={person.id} className="flex items-start gap-2">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-soft text-xs font-semibold text-primary">
-                {person.initials}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-xs font-semibold text-foreground">
-                  {person.name}
-                </p>
-                <p className="truncate text-[11px] text-muted">
-                  {person.headline}
-                </p>
-                <Button
-                  variant="secondary"
-                  disabled
-                  className="mt-1.5 h-7 px-3 text-xs"
-                >
-                  {t("connect")}
-                </Button>
-              </div>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-3 text-[10px] text-muted">{t("suggestionsHint")}</p>
-      </FeedCard>
+      <PeopleYouMayKnowCard />
     </aside>
   );
 }

@@ -10,12 +10,28 @@ model Skill {
 }
 
 model UserSkill {
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  skillId   String
-  skill     Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  userId       String
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skillId      String
+  skill        Skill              @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  createdAt    DateTime           @default(now())
+  endorsements SkillEndorsement[]
 
   @@id([userId, skillId])
   @@index([skillId])
+}
+
+/// One endorsement per (endorser, user, skill) triple — `endorserId` can't
+/// equal `userId` (enforced in the service layer, not the schema).
+model SkillEndorsement {
+  id         String    @id @default(uuid())
+  userId     String
+  skillId    String
+  userSkill  UserSkill @relation(fields: [userId, skillId], references: [userId, skillId], onDelete: Cascade)
+  endorserId String
+  endorser   User      @relation("SkillEndorser", fields: [endorserId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
+
+  @@unique([userId, skillId, endorserId])
+  @@index([userId, skillId])
 }

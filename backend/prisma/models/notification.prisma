@@ -7,6 +7,8 @@ enum NotificationType {
   CONNECTION_ACCEPTED
   PROFILE_VIEW
   NEW_FOLLOWER
+  BADGE_EARNED
+  SKILL_ENDORSED
 }
 
 model Notification {

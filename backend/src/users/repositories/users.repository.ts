@@ -8,6 +8,7 @@ import {
   LanguageSelected,
   skillSelect,
   SkillSelected,
+  SkillEndorserSelected,
   userLanguageSelect,
   UserLanguageSelected,
   userProfileSelect,
@@ -300,14 +301,83 @@ export class UsersRepository {
     return skills.map((skill) => skill.id);
   }
 
-  findUserSkills(userId: string): Promise<SkillSelected[]> {
-    return this.prisma.userSkill
-      .findMany({
-        where: { userId },
-        select: { skill: { select: skillSelect } },
-        orderBy: { createdAt: 'asc' },
-      })
-      .then((rows) => rows.map((row) => row.skill));
+  async findUserSkills(
+    userId: string,
+  ): Promise<Array<SkillSelected & { endorsementsCount: number }>> {
+    const rows = await this.prisma.userSkill.findMany({
+      where: { userId },
+      select: {
+        skill: { select: skillSelect },
+        _count: { select: { endorsements: true } },
+      },
+      orderBy: { createdAt: 'asc' },
+    });
+    return rows.map((row) => ({
+      ...row.skill,
+      endorsementsCount: row._count.endorsements,
+    }));
+  }
+
+  // --- Skill endorsements ---
+
+  async hasUserSkill(userId: string, skillId: string): Promise<boolean> {
+    const row = await this.prisma.userSkill.findUnique({
+      where: { userId_skillId: { userId, skillId } },
+      select: { userId: true },
+    });
+    return row !== null;
+  }
+
+  async endorseSkill(
+    userId: string,
+    skillId: string,
+    endorserId: string,
+  ): Promise<{ created: boolean }> {
+    const existing = await this.prisma.skillEndorsement.findUnique({
+      where: {
+        userId_skillId_endorserId: { userId, skillId, endorserId },
+      },
+      select: { id: true },
+    });
+    if (existing) return { created: false };
+
+    await this.prisma.skillEndorsement.create({
+      data: { userId, skillId, endorserId },
+    });
+    return { created: true };
+  }
+
+  async removeSkillEndorsement(
+    userId: string,
+    skillId: string,
+    endorserId: string,
+  ): Promise<boolean> {
+    const result = await this.prisma.skillEndorsement.deleteMany({
+      where: { userId, skillId, endorserId },
+    });
+    return result.count > 0;
+  }
+
+  async listSkillEndorsers(
+    userId: string,
+    skillId: string,
+  ): Promise<SkillEndorserSelected[]> {
+    const rows = await this.prisma.skillEndorsement.findMany({
+      where: { userId, skillId },
+      select: {
+        endorser: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            avatarUrl: true,
+            headline: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    return rows.map((row) => row.endorser);
   }
 
   async addUserSkill(userId: string, skillId: string): Promise<SkillSelected> {

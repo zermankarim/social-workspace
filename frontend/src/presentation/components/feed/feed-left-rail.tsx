@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bookmark, MapPin } from "lucide-react";
+import { Bookmark, MapPin, Trophy, TrendingUp } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { User } from "@/core/domain/entities/user.entity";
 import { FeedCard } from "@/presentation/components/feed/feed-card";
@@ -96,6 +96,20 @@ export function FeedLeftRail({ user }: FeedLeftRailProps) {
         >
           <Bookmark className="h-4 w-4 text-primary" aria-hidden />
           {t("savedItems")}
+        </Link>
+        <Link
+          href="/achievements"
+          className="flex w-full items-center gap-2 rounded py-1.5 text-left text-xs font-semibold text-foreground transition-colors hover:text-primary"
+        >
+          <Trophy className="h-4 w-4 text-primary" aria-hidden />
+          {t("achievements")}
+        </Link>
+        <Link
+          href="/leaderboard"
+          className="flex w-full items-center gap-2 rounded py-1.5 text-left text-xs font-semibold text-foreground transition-colors hover:text-primary"
+        >
+          <TrendingUp className="h-4 w-4 text-primary" aria-hidden />
+          {t("leaderboard")}
         </Link>
       </FeedCard>
     </aside>

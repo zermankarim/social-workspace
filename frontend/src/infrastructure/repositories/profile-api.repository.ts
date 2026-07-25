@@ -12,6 +12,7 @@ import {
 import { PaginatedUserSearch } from "@/core/domain/entities/paginated-user-search.entity";
 import { PaginationMeta } from "@/core/domain/entities/pagination-meta.entity";
 import type { Skill } from "@/core/domain/entities/skill.entity";
+import type { SkillEndorser } from "@/core/domain/entities/skill-endorser.entity";
 import type { UserLanguage } from "@/core/domain/entities/user-language.entity";
 import type { UserProfile } from "@/core/domain/entities/user-profile.entity";
 import type { WorkExperience } from "@/core/domain/entities/work-experience.entity";
@@ -23,6 +24,7 @@ import type {
   PaginatedUserSearchResponseDto,
   PrivateUserProfileResponseDto,
   PublicUserProfileResponseDto,
+  SkillEndorserResponseDto,
   SkillResponseDto,
   UserLanguageResponseDto,
   WorkExperienceResponseDto,
@@ -149,6 +151,30 @@ export class ProfileApiRepository extends ProfileRepository {
     await this.httpClient.request<void>(`/users/me/skills/${skillId}`, {
       method: "DELETE",
     });
+  }
+
+  async listSkillEndorsers(
+    userId: string,
+    skillId: string,
+  ): Promise<SkillEndorser[]> {
+    const response = await this.httpClient.request<SkillEndorserResponseDto[]>(
+      `/users/${userId}/skills/${skillId}/endorsements`,
+    );
+    return response.map((item) => ProfileMapper.skillEndorserFromApi(item));
+  }
+
+  async endorseSkill(userId: string, skillId: string): Promise<void> {
+    await this.httpClient.request<void>(
+      `/users/${userId}/skills/${skillId}/endorsements`,
+      { method: "POST" },
+    );
+  }
+
+  async removeSkillEndorsement(userId: string, skillId: string): Promise<void> {
+    await this.httpClient.request<void>(
+      `/users/${userId}/skills/${skillId}/endorsements`,
+      { method: "DELETE" },
+    );
   }
 
   async searchLanguages(

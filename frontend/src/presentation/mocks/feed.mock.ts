@@ -15,18 +15,3 @@ export const MOCK_NEWS_ITEMS = [
     readers: "5,220 readers",
   },
 ];
-
-export const MOCK_SUGGESTIONS = [
-  {
-    id: "s1",
-    name: "Jordan Lee",
-    headline: "Frontend Engineer",
-    initials: "JL",
-  },
-  {
-    id: "s2",
-    name: "Priya Nair",
-    headline: "People Ops Lead",
-    initials: "PN",
-  },
-];

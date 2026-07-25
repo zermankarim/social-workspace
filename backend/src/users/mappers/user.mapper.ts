@@ -8,13 +8,14 @@ import {
   UserPublic,
   UserSearchSelected,
   SkillSelected,
+  SkillEndorserSelected,
   WorkExperienceSelected,
   EducationSelected,
   UserLanguageSelected,
   LanguageSelected,
 } from '../user.select';
 import { LocationMapper } from './location.mapper';
-import { SkillResponseDto } from '../dto/skill.dto';
+import { SkillEndorserDto, SkillResponseDto } from '../dto/skill.dto';
 import { WorkExperienceResponseDto } from '../dto/work-experience.dto';
 import { EducationResponseDto } from '../dto/education.dto';
 import {
@@ -103,12 +104,27 @@ export class UserMapper {
     };
   }
 
-  static toSkillResponse(skill: SkillSelected): SkillResponseDto {
+  static toSkillResponse(
+    skill: SkillSelected & { endorsementsCount?: number },
+  ): SkillResponseDto {
     return {
       id: skill.id,
       name: skill.name,
       createdAt: skill.createdAt,
       updatedAt: skill.updatedAt,
+      endorsementsCount: skill.endorsementsCount ?? 0,
+    };
+  }
+
+  static toSkillEndorserResponse(
+    endorser: SkillEndorserSelected,
+  ): SkillEndorserDto {
+    return {
+      id: endorser.id,
+      firstName: endorser.firstName,
+      lastName: endorser.lastName,
+      avatarUrl: endorser.avatarUrl,
+      headline: endorser.headline,
     };
   }
 

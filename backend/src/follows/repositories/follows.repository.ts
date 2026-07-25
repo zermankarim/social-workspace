@@ -74,4 +74,12 @@ export class FollowsRepository {
   countFollowing(userId: string): Promise<number> {
     return this.prisma.follow.count({ where: { followerId: userId } });
   }
+
+  async findFollowingIds(userId: string): Promise<string[]> {
+    const rows = await this.prisma.follow.findMany({
+      where: { followerId: userId },
+      select: { followingId: true },
+    });
+    return rows.map((row) => row.followingId);
+  }
 }

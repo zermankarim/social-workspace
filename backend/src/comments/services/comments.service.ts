@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { NotificationType, Prisma } from '@prisma/client';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CommentsRepository } from '../repositories/comments.repository';
 import { CommentResponseDto } from '../dto/comment.dto';
 import { CreateCommentDto } from '../dto/create-comment.dto';
@@ -18,12 +19,14 @@ import {
 } from '../../shared/utils/pagination';
 import { CommentSelected } from '../comment.select';
 import { NotificationsService } from '../../notifications/services/notifications.service';
+import { POST_COMMENT_RECEIVED_EVENT } from '../../gamification/events/gamification.events';
 
 @Injectable()
 export class CommentsService {
   constructor(
     private readonly commentsRepository: CommentsRepository,
     private readonly notificationsService: NotificationsService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   public async getCommentsByPostIdPaginated(
@@ -91,6 +94,15 @@ export class CommentsService {
         postId,
         NotificationType.POST_COMMENT,
       );
+    }
+
+    const postAuthorId = await this.commentsRepository.findPostAuthorId(postId);
+    if (postAuthorId) {
+      this.eventEmitter.emit(POST_COMMENT_RECEIVED_EVENT, {
+        recipientId: postAuthorId,
+        actorId: authorId,
+        postId,
+      });
     }
 
     return CommentsMapper.toCommentResponseDto(comment);

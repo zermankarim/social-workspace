@@ -12,6 +12,15 @@ export interface SkillResponseDto {
   name: string;
   createdAt: string;
   updatedAt: string;
+  endorsementsCount: number;
+}
+
+export interface SkillEndorserResponseDto {
+  id: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string | null;
+  headline: string | null;
 }
 
 export interface LanguageResponseDto {

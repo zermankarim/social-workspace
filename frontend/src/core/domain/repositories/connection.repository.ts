@@ -1,4 +1,5 @@
 import type { Connection } from "@/core/domain/entities/connection.entity";
+import type { ConnectionSuggestion } from "@/core/domain/entities/connection-suggestion.entity";
 import type { PaginatedConnections } from "@/core/domain/entities/paginated-connections.entity";
 
 export abstract class ConnectionRepository {
@@ -25,4 +26,5 @@ export abstract class ConnectionRepository {
   abstract remove(id: string): Promise<void>;
   abstract block(userId: string): Promise<Connection>;
   abstract unblock(userId: string): Promise<void>;
+  abstract getSuggestions(limit?: number): Promise<ConnectionSuggestion[]>;
 }

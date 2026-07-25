@@ -50,7 +50,7 @@ import {
   UserLanguageResponseDto,
 } from '../dto/user-language.dto';
 import { AddUserSkillDto, CreateSkillDto } from '../dto/create-skill.dto';
-import { SkillResponseDto } from '../dto/skill.dto';
+import { SkillEndorserDto, SkillResponseDto } from '../dto/skill.dto';
 import { CatalogSearchQueryDto } from '../dto/catalog-search-query.dto';
 import {
   PaginatedLanguagesResponseDto,
@@ -336,6 +336,58 @@ export class UsersController {
     @Param('skillId', ParseUUIDPipe) skillId: string,
   ): Promise<void> {
     return this.usersService.removeUserSkill(req.user.userId, skillId);
+  }
+
+  // --- Skill endorsements ---
+
+  @Get(':userId/skills/:skillId/endorsements')
+  @ApiOperation({ summary: 'List endorsers of a skill on a profile' })
+  @ApiOkResponse({ type: [SkillEndorserDto] })
+  listSkillEndorsers(
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Param('skillId', ParseUUIDPipe) skillId: string,
+  ): Promise<SkillEndorserDto[]> {
+    return this.usersService.listSkillEndorsers(userId, skillId);
+  }
+
+  @Post(':userId/skills/:skillId/endorsements')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: "Endorse a skill on someone else's profile",
+    description: 'Idempotent — endorsing the same skill twice is a no-op.',
+  })
+  @ApiNoContentResponse()
+  @ApiBadRequestResponse({ description: 'Cannot endorse your own skill' })
+  @ApiNotFoundResponse({ description: 'That user does not have this skill' })
+  @ApiUnauthorizedResponse()
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('access_token')
+  endorseSkill(
+    @Req() req: RequestWithJwtPayload,
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Param('skillId', ParseUUIDPipe) skillId: string,
+  ): Promise<void> {
+    return this.usersService.endorseSkill(req.user.userId, userId, skillId);
+  }
+
+  @Delete(':userId/skills/:skillId/endorsements')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Remove your endorsement of a skill' })
+  @ApiNoContentResponse()
+  @ApiNotFoundResponse()
+  @ApiUnauthorizedResponse()
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('access_token')
+  removeSkillEndorsement(
+    @Req() req: RequestWithJwtPayload,
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Param('skillId', ParseUUIDPipe) skillId: string,
+  ): Promise<void> {
+    return this.usersService.removeSkillEndorsement(
+      req.user.userId,
+      userId,
+      skillId,
+    );
   }
 
   @Get(':userId/connections')

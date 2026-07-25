@@ -1,4 +1,5 @@
 import type { Connection } from "@/core/domain/entities/connection.entity";
+import type { ConnectionSuggestion } from "@/core/domain/entities/connection-suggestion.entity";
 import type { PaginatedConnections } from "@/core/domain/entities/paginated-connections.entity";
 import type { ConnectionRepository } from "@/core/domain/repositories/connection.repository";
 
@@ -47,5 +48,9 @@ export class ConnectionService {
 
   unblock(userId: string): Promise<void> {
     return this.connectionRepository.unblock(userId);
+  }
+
+  getSuggestions(limit = 10): Promise<ConnectionSuggestion[]> {
+    return this.connectionRepository.getSuggestions(limit);
   }
 }

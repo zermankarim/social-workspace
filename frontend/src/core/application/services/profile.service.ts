@@ -4,6 +4,7 @@ import type {
 } from "@/core/domain/entities/paginated-catalog.entity";
 import type { PaginatedUserSearch } from "@/core/domain/entities/paginated-user-search.entity";
 import type { Skill } from "@/core/domain/entities/skill.entity";
+import type { SkillEndorser } from "@/core/domain/entities/skill-endorser.entity";
 import type { UserLanguage } from "@/core/domain/entities/user-language.entity";
 import type { UserProfile } from "@/core/domain/entities/user-profile.entity";
 import type { WorkExperience } from "@/core/domain/entities/work-experience.entity";
@@ -85,6 +86,21 @@ export class ProfileService {
 
   removeSkill(skillId: string): Promise<void> {
     return this.profileRepository.removeSkill(skillId);
+  }
+
+  listSkillEndorsers(
+    userId: string,
+    skillId: string,
+  ): Promise<SkillEndorser[]> {
+    return this.profileRepository.listSkillEndorsers(userId, skillId);
+  }
+
+  endorseSkill(userId: string, skillId: string): Promise<void> {
+    return this.profileRepository.endorseSkill(userId, skillId);
+  }
+
+  removeSkillEndorsement(userId: string, skillId: string): Promise<void> {
+    return this.profileRepository.removeSkillEndorsement(userId, skillId);
   }
 
   /**

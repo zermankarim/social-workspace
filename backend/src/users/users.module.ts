@@ -7,9 +7,10 @@ import {
 import { UsersRepository } from './repositories/users.repository';
 import { AuthModule } from '../auth/auth.module';
 import { ConnectionsModule } from '../connections/connections.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [AuthModule, ConnectionsModule],
+  imports: [AuthModule, ConnectionsModule, NotificationsModule],
   controllers: [UsersController, CatalogController],
   providers: [UsersService, UsersRepository],
   exports: [UsersService, UsersRepository],

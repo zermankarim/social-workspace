@@ -1,33 +1,38 @@
 "use client";
 
-import { Award, Coins, Info } from "lucide-react";
+import { Award, ChevronRight, Coins, Info, Trophy } from "lucide-react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { StreakInfoDialog } from "@/presentation/components/profile/streak-info-dialog";
 import { StreakFlame } from "@/presentation/components/shared/streak-flame/streak-flame";
+import { BadgeIcon } from "@/presentation/components/gamification/badge-icon";
+import { LevelBadge } from "@/presentation/components/gamification/level-badge";
+import { BADGE_DEFINITIONS_BY_KEY } from "@/presentation/config/badge-definitions";
 import { useGamificationState } from "@/presentation/hooks/use-gamification";
 
-const BADGE_ICONS: Record<string, string> = {
-  streak_7: "🔥",
-  streak_30: "🔥",
-  connections_50: "🤝",
-  connections_100: "🤝",
-  followers_100: "⭐",
-};
+const COMPACT_BADGE_COUNT = 4;
 
 export function GamificationWidget() {
   const t = useTranslations("profile");
+  const tAchievements = useTranslations("achievements");
   const stateQuery = useGamificationState();
   const state = stateQuery.data;
   const [showStreakInfo, setShowStreakInfo] = useState(false);
 
   if (!state) return null;
 
+  const recentBadges = state.badges.slice(-COMPACT_BADGE_COUNT).reverse();
+
   return (
     <div>
       <h2 className="text-sm font-semibold text-foreground">
         {t("yourActivity")}
       </h2>
+
+      <div className="mt-3">
+        <LevelBadge level={state.level} pointsBalance={state.pointsBalance} />
+      </div>
 
       <div className="mt-3 grid grid-cols-2 gap-2">
         <div className="rounded-md bg-surface-muted px-3 py-2">
@@ -82,27 +87,55 @@ export function GamificationWidget() {
         </div>
       </div>
 
-      {state.badges.length > 0 ? (
-        <div className="mt-3">
-          <div className="mb-1.5 flex items-center gap-1.5 text-muted">
+      <div className="mt-3">
+        <div className="mb-1.5 flex items-center justify-between">
+          <div className="flex items-center gap-1.5 text-muted">
             <Award className="h-3.5 w-3.5" aria-hidden />
             <span className="text-[11px] font-medium uppercase tracking-wide">
               {t("badges")}
             </span>
           </div>
-          <div className="flex flex-wrap gap-1.5">
-            {state.badges.map((badge) => (
-              <span
-                key={badge}
-                className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-xs font-medium text-primary"
-              >
-                <span aria-hidden>{BADGE_ICONS[badge] ?? "🏅"}</span>
-                {t(`badge.${badge}`)}
-              </span>
-            ))}
-          </div>
+          <Link
+            href="/achievements"
+            className="inline-flex items-center gap-0.5 text-[11px] font-medium text-primary hover:underline"
+          >
+            {tAchievements("viewAll")}
+            <ChevronRight className="h-3 w-3" aria-hidden />
+          </Link>
         </div>
-      ) : null}
+
+        {recentBadges.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {recentBadges.map((badgeKey) => {
+              const def = BADGE_DEFINITIONS_BY_KEY[badgeKey];
+              if (!def) return null;
+              return (
+                <Link
+                  key={badgeKey}
+                  href="/achievements"
+                  className="flex flex-col items-center gap-1"
+                  title={tAchievements(`badge.${badgeKey}`)}
+                >
+                  <BadgeIcon
+                    category={def.category}
+                    tier={def.tier}
+                    earned
+                    size="sm"
+                  />
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          <Link
+            href="/achievements"
+            className="flex items-center gap-2 rounded-md bg-surface-muted px-3 py-2 text-xs text-muted hover:text-foreground"
+          >
+            <Trophy className="h-3.5 w-3.5" aria-hidden />
+            {tAchievements("noneYet")}
+          </Link>
+        )}
+      </div>
 
       {showStreakInfo ? (
         <StreakInfoDialog onClose={() => setShowStreakInfo(false)} />

@@ -155,6 +155,36 @@ export class NotificationsService {
     });
   }
 
+  public async notifySkillEndorsed(
+    endorserId: string,
+    skillOwnerId: string,
+  ): Promise<void> {
+    await this.safeCreate({
+      recipientId: skillOwnerId,
+      actorId: endorserId,
+      type: NotificationType.SKILL_ENDORSED,
+    });
+  }
+
+  /**
+   * Self-actor system notification (achievement unlocks have no second party),
+   * so it bypasses safeCreate's actor === recipient no-op guard on purpose.
+   */
+  public async notifyBadgeEarned(userId: string): Promise<void> {
+    try {
+      const created = await this.notificationsRepository.create({
+        recipientId: userId,
+        actorId: userId,
+        type: NotificationType.BADGE_EARNED,
+      });
+      this.emitCreated(userId, created);
+    } catch (error) {
+      this.logger.warn(
+        `Failed to create BADGE_EARNED notification for ${userId}: ${String(error)}`,
+      );
+    }
+  }
+
   private async safeCreate(input: {
     recipientId: string;
     actorId: string;

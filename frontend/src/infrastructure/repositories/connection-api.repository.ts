@@ -1,8 +1,10 @@
 import type { Connection } from "@/core/domain/entities/connection.entity";
+import type { ConnectionSuggestion } from "@/core/domain/entities/connection-suggestion.entity";
 import type { PaginatedConnections } from "@/core/domain/entities/paginated-connections.entity";
 import { ConnectionRepository } from "@/core/domain/repositories/connection.repository";
 import type {
   ConnectionResponseDto,
+  ConnectionSuggestionResponseDto,
   CreateConnectionRequestDto,
   PaginatedConnectionsResponseDto,
 } from "@/infrastructure/api/dto/connection-response.dto";
@@ -84,6 +86,14 @@ export class ConnectionApiRepository extends ConnectionRepository {
     await this.httpClient.request<void>(`/connections/block/${userId}`, {
       method: "DELETE",
     });
+  }
+
+  async getSuggestions(limit = 10): Promise<ConnectionSuggestion[]> {
+    const params = new URLSearchParams({ limit: String(limit) });
+    const response = await this.httpClient.request<
+      ConnectionSuggestionResponseDto[]
+    >(`/connections/suggestions?${params.toString()}`);
+    return response.map((item) => ConnectionMapper.suggestionFromApi(item));
   }
 
   private async fetchList(

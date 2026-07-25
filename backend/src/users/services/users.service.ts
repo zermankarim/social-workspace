@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UsersRepository } from '../repositories/users.repository';
 import { UserMapper } from '../mappers/user.mapper';
 import {
@@ -32,7 +33,7 @@ import {
   UserLanguageResponseDto,
 } from '../dto/user-language.dto';
 import { AddUserSkillDto, CreateSkillDto } from '../dto/create-skill.dto';
-import { SkillResponseDto } from '../dto/skill.dto';
+import { SkillEndorserDto, SkillResponseDto } from '../dto/skill.dto';
 import { CatalogSearchQueryDto } from '../dto/catalog-search-query.dto';
 import { PaginatedResponseDto } from '../../shared/dto/paginated-response.dto';
 import {
@@ -51,12 +52,16 @@ import { PaginatedConnectionsQueryDto } from '../../connections/dto/paginated-co
 import { UserSearchQueryDto } from '../dto/user-search-query.dto';
 import { UserSearchResultDto } from '../dto/user-search-result.dto';
 import { buildUserSearchWhere } from '../utils/user-search.utils';
+import { NotificationsService } from '../../notifications/services/notifications.service';
+import { SKILL_ENDORSEMENT_RECEIVED_EVENT } from '../../gamification/events/gamification.events';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly connectionsService: ConnectionsService,
+    private readonly notificationsService: NotificationsService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async getMyProfile(userId: string): Promise<PrivateUserProfileResponseDto> {
@@ -454,6 +459,59 @@ export class UsersService {
     if (!removed) {
       throw new NotFoundException('Skill not found on profile');
     }
+  }
+
+  async endorseSkill(
+    endorserId: string,
+    userId: string,
+    skillId: string,
+  ): Promise<void> {
+    if (endorserId === userId) {
+      throw new BadRequestException('Cannot endorse your own skill');
+    }
+    const hasSkill = await this.usersRepository.hasUserSkill(userId, skillId);
+    if (!hasSkill) {
+      throw new NotFoundException('Skill not found on that profile');
+    }
+
+    const { created } = await this.usersRepository.endorseSkill(
+      userId,
+      skillId,
+      endorserId,
+    );
+    if (created) {
+      await this.notificationsService.notifySkillEndorsed(endorserId, userId);
+      this.eventEmitter.emit(SKILL_ENDORSEMENT_RECEIVED_EVENT, {
+        recipientId: userId,
+        endorserId,
+      });
+    }
+  }
+
+  async removeSkillEndorsement(
+    endorserId: string,
+    userId: string,
+    skillId: string,
+  ): Promise<void> {
+    const removed = await this.usersRepository.removeSkillEndorsement(
+      userId,
+      skillId,
+      endorserId,
+    );
+    if (!removed) {
+      throw new NotFoundException('Endorsement not found');
+    }
+  }
+
+  listSkillEndorsers(
+    userId: string,
+    skillId: string,
+  ): Promise<SkillEndorserDto[]> {
+    return this.usersRepository
+      .listSkillEndorsers(userId, skillId)
+      .then((rows) =>
+        rows.map((row) => UserMapper.toSkillEndorserResponse(row)),
+      );
   }
 
   listConnections(
