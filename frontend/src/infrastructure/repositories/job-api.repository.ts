@@ -1,7 +1,10 @@
 import type { CreateJobDto } from "@/core/application/dtos/create-job.dto";
 import type { Job } from "@/core/domain/entities/job.entity";
 import type { PaginatedJobs } from "@/core/domain/entities/paginated-jobs.entity";
-import { JobRepository } from "@/core/domain/repositories/job.repository";
+import {
+  JobRepository,
+  type JobFilters,
+} from "@/core/domain/repositories/job.repository";
 import type {
   CreateJobRequestDto,
   JobResponseDto,
@@ -15,11 +18,26 @@ export class JobApiRepository extends JobRepository {
     super();
   }
 
-  async findFeed(page = 1, limit = 20): Promise<PaginatedJobs> {
+  async findFeed(
+    filters: JobFilters = {},
+    page = 1,
+    limit = 20,
+  ): Promise<PaginatedJobs> {
     const params = new URLSearchParams({
       page: String(page),
       limit: String(limit),
     });
+    if (filters.q?.trim()) params.set("q", filters.q.trim());
+    if (filters.location?.trim())
+      params.set("location", filters.location.trim());
+    if (filters.companyId) params.set("companyId", filters.companyId);
+    if (filters.employmentType)
+      params.set("employmentType", filters.employmentType);
+    if (filters.workplaceType)
+      params.set("workplaceType", filters.workplaceType);
+    if (filters.experienceLevel)
+      params.set("experienceLevel", filters.experienceLevel);
+
     const response = await this.httpClient.request<PaginatedJobsResponseDto>(
       `/jobs?${params.toString()}`,
     );
@@ -36,10 +54,14 @@ export class JobApiRepository extends JobRepository {
   async create(dto: CreateJobDto): Promise<Job> {
     const body: CreateJobRequestDto = {
       title: dto.title,
+      companyId: dto.companyId,
       companyName: dto.companyName,
       location: dto.location,
       description: dto.description,
       applyUrl: dto.applyUrl,
+      employmentType: dto.employmentType,
+      workplaceType: dto.workplaceType,
+      experienceLevel: dto.experienceLevel,
     };
     const response = await this.httpClient.request<JobResponseDto>("/jobs", {
       method: "POST",

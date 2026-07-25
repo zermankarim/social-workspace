@@ -60,7 +60,7 @@ export class JobsController {
   @ApiOperation({
     summary: 'Post a job listing',
     description:
-      'Candidates apply via the external `applyUrl` — no in-app applications in v1.',
+      'Pass companyId to post on behalf of a registered company page (you must be an admin of it) — companyName is then derived automatically.',
   })
   @ApiCreatedResponse({ type: JobResponseDto })
   @ApiBadRequestResponse({ description: 'Invalid request body' })

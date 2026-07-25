@@ -37,9 +37,20 @@ export class UploadService implements OnModuleInit {
   }
 
   async saveImage(file: Express.Multer.File): Promise<UploadResponseDto> {
+    return this.saveFile(file, 'images');
+  }
+
+  async saveResume(file: Express.Multer.File): Promise<UploadResponseDto> {
+    return this.saveFile(file, 'resumes');
+  }
+
+  private async saveFile(
+    file: Express.Multer.File,
+    folder: string,
+  ): Promise<UploadResponseDto> {
     const originalName = this.decodeOriginalFileName(file.originalname);
     const extension = extname(originalName).toLowerCase();
-    const storedName = `${randomUUID()}${extension}`;
+    const storedName = `${folder}/${randomUUID()}${extension}`;
 
     const { error } = await this.supabase.storage
       .from(this.bucket)

@@ -16,7 +16,12 @@
     "adminBadge": "Админ",
     "showMore": "Ещё",
     "showLess": "Свернуть",
-    "you": "Вы"
+    "you": "Вы",
+    "any": "Любой",
+    "edit": "Изменить",
+    "back": "Назад",
+    "next": "Далее",
+    "nothingSelected": "Выберите вакансию из списка слева, чтобы увидеть детали."
   },
   "nav": {
     "main": "Основная навигация",
@@ -305,7 +310,12 @@
       "NATIVE_OR_BILINGUAL": "Родной / двуязычный"
     },
     "endorseSkill": "Одобрить навык",
-    "noEndorsersYet": "Пока нет одобрений"
+    "noEndorsersYet": "Пока нет одобрений",
+    "resumes": "Резюме",
+    "resumesEmpty": "Пока нет загруженных резюме.",
+    "uploadResume": "Загрузить резюме",
+    "deleteResume": "Удалить резюме",
+    "resumesLimitHint": "До {max} резюме — используются при отклике на вакансии."
   },
   "network": {
     "manageNetwork": "Управление сетью",
@@ -407,7 +417,9 @@
       "commentReply": "ответил(а) на ваш комментарий",
       "newFollower": "подписался(лась) на вас",
       "badgeEarned": "получил(а) новую награду",
-      "skillEndorsed": "одобрил(а) один из ваших навыков"
+      "skillEndorsed": "одобрил(а) один из ваших навыков",
+      "jobApplicationReceived": "откликнул(а)сь на вашу вакансию",
+      "jobApplicationStatusChanged": "обновил(а) статус вашей заявки"
     }
   },
   "news": {
@@ -448,7 +460,60 @@
     "currentEmployeesCount": "{count, plural, one {# сейчас} few {# сейчас} many {# сейчас} other {# сейчас}}",
     "noEmployees": "Пока никто не указал эту компанию.",
     "current": "Сейчас",
-    "past": "Ранее"
+    "past": "Ранее",
+    "directoryTitle": "Компании",
+    "registerCompany": "Зарегистрировать компанию",
+    "searchCompanyPlaceholder": "Поиск компаний",
+    "noCompaniesFound": "Компании не найдены.",
+    "noCompaniesYet": "Пока нет зарегистрированных компаний.",
+    "companyNameLabel": "Название компании",
+    "tagline": "Слоган",
+    "industry": "Отрасль",
+    "headquarters": "Штаб-квартира",
+    "website": "Сайт",
+    "about": "О компании",
+    "saveFailed": "Не удалось сохранить. Попробуйте снова.",
+    "editCompany": "Редактировать компанию",
+    "clearCompany": "Очистить выбранную компанию",
+    "sizeValue": {
+      "SIZE_1_10": "1-10 сотрудников",
+      "SIZE_11_50": "11-50 сотрудников",
+      "SIZE_51_200": "51-200 сотрудников",
+      "SIZE_201_500": "201-500 сотрудников",
+      "SIZE_501_1000": "501-1 000 сотрудников",
+      "SIZE_1000_PLUS": "1 000+ сотрудников"
+    },
+    "founded": "Основана в {year}",
+    "jobsCount": "{count, plural, =0 {Нет открытых вакансий} one {# открытая вакансия} few {# открытые вакансии} many {# открытых вакансий} other {# открытой вакансии}}",
+    "services": "Услуги",
+    "noServices": "Пока нет добавленных услуг.",
+    "addService": "Добавить услугу",
+    "serviceName": "Название услуги",
+    "add": "Добавить",
+    "removeService": "Удалить услугу",
+    "openJobs": "Открытые вакансии",
+    "viewAllJobs": "Смотреть все",
+    "noOpenJobs": "Сейчас нет открытых вакансий.",
+    "postJobHint": "Опубликуйте вакансию со страницы «Вакансии», выбрав эту компанию.",
+    "admins": "Администраторы страницы",
+    "addAdmin": "Добавить администратора",
+    "adminRole": {
+      "OWNER": "Владелец",
+      "ADMIN": "Администратор"
+    },
+    "removeAdmin": "Удалить администратора",
+    "searchPeoplePlaceholder": "Поиск людей по имени",
+    "noPeopleFound": "Никого не найдено.",
+    "employees": "Сотрудники",
+    "logo": "Логотип",
+    "cover": "Обложка",
+    "uploadLogo": "Загрузить логотип",
+    "uploadCover": "Загрузить обложку",
+    "followersCount": "{count, plural, =0 {Нет подписчиков} one {# подписчик} few {# подписчика} many {# подписчиков} other {# подписчика}}",
+    "follow": "Подписаться",
+    "following": "Вы подписаны",
+    "showMore": "Показать больше",
+    "showLess": "Свернуть"
   },
   "jobs": {
     "title": "Вакансии",
@@ -464,7 +529,75 @@
     "applyUrl": "Ссылка для отклика",
     "apply": "Откликнуться",
     "deleteJob": "Удалить вакансию",
-    "deleteJobConfirm": "Удалить эту вакансию?"
+    "deleteJobConfirm": "Удалить эту вакансию?",
+    "myApplications": "Мои заявки",
+    "company": "Компания",
+    "companyNameFallback": "Название компании",
+    "employmentType": "Тип занятости",
+    "workplaceType": "Формат работы",
+    "experienceLevel": "Уровень опыта",
+    "employmentTypeValue": {
+      "FULL_TIME": "Полная занятость",
+      "PART_TIME": "Частичная занятость",
+      "SELF_EMPLOYED": "Самозанятость",
+      "FREELANCE": "Фриланс",
+      "CONTRACT": "Контракт",
+      "INTERNSHIP": "Стажировка",
+      "APPRENTICESHIP": "Ученичество",
+      "SEASONAL": "Сезонная работа"
+    },
+    "workplaceTypeValue": {
+      "ON_SITE": "В офисе",
+      "HYBRID": "Гибрид",
+      "REMOTE": "Удалённо"
+    },
+    "experienceLevelValue": {
+      "NO_EXPERIENCE": "Без опыта",
+      "JUNIOR": "Junior",
+      "MIDDLE": "Middle",
+      "SENIOR": "Senior",
+      "LEAD": "Lead"
+    },
+    "applyUrlHint": "Необязательно — покажется рядом с быстрым откликом.",
+    "searchPlaceholder": "Поиск по должности или ключевым словам",
+    "applicantsCount": "{count, plural, =0 {Пока нет откликов} one {# отклик} few {# отклика} many {# откликов} other {# отклика}}",
+    "applyExternally": "Откликнуться на сайте компании",
+    "applied": "Отклик отправлен",
+    "chooseResume": "Выберите резюме (необязательно)",
+    "noResumesHint": "Вы ещё не загрузили резюме.",
+    "addResumeLink": "Добавить в профиле",
+    "coverNote": "Сообщение команде найма (необязательно)",
+    "coverNotePlaceholder": "Коротко расскажите, почему вы подходите…",
+    "applyFailed": "Не удалось отправить отклик",
+    "submitApplication": "Отправить отклик",
+    "applyTo": "Отклик на «{title}»",
+    "applicationsTitle": "Заявки",
+    "received": "Полученные",
+    "sent": "Отправленные",
+    "decide": "Рассмотреть",
+    "accept": "Принять",
+    "reject": "Отклонить",
+    "withdraw": "Отозвать",
+    "decisionReasonPlaceholder": "Необязательная заметка для кандидата…",
+    "decisionReasonLabel": "Заметка",
+    "status": {
+      "PENDING": "На рассмотрении",
+      "ACCEPTED": "Принято",
+      "REJECTED": "Отклонено",
+      "WITHDRAWN": "Отозвано"
+    },
+    "noSentApplications": "Вы пока не откликались на вакансии.",
+    "noReceivedApplications": "Пока нет полученных откликов.",
+    "appliedTo": "Отклик на «{title}»",
+    "uploadNewResume": "Загрузить новое резюме",
+    "aboutJob": "О вакансии",
+    "aboutCompany": "О компании",
+    "jobItemLabel": "вакансия",
+    "contactInfo": "Контактные данные",
+    "contactEmail": "Email",
+    "contactPhone": "Номер телефона",
+    "contactPhonePlaceholder": "Необязательно",
+    "noResumeSelected": "Резюме не выбрано"
   },
   "onboarding": {
     "title": "Заполните профиль",
@@ -533,7 +666,9 @@
       "commentsReceived": "Полученные комментарии",
       "endorsementsReceived": "Одобрения навыков",
       "points": "Очковые рубежи",
-      "profile": "Профиль"
+      "profile": "Профиль",
+      "applications": "Отклики",
+      "experience": "Опыт работы"
     },
     "badge": {
       "streak_7": "Серия 7 дней",
@@ -565,7 +700,15 @@
       "points_1000": "1 000 очков",
       "points_10000": "10 000 очков",
       "points_50000": "50 000 очков",
-      "profile_complete": "Идеальный профиль"
+      "profile_complete": "Идеальный профиль",
+      "applications_1": "Первый отклик",
+      "applications_10": "10 откликов",
+      "applications_50": "50 откликов",
+      "first_hire": "Приняты на работу!",
+      "experience_1y": "1 год опыта",
+      "experience_3y": "3 года опыта",
+      "experience_5y": "5 лет опыта",
+      "experience_10y": "10 лет опыта"
     }
   }
 }

@@ -1,17 +1,68 @@
-/// Minimal job board: post a listing, browse, apply via an external link.
-/// No applications/ATS tracking in v1 — `applyUrl` is where candidates go.
+enum JobExperienceLevel {
+  NO_EXPERIENCE
+  JUNIOR
+  MIDDLE
+  SENIOR
+  LEAD
+}
+
+enum JobApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+/// Job board: post a listing (optionally on behalf of a registered Company),
+/// browse with filters, apply in-app or via an external `applyUrl`.
 model Job {
-  id          String   @id @default(uuid())
-  posterId    String
-  poster      User     @relation(fields: [posterId], references: [id], onDelete: Cascade)
-  title       String
-  companyName String
-  location    String?
-  description String
-  applyUrl    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String              @id @default(uuid())
+  posterId        String
+  poster          User                @relation(fields: [posterId], references: [id], onDelete: Cascade)
+  companyId       String?
+  company         Company?            @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  title           String
+  companyName     String
+  location        String?
+  description     String
+  applyUrl        String?
+  employmentType  EmploymentType?
+  workplaceType   WorkplaceType?
+  experienceLevel JobExperienceLevel?
+  applications    JobApplication[]
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
 
   @@index([createdAt])
   @@index([posterId])
+  @@index([companyId])
+  @@index([employmentType])
+  @@index([workplaceType])
+  @@index([experienceLevel])
+}
+
+/// In-app "Easy Apply". One active row per (job, applicant) — withdrawing and
+/// re-applying reopens the same row rather than creating a new one.
+model JobApplication {
+  id              String               @id @default(uuid())
+  jobId           String
+  job             Job                  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  applicantId     String
+  applicant       User                 @relation("JobApplicationApplicant", fields: [applicantId], references: [id], onDelete: Cascade)
+  resumeId        String?
+  resume          Resume?              @relation(fields: [resumeId], references: [id], onDelete: SetNull)
+  contactEmail    String?
+  contactPhone    String?
+  coverNote       String?
+  status          JobApplicationStatus @default(PENDING)
+  decisionReason  String?
+  decidedAt       DateTime?
+  decidedByUserId String?
+  decidedBy       User?                @relation("JobApplicationDecider", fields: [decidedByUserId], references: [id], onDelete: SetNull)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@unique([jobId, applicantId])
+  @@index([jobId, status])
+  @@index([applicantId, status])
 }

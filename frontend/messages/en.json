@@ -16,7 +16,12 @@
     "adminBadge": "Admin",
     "showMore": "Show more",
     "showLess": "Show less",
-    "you": "You"
+    "you": "You",
+    "any": "Any",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "nothingSelected": "Select a job from the list to see its details."
   },
   "nav": {
     "main": "Main navigation",
@@ -305,7 +310,12 @@
       "NATIVE_OR_BILINGUAL": "Native or bilingual"
     },
     "endorseSkill": "Endorse skill",
-    "noEndorsersYet": "No endorsements yet"
+    "noEndorsersYet": "No endorsements yet",
+    "resumes": "Resumes",
+    "resumesEmpty": "No resumes uploaded yet.",
+    "uploadResume": "Upload resume",
+    "deleteResume": "Delete resume",
+    "resumesLimitHint": "Up to {max} resumes — reused when you apply to jobs."
   },
   "network": {
     "manageNetwork": "Manage my network",
@@ -407,7 +417,9 @@
       "commentReply": "replied to your comment",
       "newFollower": "started following you",
       "badgeEarned": "unlocked a new achievement",
-      "skillEndorsed": "endorsed one of your skills"
+      "skillEndorsed": "endorsed one of your skills",
+      "jobApplicationReceived": "applied to your job posting",
+      "jobApplicationStatusChanged": "updated the status of your application"
     }
   },
   "news": {
@@ -448,7 +460,60 @@
     "currentEmployeesCount": "{count, plural, one {# current} other {# current}}",
     "noEmployees": "No one has listed this company yet.",
     "current": "Current",
-    "past": "Past"
+    "past": "Past",
+    "directoryTitle": "Companies",
+    "registerCompany": "Register a company",
+    "searchCompanyPlaceholder": "Search companies",
+    "noCompaniesFound": "No companies found.",
+    "noCompaniesYet": "No companies registered yet.",
+    "companyNameLabel": "Company name",
+    "tagline": "Tagline",
+    "industry": "Industry",
+    "headquarters": "Headquarters",
+    "website": "Website",
+    "about": "About",
+    "saveFailed": "Could not save. Please try again.",
+    "editCompany": "Edit company",
+    "clearCompany": "Clear selected company",
+    "sizeValue": {
+      "SIZE_1_10": "1-10 employees",
+      "SIZE_11_50": "11-50 employees",
+      "SIZE_51_200": "51-200 employees",
+      "SIZE_201_500": "201-500 employees",
+      "SIZE_501_1000": "501-1,000 employees",
+      "SIZE_1000_PLUS": "1,000+ employees"
+    },
+    "founded": "Founded {year}",
+    "jobsCount": "{count, plural, =0 {No open jobs} one {# open job} other {# open jobs}}",
+    "services": "Services",
+    "noServices": "No services listed yet.",
+    "addService": "Add service",
+    "serviceName": "Service name",
+    "add": "Add",
+    "removeService": "Remove service",
+    "openJobs": "Open jobs",
+    "viewAllJobs": "View all",
+    "noOpenJobs": "No open jobs right now.",
+    "postJobHint": "Post a job from the Jobs page and select this company.",
+    "admins": "Page admins",
+    "addAdmin": "Add admin",
+    "adminRole": {
+      "OWNER": "Owner",
+      "ADMIN": "Admin"
+    },
+    "removeAdmin": "Remove admin",
+    "searchPeoplePlaceholder": "Search people by name",
+    "noPeopleFound": "No one found.",
+    "employees": "Employees",
+    "logo": "Logo",
+    "cover": "Cover image",
+    "uploadLogo": "Upload logo",
+    "uploadCover": "Upload cover",
+    "followersCount": "{count, plural, =0 {No followers yet} one {# follower} other {# followers}}",
+    "follow": "Follow",
+    "following": "Following",
+    "showMore": "Show more",
+    "showLess": "Show less"
   },
   "jobs": {
     "title": "Jobs",
@@ -464,7 +529,75 @@
     "applyUrl": "Apply link",
     "apply": "Apply",
     "deleteJob": "Delete job",
-    "deleteJobConfirm": "Delete this job posting?"
+    "deleteJobConfirm": "Delete this job posting?",
+    "myApplications": "My applications",
+    "company": "Company",
+    "companyNameFallback": "Company name",
+    "employmentType": "Employment type",
+    "workplaceType": "Workplace",
+    "experienceLevel": "Experience level",
+    "employmentTypeValue": {
+      "FULL_TIME": "Full-time",
+      "PART_TIME": "Part-time",
+      "SELF_EMPLOYED": "Self-employed",
+      "FREELANCE": "Freelance",
+      "CONTRACT": "Contract",
+      "INTERNSHIP": "Internship",
+      "APPRENTICESHIP": "Apprenticeship",
+      "SEASONAL": "Seasonal"
+    },
+    "workplaceTypeValue": {
+      "ON_SITE": "On-site",
+      "HYBRID": "Hybrid",
+      "REMOTE": "Remote"
+    },
+    "experienceLevelValue": {
+      "NO_EXPERIENCE": "No experience",
+      "JUNIOR": "Junior",
+      "MIDDLE": "Middle",
+      "SENIOR": "Senior",
+      "LEAD": "Lead"
+    },
+    "applyUrlHint": "Optional — shown alongside in-app Easy Apply.",
+    "searchPlaceholder": "Search by title or keyword",
+    "applicantsCount": "{count, plural, =0 {No applicants yet} one {# applicant} other {# applicants}}",
+    "applyExternally": "Apply on company site",
+    "applied": "Applied",
+    "chooseResume": "Choose a resume (optional)",
+    "noResumesHint": "You haven't uploaded a resume yet.",
+    "addResumeLink": "Add one from your profile",
+    "coverNote": "Note to hiring team (optional)",
+    "coverNotePlaceholder": "Briefly say why you're a good fit…",
+    "applyFailed": "Failed to submit application",
+    "submitApplication": "Submit application",
+    "applyTo": "Apply to {title}",
+    "applicationsTitle": "Applications",
+    "received": "Received",
+    "sent": "Sent",
+    "decide": "Review",
+    "accept": "Accept",
+    "reject": "Reject",
+    "withdraw": "Withdraw",
+    "decisionReasonPlaceholder": "Optional note to the applicant…",
+    "decisionReasonLabel": "Note",
+    "status": {
+      "PENDING": "Pending",
+      "ACCEPTED": "Accepted",
+      "REJECTED": "Rejected",
+      "WITHDRAWN": "Withdrawn"
+    },
+    "noSentApplications": "You haven't applied to any jobs yet.",
+    "noReceivedApplications": "No applications received yet.",
+    "appliedTo": "Applied to {title}",
+    "uploadNewResume": "Upload a new resume",
+    "aboutJob": "About the job",
+    "aboutCompany": "About the company",
+    "jobItemLabel": "job",
+    "contactInfo": "Contact info",
+    "contactEmail": "Email address",
+    "contactPhone": "Phone number",
+    "contactPhonePlaceholder": "Optional",
+    "noResumeSelected": "No resume selected"
   },
   "onboarding": {
     "title": "Complete your profile",
@@ -533,7 +666,9 @@
       "commentsReceived": "Comments received",
       "endorsementsReceived": "Skill endorsements",
       "points": "Points milestones",
-      "profile": "Profile"
+      "profile": "Profile",
+      "applications": "Applications",
+      "experience": "Experience"
     },
     "badge": {
       "streak_7": "7-Day Streak",
@@ -565,7 +700,15 @@
       "points_1000": "1,000 Points",
       "points_10000": "10,000 Points",
       "points_50000": "50,000 Points",
-      "profile_complete": "Profile All-Star"
+      "profile_complete": "Profile All-Star",
+      "applications_1": "First Application",
+      "applications_10": "10 Applications",
+      "applications_50": "50 Applications",
+      "first_hire": "Got Hired!",
+      "experience_1y": "1 Year of Experience",
+      "experience_3y": "3 Years of Experience",
+      "experience_5y": "5 Years of Experience",
+      "experience_10y": "10 Years of Experience"
     }
   }
 }

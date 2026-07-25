@@ -6,6 +6,7 @@ import {
   Award,
   BadgeCheck,
   Bell,
+  Briefcase,
   Eye,
   Loader2,
   MessageCircle,
@@ -92,6 +93,17 @@ const TYPE_META: Record<
     icon: BadgeCheck,
     className: "bg-primary-soft text-primary",
     key: "skillEndorsed",
+  },
+  [NotificationType.JOB_APPLICATION_RECEIVED]: {
+    icon: Briefcase,
+    className: "bg-primary-soft text-primary",
+    key: "jobApplicationReceived",
+  },
+  [NotificationType.JOB_APPLICATION_STATUS_CHANGED]: {
+    icon: Briefcase,
+    className:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+    key: "jobApplicationStatusChanged",
   },
 };
 

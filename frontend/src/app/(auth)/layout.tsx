@@ -21,7 +21,6 @@ export default function AuthLayout({
             <BrandLogo
               variant="mark"
               href={null}
-              priority
               className="h-16 w-16 rounded-2xl sm:h-20 sm:w-20"
             />
             <h1 className="mt-4 text-2xl font-semibold tracking-tight text-foreground">

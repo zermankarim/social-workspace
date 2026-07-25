@@ -54,12 +54,7 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-nav">
       <div className="mx-auto flex h-[52px] max-w-[1128px] items-center gap-2 px-3 sm:px-4 lg:gap-3">
-        <BrandLogo
-          href="/feed"
-          variant="mark"
-          priority
-          className="rounded-md"
-        />
+        <BrandLogo href="/feed" variant="mark" className="rounded-lg" />
 
         <HeaderSearch className="hidden min-w-0 flex-1 md:block md:max-w-[280px]" />
 

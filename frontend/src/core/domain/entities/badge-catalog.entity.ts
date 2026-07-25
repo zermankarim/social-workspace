@@ -9,7 +9,9 @@ export type BadgeCategory =
   | "commentsReceived"
   | "endorsementsReceived"
   | "points"
-  | "profile";
+  | "profile"
+  | "applications"
+  | "experience";
 
 export class BadgeCatalogItem {
   constructor(

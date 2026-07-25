@@ -34,8 +34,7 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
           <BrandLogo
             variant="mark"
             href={null}
-            priority
-            className="h-12 w-12"
+            className="h-12 w-12 rounded-xl"
           />
           <Loader2 className="h-6 w-6 animate-spin text-primary" aria-hidden />
           <p className="text-sm text-muted">Loading session…</p>

@@ -9,6 +9,7 @@ import type { MessagingUser } from "@/core/domain/entities/messaging-user.entity
 import { useDecryptedMessageBody } from "@/presentation/hooks/use-decrypted-message";
 import { useMyDevices, usePeerDevices } from "@/presentation/hooks/use-devices";
 import { formatMentionsForPreview } from "@/presentation/lib/mentions";
+import { formatRelativeTime } from "@/presentation/lib/format-relative-time";
 import { usePresenceStore } from "@/presentation/stores/presence.store";
 
 function PeerAvatar({
@@ -62,13 +63,11 @@ function LastMessagePreview({
   );
 
   if (message.isDeleted) {
-    return (
-      <span className="truncate text-xs text-muted">{t("messageDeleted")}</span>
-    );
+    return <>{t("messageDeleted")}</>;
   }
 
   if (decrypted.status === "loading") {
-    return <span className="truncate text-xs text-muted">…</span>;
+    return <>…</>;
   }
 
   const prefix = message.isFrom(currentUserId) ? `${t("you")}: ` : "";
@@ -79,10 +78,10 @@ function LastMessagePreview({
 
   if (decrypted.status === "error") {
     return (
-      <span className="truncate text-xs text-muted">
+      <>
         {prefix}
         {attachmentHint ?? t("encryptedPreview")}
-      </span>
+      </>
     );
   }
 
@@ -91,10 +90,10 @@ function LastMessagePreview({
     : null;
 
   return (
-    <span className="truncate text-xs text-muted">
+    <>
       {prefix}
       {text ?? attachmentHint ?? t("encryptedPreview")}
-    </span>
+    </>
   );
 }
 
@@ -150,6 +149,11 @@ export function ConversationListItem({
           >
             {peer?.displayName ?? t("unknownPeer")}
           </p>
+          {conversation.lastMessage ? (
+            <span className="shrink-0 text-[11px] text-muted">
+              {formatRelativeTime(conversation.lastMessage.createdAt)}
+            </span>
+          ) : null}
           {unread ? (
             <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-danger px-1.5 text-[10px] font-bold leading-none text-white">
               {conversation.unreadCount > 99 ? "99+" : conversation.unreadCount}
@@ -157,7 +161,9 @@ export function ConversationListItem({
           ) : null}
         </div>
         <p
-          className={`mt-0.5 ${unread ? "font-medium text-foreground/80" : ""}`}
+          className={`mt-0.5 min-w-0 truncate text-xs text-muted ${
+            unread ? "font-medium text-foreground/80" : ""
+          }`}
         >
           {conversation.lastMessage ? (
             <LastMessagePreview
@@ -166,9 +172,7 @@ export function ConversationListItem({
               peerUserId={peer?.id}
             />
           ) : (
-            <span className="truncate text-xs text-muted">
-              {t("conversationFallback")}
-            </span>
+            t("conversationFallback")
           )}
         </p>
       </div>

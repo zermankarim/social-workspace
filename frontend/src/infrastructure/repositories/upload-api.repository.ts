@@ -16,4 +16,12 @@ export class UploadApiRepository extends UploadRepository {
     );
     return UploadMapper.fromApi(response);
   }
+
+  async uploadResume(file: File): Promise<UploadResult> {
+    const response = await this.httpClient.upload<UploadResponseDto>(
+      "/upload/resume",
+      file,
+    );
+    return UploadMapper.fromApi(response);
+  }
 }

@@ -166,6 +166,28 @@ export class NotificationsService {
     });
   }
 
+  public async notifyJobApplicationReceived(
+    applicantId: string,
+    recipientId: string,
+  ): Promise<void> {
+    await this.safeCreate({
+      recipientId,
+      actorId: applicantId,
+      type: NotificationType.JOB_APPLICATION_RECEIVED,
+    });
+  }
+
+  public async notifyJobApplicationStatusChanged(
+    deciderId: string,
+    applicantId: string,
+  ): Promise<void> {
+    await this.safeCreate({
+      recipientId: applicantId,
+      actorId: deciderId,
+      type: NotificationType.JOB_APPLICATION_STATUS_CHANGED,
+    });
+  }
+
   /**
    * Self-actor system notification (achievement unlocks have no second party),
    * so it bypasses safeCreate's actor === recipient no-op guard on purpose.

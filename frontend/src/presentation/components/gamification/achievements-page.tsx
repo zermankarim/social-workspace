@@ -19,6 +19,8 @@ const CATEGORY_ORDER: BadgeCategory[] = [
   "likesReceived",
   "commentsReceived",
   "endorsementsReceived",
+  "applications",
+  "experience",
   "points",
   "profile",
 ];

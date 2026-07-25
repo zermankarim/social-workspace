@@ -23,6 +23,8 @@ import { ReportsModule } from './reports/reports.module';
 import { GamificationModule } from './gamification/gamification.module';
 import { JobsModule } from './jobs/jobs.module';
 import { CompaniesModule } from './companies/companies.module';
+import { ResumesModule } from './resumes/resumes.module';
+import { JobApplicationsModule } from './job-applications/job-applications.module';
 
 @Module({
   imports: [
@@ -50,6 +52,8 @@ import { CompaniesModule } from './companies/companies.module';
     GamificationModule,
     JobsModule,
     CompaniesModule,
+    ResumesModule,
+    JobApplicationsModule,
   ],
 })
 export class AppModule {}

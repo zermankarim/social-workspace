@@ -1,0 +1,78 @@
+enum CompanyAdminRole {
+  OWNER
+  ADMIN
+}
+
+enum CompanySize {
+  SIZE_1_10
+  SIZE_11_50
+  SIZE_51_200
+  SIZE_201_500
+  SIZE_501_1000
+  SIZE_1000_PLUS
+}
+
+/// A registered company page, distinct from the free-text `companyName` still
+/// allowed on WorkExperience/Job for employers who haven't registered one.
+model Company {
+  id            String            @id @default(uuid())
+  name          String            @unique
+  tagline       String?
+  description   String?
+  industry      String?
+  size          CompanySize?
+  foundedYear   Int?
+  websiteUrl    String?
+  headquarters  String?
+  logoUrl       String?
+  coverUrl      String?
+  admins        CompanyAdmin[]
+  services      CompanyService[]
+  jobs          Job[]
+  employees     WorkExperience[]
+  followers     CompanyFollower[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([name])
+}
+
+/// A user following a company page for updates — separate from CompanyAdmin
+/// (who can manage the page) and from WorkExperience (who has worked there).
+model CompanyFollower {
+  id        String   @id @default(uuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([companyId, userId])
+  @@index([companyId])
+  @@index([userId])
+}
+
+/// Users who can manage a Company page (edit profile, post jobs, review applications).
+model CompanyAdmin {
+  id        String           @id @default(uuid())
+  companyId String
+  company   Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      CompanyAdminRole @default(ADMIN)
+  createdAt DateTime         @default(now())
+
+  @@unique([companyId, userId])
+  @@index([userId])
+}
+
+model CompanyService {
+  id          String   @id @default(uuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+
+  @@index([companyId])
+}

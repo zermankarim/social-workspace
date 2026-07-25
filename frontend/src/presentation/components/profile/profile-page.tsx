@@ -10,6 +10,7 @@ import { ProfileEducationSection } from "@/presentation/components/profile/profi
 import { ProfileExperienceSection } from "@/presentation/components/profile/profile-experience-section";
 import { ProfileHero } from "@/presentation/components/profile/profile-hero";
 import { ProfileLanguagesSection } from "@/presentation/components/profile/profile-languages-section";
+import { ProfileResumesSection } from "@/presentation/components/profile/profile-resumes-section";
 import { ProfileSkillsSection } from "@/presentation/components/profile/profile-skills-section";
 import { FeedCard } from "@/presentation/components/feed/feed-card";
 import { ProfileConnectActions } from "@/presentation/components/network/profile-connect-actions";
@@ -122,6 +123,7 @@ export function ProfilePage({ userId }: ProfilePageProps) {
             languages={profile.languages}
             canEdit={canEdit}
           />
+          {canEdit ? <ProfileResumesSection /> : null}
         </div>
 
         <aside className="space-y-2">

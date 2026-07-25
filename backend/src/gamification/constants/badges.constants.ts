@@ -9,7 +9,9 @@ export type BadgeCategory =
   | 'commentsReceived'
   | 'endorsementsReceived'
   | 'points'
-  | 'profile';
+  | 'profile'
+  | 'applications'
+  | 'experience';
 
 export type BadgeStats = {
   longestStreak: number;
@@ -21,6 +23,9 @@ export type BadgeStats = {
   endorsementsReceivedCount: number;
   pointsBalance: number;
   profileCompletionPercent: number;
+  applicationsSentCount: number;
+  applicationsAcceptedCount: number;
+  totalExperienceMonths: number;
 };
 
 export type BadgeDefinition = {
@@ -98,6 +103,20 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
   ]),
   ...tier('profileCompletionPercent', 'profile', [
     ['profile_complete', 100, 'gold', 20],
+  ]),
+  ...tier('applicationsSentCount', 'applications', [
+    ['applications_1', 1, 'bronze', 10],
+    ['applications_10', 10, 'silver', 25],
+    ['applications_50', 50, 'gold', 75],
+  ]),
+  ...tier('applicationsAcceptedCount', 'applications', [
+    ['first_hire', 1, 'platinum', 100],
+  ]),
+  ...tier('totalExperienceMonths', 'experience', [
+    ['experience_1y', 12, 'bronze', 10],
+    ['experience_3y', 36, 'silver', 25],
+    ['experience_5y', 60, 'gold', 75],
+    ['experience_10y', 120, 'platinum', 200],
   ]),
 ];
 

@@ -42,6 +42,7 @@ const PROFILE_CRITERIA: ProfileCriterion[] = [
     key: 'social',
     test: (f) => Boolean(f.website || f.github || f.linkedin || f.twitter),
   },
+  { key: 'resume', test: (f) => f._count.resumes >= 1 },
 ];
 
 function startOfDay(date: Date): Date {
@@ -288,6 +289,9 @@ export class GamificationService {
       endorsementsReceivedCount: activityStats.endorsementsReceivedCount,
       pointsBalance: gamification.pointsBalance,
       profileCompletionPercent,
+      applicationsSentCount: activityStats.applicationsSentCount,
+      applicationsAcceptedCount: activityStats.applicationsAcceptedCount,
+      totalExperienceMonths: activityStats.totalExperienceMonths,
     };
   }
 

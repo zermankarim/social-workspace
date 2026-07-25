@@ -50,6 +50,14 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
   { key: "points_10000", category: "points", tier: "gold" },
   { key: "points_50000", category: "points", tier: "platinum" },
   { key: "profile_complete", category: "profile", tier: "gold" },
+  { key: "applications_1", category: "applications", tier: "bronze" },
+  { key: "applications_10", category: "applications", tier: "silver" },
+  { key: "applications_50", category: "applications", tier: "gold" },
+  { key: "first_hire", category: "applications", tier: "platinum" },
+  { key: "experience_1y", category: "experience", tier: "bronze" },
+  { key: "experience_3y", category: "experience", tier: "silver" },
+  { key: "experience_5y", category: "experience", tier: "gold" },
+  { key: "experience_10y", category: "experience", tier: "platinum" },
 ];
 
 export const BADGE_DEFINITIONS_BY_KEY: Record<string, BadgeDefinition> =

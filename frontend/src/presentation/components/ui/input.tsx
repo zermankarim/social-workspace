@@ -3,17 +3,24 @@ import { forwardRef, type InputHTMLAttributes } from "react";
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label: string;
   error?: string;
+  /** Visually hide the label (still announced for a11y). */
+  hideLabel?: boolean;
 };
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  { label, error, id, className = "", ...props },
+  { label, error, id, className = "", hideLabel = false, ...props },
   ref,
 ) {
   const inputId = id ?? label.toLowerCase().replace(/\s+/g, "-");
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={inputId} className="text-sm font-medium text-foreground">
+      <label
+        htmlFor={inputId}
+        className={
+          hideLabel ? "sr-only" : "text-sm font-medium text-foreground"
+        }
+      >
         {label}
       </label>
       <input

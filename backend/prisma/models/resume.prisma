@@ -1,0 +1,14 @@
+/// Up to 3 per user (enforced in the service layer). Reused across job
+/// applications instead of re-uploading each time.
+model Resume {
+  id           String           @id @default(uuid())
+  userId       String
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fileName     String
+  fileUrl      String
+  sizeBytes    Int
+  uploadedAt   DateTime         @default(now())
+  applications JobApplication[]
+
+  @@index([userId])
+}

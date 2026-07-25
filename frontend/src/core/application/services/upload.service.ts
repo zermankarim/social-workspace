@@ -11,4 +11,8 @@ export class UploadService {
   uploadMany(files: File[]): Promise<UploadResult[]> {
     return Promise.all(files.map((file) => this.uploadRepository.upload(file)));
   }
+
+  uploadResume(file: File): Promise<UploadResult> {
+    return this.uploadRepository.uploadResume(file);
+  }
 }

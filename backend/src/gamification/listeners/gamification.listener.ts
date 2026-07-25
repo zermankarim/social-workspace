@@ -4,6 +4,10 @@ import { GamificationService } from '../services/gamification.service';
 import {
   CONNECTION_ACCEPTED_EVENT,
   CONNECTION_ACCEPTED_POINTS,
+  JOB_APPLICATION_ACCEPTED_EVENT,
+  JOB_APPLICATION_ACCEPTED_POINTS,
+  JOB_APPLICATION_SENT_EVENT,
+  JOB_APPLICATION_SENT_POINTS,
   POST_COMMENT_RECEIVED_EVENT,
   POST_COMMENT_RECEIVED_POINTS,
   POST_LIKE_RECEIVED_EVENT,
@@ -15,6 +19,8 @@ import {
 } from '../events/gamification.events';
 import type {
   ConnectionAcceptedEvent,
+  JobApplicationAcceptedEvent,
+  JobApplicationSentEvent,
   PostCommentReceivedEvent,
   PostLikeReceivedEvent,
   PostPublishedEvent,
@@ -79,6 +85,26 @@ export class GamificationListener {
       event.recipientId,
       SKILL_ENDORSEMENT_RECEIVED_POINTS,
       'skill-endorsement-received',
+    );
+  }
+
+  @OnEvent(JOB_APPLICATION_SENT_EVENT)
+  async onJobApplicationSent(event: JobApplicationSentEvent): Promise<void> {
+    await this.safeAward(
+      event.applicantId,
+      JOB_APPLICATION_SENT_POINTS,
+      'job-application-sent',
+    );
+  }
+
+  @OnEvent(JOB_APPLICATION_ACCEPTED_EVENT)
+  async onJobApplicationAccepted(
+    event: JobApplicationAcceptedEvent,
+  ): Promise<void> {
+    await this.safeAward(
+      event.applicantId,
+      JOB_APPLICATION_ACCEPTED_POINTS,
+      'job-application-accepted',
     );
   }
 

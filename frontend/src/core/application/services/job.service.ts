@@ -1,13 +1,16 @@
 import type { CreateJobDto } from "@/core/application/dtos/create-job.dto";
 import type { Job } from "@/core/domain/entities/job.entity";
 import type { PaginatedJobs } from "@/core/domain/entities/paginated-jobs.entity";
-import type { JobRepository } from "@/core/domain/repositories/job.repository";
+import type {
+  JobFilters,
+  JobRepository,
+} from "@/core/domain/repositories/job.repository";
 
 export class JobService {
   constructor(private readonly jobRepository: JobRepository) {}
 
-  getFeed(page = 1, limit = 20): Promise<PaginatedJobs> {
-    return this.jobRepository.findFeed(page, limit);
+  getFeed(filters?: JobFilters, page = 1, limit = 20): Promise<PaginatedJobs> {
+    return this.jobRepository.findFeed(filters, page, limit);
   }
 
   getById(id: string): Promise<Job> {

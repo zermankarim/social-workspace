@@ -50,6 +50,11 @@ model User {
   skillEndorsementsGiven SkillEndorsement[]   @relation("SkillEndorser")
   // Jobs
   jobsPosted             Job[]
+  jobApplications        JobApplication[]     @relation("JobApplicationApplicant")
+  decidedJobApplications JobApplication[]     @relation("JobApplicationDecider")
+  resumes                Resume[]
+  companyAdminOf         CompanyAdmin[]
+  companiesFollowed      CompanyFollower[]
   // Conversations
   conversations         ConversationMember[]
   messages              Message[]

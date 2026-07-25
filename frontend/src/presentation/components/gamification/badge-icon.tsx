@@ -1,5 +1,7 @@
 import type { ComponentType, CSSProperties } from "react";
 import {
+  Award,
+  Briefcase,
   CheckCircle2,
   Flame,
   Lock,
@@ -29,6 +31,8 @@ const CATEGORY_ICON: Record<
   endorsementsReceived: ThumbsUp,
   points: Coins,
   profile: CheckCircle2,
+  applications: Award,
+  experience: Briefcase,
 };
 
 const TIER_GRADIENT: Record<

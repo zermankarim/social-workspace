@@ -21,20 +21,18 @@ export default function GlobalError({
         }}
       >
         <div style={{ textAlign: "center", padding: 24 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/brand/logo.png"
-            alt="Social Workspace"
+          <svg
+            viewBox="0 0 100 100"
+            role="img"
+            aria-label="Social Workspace"
             width={64}
             height={64}
-            style={{
-              width: 64,
-              height: 64,
-              objectFit: "contain",
-              margin: "0 auto 16px",
-              borderRadius: 12,
-            }}
-          />
+            style={{ margin: "0 auto 16px", borderRadius: 12 }}
+          >
+            <rect width="100" height="100" rx="24" fill="#17389e" />
+            <circle cx="38" cy="50" r="22" fill="#fff" fillOpacity={0.95} />
+            <circle cx="62" cy="50" r="22" fill="#fff" fillOpacity={0.55} />
+          </svg>
           <h1 style={{ fontSize: 20, marginBottom: 8 }}>
             Something went wrong
           </h1>
