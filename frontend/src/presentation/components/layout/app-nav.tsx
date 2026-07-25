@@ -67,10 +67,10 @@ export function AppNav({ id, role, className = "", onNavigate }: AppNavProps) {
             <Link
               href={item.href}
               onClick={onNavigate}
-              className={`relative flex min-w-[4.25rem] flex-col items-center justify-center gap-0.5 px-2 py-1.5 text-[11px] transition-colors xl:min-w-[5rem] ${
+              className={`relative flex min-w-[4.25rem] flex-col items-center justify-center gap-0.5 rounded-lg px-2 py-1.5 text-[11px] transition-colors xl:min-w-[5rem] ${
                 isActive
-                  ? "font-semibold text-nav-active"
-                  : "font-normal text-nav-foreground hover:text-nav-active"
+                  ? "bg-primary-soft font-semibold text-primary"
+                  : "font-normal text-nav-foreground hover:bg-surface-muted hover:text-nav-active"
               }`}
               aria-current={isActive ? "page" : undefined}
               aria-label={
@@ -107,12 +107,6 @@ export function AppNav({ id, role, className = "", onNavigate }: AppNavProps) {
                 ) : null}
               </span>
               <span className="max-w-full truncate">{t(item.labelKey)}</span>
-              {isActive ? (
-                <span
-                  className="absolute inset-x-1 bottom-0 h-0.5 rounded-full bg-nav-active"
-                  aria-hidden
-                />
-              ) : null}
             </Link>
           </div>
         );

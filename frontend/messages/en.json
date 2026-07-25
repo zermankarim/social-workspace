@@ -237,6 +237,36 @@
       "connections_100": "100 connections",
       "followers_100": "100 followers"
     },
+    "streakInfoLabel": "About streak flames",
+    "streakInfoTitle": "Streak flames",
+    "streakInfoIntro": "Check in at least once a day to build your streak. Miss a day and it resets to zero — the flame changes as your streak grows.",
+    "streakTiers": {
+      "tier0": {
+        "range": "0 days",
+        "name": "Not started",
+        "description": "Check in today to light your first flame."
+      },
+      "tier1": {
+        "range": "1–2 days",
+        "name": "Spark",
+        "description": "A small flame — come back tomorrow to keep it going."
+      },
+      "tier2": {
+        "range": "3–6 days",
+        "name": "Ember",
+        "description": "Your streak is catching on."
+      },
+      "tier3": {
+        "range": "7–29 days",
+        "name": "Blaze",
+        "description": "A full week of consistency — you've unlocked the 7-day badge."
+      },
+      "tier4": {
+        "range": "30+ days",
+        "name": "White flame",
+        "description": "A full month of dedication — you've unlocked the 30-day badge."
+      }
+    },
     "devices": "Devices",
     "devicesHint": "Devices that can decrypt your messages. Remove any you don't recognize.",
     "deviceThisDevice": "This device",

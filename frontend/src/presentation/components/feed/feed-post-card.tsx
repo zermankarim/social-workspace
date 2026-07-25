@@ -440,7 +440,12 @@ export function FeedPostCard({
 
           <div className="flex shrink-0 items-center gap-1">
             {isAuthor ? null : (
-              <ConnectActions otherUserId={post.author.id} variant="compact" />
+              <div className="hidden sm:block">
+                <ConnectActions
+                  otherUserId={post.author.id}
+                  variant="compact"
+                />
+              </div>
             )}
             <div className="relative" ref={menuRef}>
               <button
@@ -454,7 +459,7 @@ export function FeedPostCard({
                 <MoreHorizontal className="h-5 w-5" />
               </button>
               {menuOpen ? (
-                <div className="absolute right-0 z-10 mt-1 w-44 overflow-hidden rounded-md border border-border bg-surface shadow-card">
+                <div className="absolute right-0 z-10 mt-1 w-44 overflow-hidden rounded-lg border border-border bg-surface shadow-card">
                   <button
                     type="button"
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-foreground hover:bg-surface-muted"
@@ -591,7 +596,7 @@ export function FeedPostCard({
 
             {post.attachments.length > 0 ? (
               <PostAttachmentsGallery
-                className="mt-3 -mx-4"
+                className="mt-3 -mx-3 sm:-mx-4"
                 fullBleed
                 attachments={post.attachments.map((attachment) => ({
                   id: attachment.id,
@@ -661,7 +666,7 @@ export function FeedPostCard({
                 ) : null}
               </button>
               {repostMenuOpen ? (
-                <div className="absolute bottom-full left-1/2 z-10 mb-1 w-44 -translate-x-1/2 overflow-hidden rounded-md border border-border bg-surface shadow-card">
+                <div className="absolute bottom-full left-1/2 z-10 mb-1 w-44 -translate-x-1/2 overflow-hidden rounded-lg border border-border bg-surface shadow-card">
                   <button
                     type="button"
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-foreground hover:bg-surface-muted"

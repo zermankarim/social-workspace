@@ -71,125 +71,124 @@ export function ConnectActions({
     );
   }
 
-  const buttonClass = compact
-    ? "h-8 shrink-0 gap-1 px-3 text-xs"
-    : "gap-1.5 self-start sm:self-auto";
+  const buttonClass = compact ? "h-8 shrink-0 gap-1 px-3 text-xs" : "gap-1.5";
+
+  function handleRemove() {
+    if (!relation.connection) return;
+    if (!window.confirm(t("removeConfirm"))) return;
+    void run(() => remove.mutateAsync(relation.connection!.id));
+  }
 
   return (
-    <div
-      className={
-        compact
-          ? "flex shrink-0 items-start gap-1.5"
-          : "flex flex-col items-stretch gap-1 sm:items-end"
-      }
-    >
-      <div className="flex items-start gap-1">
+    <div className="flex flex-col items-end gap-1">
+      <div
+        className={
+          compact
+            ? "flex shrink-0 items-center gap-1.5"
+            : "flex flex-wrap items-center justify-end gap-1.5"
+        }
+      >
         <FollowButton userId={otherUserId} variant={variant} />
-        {!compact ? <ProfileMoreActionsMenu userId={otherUserId} /> : null}
-      </div>
 
-      {relation.kind === "none" ? (
-        <Button
-          type="button"
-          variant={compact ? "secondary" : "primary"}
-          disabled={busy}
-          className={buttonClass}
-          onClick={() => void run(() => create.mutateAsync(otherUserId))}
-        >
-          {busy ? (
-            <Loader2
-              className={
-                compact ? "h-3.5 w-3.5 animate-spin" : "h-4 w-4 animate-spin"
-              }
-              aria-hidden
-            />
-          ) : (
-            <UserPlus
-              className={compact ? "h-3.5 w-3.5" : "h-4 w-4"}
-              aria-hidden
-            />
-          )}
-          {t("connect")}
-        </Button>
-      ) : null}
+        {relation.kind === "none" ? (
+          <Button
+            type="button"
+            variant={compact ? "secondary" : "primary"}
+            disabled={busy}
+            className={buttonClass}
+            onClick={() => void run(() => create.mutateAsync(otherUserId))}
+          >
+            {busy ? (
+              <Loader2
+                className={
+                  compact ? "h-3.5 w-3.5 animate-spin" : "h-4 w-4 animate-spin"
+                }
+                aria-hidden
+              />
+            ) : (
+              <UserPlus
+                className={compact ? "h-3.5 w-3.5" : "h-4 w-4"}
+                aria-hidden
+              />
+            )}
+            {t("connect")}
+          </Button>
+        ) : null}
 
-      {relation.kind === "pendingOutgoing" && relation.connection ? (
-        <Button
-          type="button"
-          variant="secondary"
-          disabled={busy}
-          className={buttonClass}
-          onClick={() =>
-            void run(() => remove.mutateAsync(relation.connection!.id))
-          }
-        >
-          {busy ? (
-            <Loader2
-              className={
-                compact ? "h-3.5 w-3.5 animate-spin" : "h-4 w-4 animate-spin"
-              }
-              aria-hidden
-            />
-          ) : (
-            <X className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} aria-hidden />
-          )}
-          {t("pending")}
-        </Button>
-      ) : null}
-
-      {relation.kind === "pendingIncoming" && relation.connection ? (
-        <div className="flex flex-wrap justify-end gap-1.5">
+        {relation.kind === "pendingOutgoing" && relation.connection ? (
           <Button
             type="button"
             variant="secondary"
             disabled={busy}
-            className={compact ? "h-8 px-3 text-xs" : undefined}
+            className={buttonClass}
             onClick={() =>
-              void run(() => reject.mutateAsync(relation.connection!.id))
+              void run(() => remove.mutateAsync(relation.connection!.id))
             }
           >
-            {t("ignore")}
+            {busy ? (
+              <Loader2
+                className={
+                  compact ? "h-3.5 w-3.5 animate-spin" : "h-4 w-4 animate-spin"
+                }
+                aria-hidden
+              />
+            ) : (
+              <X className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} aria-hidden />
+            )}
+            {t("pending")}
           </Button>
-          <Button
-            type="button"
-            disabled={busy}
-            className={compact ? "h-8 px-3 text-xs" : undefined}
-            onClick={() =>
-              void run(() => accept.mutateAsync(relation.connection!.id))
-            }
-          >
-            {t("accept")}
-          </Button>
-        </div>
-      ) : null}
+        ) : null}
 
-      {relation.kind === "connected" && relation.connection ? (
-        <div className="flex flex-wrap justify-end gap-1.5">
-          <MessageUserButton
-            userId={otherUserId}
-            variant={compact ? "compact" : "secondary"}
-          />
-          {!compact ? (
+        {relation.kind === "pendingIncoming" && relation.connection ? (
+          <>
             <Button
               type="button"
               variant="secondary"
               disabled={busy}
               className={buttonClass}
-              onClick={() => {
-                if (!window.confirm(t("removeConfirm"))) return;
-                void run(() => remove.mutateAsync(relation.connection!.id));
-              }}
+              onClick={() =>
+                void run(() => reject.mutateAsync(relation.connection!.id))
+              }
             >
-              {busy ? (
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-              ) : (
-                <UserMinus className="h-4 w-4" aria-hidden />
-              )}
-              {t("remove")}
+              {t("ignore")}
             </Button>
-          ) : null}
-        </div>
-      ) : null}
+            <Button
+              type="button"
+              disabled={busy}
+              className={buttonClass}
+              onClick={() =>
+                void run(() => accept.mutateAsync(relation.connection!.id))
+              }
+            >
+              {t("accept")}
+            </Button>
+          </>
+        ) : null}
+
+        {relation.kind === "connected" && relation.connection ? (
+          <MessageUserButton
+            userId={otherUserId}
+            variant={compact ? "compact" : "secondary"}
+          />
+        ) : null}
+
+        {!compact ? (
+          <ProfileMoreActionsMenu
+            userId={otherUserId}
+            extraActions={
+              relation.kind === "connected" && relation.connection
+                ? [
+                    {
+                      label: t("remove"),
+                      icon: <UserMinus className="h-3.5 w-3.5" aria-hidden />,
+                      onClick: handleRemove,
+                    },
+                  ]
+                : undefined
+            }
+          />
+        ) : null}
+      </div>
 
       {error ? (
         <p

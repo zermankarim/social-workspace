@@ -209,7 +209,7 @@ export function ProfileHero({
                 name={profile.displayName}
                 showAdminBadge={profile.isAdmin()}
                 badgeSize="md"
-                nameClassName="text-2xl font-semibold text-foreground"
+                nameClassName="text-2xl font-semibold tracking-tight text-foreground"
               />
             </div>
             {profile.headline ? (

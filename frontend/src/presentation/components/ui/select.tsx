@@ -61,7 +61,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             value={value}
             disabled={disabled}
             onChange={handleChange}
-            className={`w-full appearance-none rounded-md border border-border-strong bg-surface py-2 pr-10 pl-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-60 ${
+            className={`w-full appearance-none rounded-lg border border-border-strong bg-surface py-2 pr-10 pl-3 text-sm text-foreground transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-60 ${
               error ? "border-danger focus:ring-danger/20" : ""
             } ${className}`}
             {...props}

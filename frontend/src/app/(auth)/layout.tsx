@@ -29,7 +29,7 @@ export default function AuthLayout({
             </h1>
             <p className="mt-2 text-sm text-muted">{BRAND.tagline}</p>
           </div>
-          <div className="rounded-lg bg-surface p-6 shadow-card sm:p-8">
+          <div className="rounded-xl bg-surface p-6 shadow-card sm:p-8">
             {children}
           </div>
         </div>

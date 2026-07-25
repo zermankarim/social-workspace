@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Flag, MoreHorizontal, ShieldOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ApiError } from "@/core/application/errors/api.error";
@@ -8,13 +8,22 @@ import { ReportTargetType } from "@/core/domain/enums/report-target-type.enum";
 import { ReportDialog } from "@/presentation/components/moderation/report-dialog";
 import { appContainer } from "@/modules/app.container";
 
+export type ProfileMoreAction = {
+  label: string;
+  icon: ReactNode;
+  onClick: () => void;
+};
+
 type ProfileMoreActionsMenuProps = {
   userId: string;
+  /** Extra rare/destructive actions (e.g. "Remove connection") shown above Report/Block. */
+  extraActions?: ProfileMoreAction[];
 };
 
 /** Report/block a user — kept out of ConnectActions' main flow since these are destructive/rare actions. */
 export function ProfileMoreActionsMenu({
   userId,
+  extraActions,
 }: ProfileMoreActionsMenuProps) {
   const t = useTranslations("moderation");
   const menuRef = useRef<HTMLDivElement>(null);
@@ -58,7 +67,26 @@ export function ProfileMoreActionsMenu({
         <MoreHorizontal className="h-4 w-4" />
       </button>
       {menuOpen ? (
-        <div className="absolute right-0 z-10 mt-1 w-40 overflow-hidden rounded-md border border-border bg-surface shadow-card">
+        <div className="absolute right-0 z-10 mt-1 w-44 overflow-hidden rounded-lg border border-border bg-surface shadow-card">
+          {extraActions?.length ? (
+            <>
+              {extraActions.map((action) => (
+                <button
+                  key={action.label}
+                  type="button"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-foreground hover:bg-surface-muted"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    action.onClick();
+                  }}
+                >
+                  {action.icon}
+                  {action.label}
+                </button>
+              ))}
+              <div className="border-t border-border" />
+            </>
+          ) : null}
           <button
             type="button"
             className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-foreground hover:bg-surface-muted"
@@ -81,7 +109,7 @@ export function ProfileMoreActionsMenu({
         </div>
       ) : null}
       {error ? (
-        <p className="absolute right-0 mt-1 w-40 text-right text-[11px] text-danger">
+        <p className="absolute right-0 mt-1 w-44 text-right text-[11px] text-danger">
           {error instanceof ApiError ? error.message : t("blockFailed")}
         </p>
       ) : null}

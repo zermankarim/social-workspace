@@ -19,9 +19,9 @@ function getInitials(user: User): string {
 
 export function ProfileCard({ user }: ProfileCardProps) {
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+    <section className="rounded-xl border border-border bg-surface p-5 shadow-card">
       <div className="flex items-center gap-3">
-        <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-sm font-semibold text-white dark:bg-zinc-100 dark:text-zinc-900">
+        <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-soft text-sm font-semibold text-primary">
           {getInitials(user)}
           {user.isAdmin() ? (
             <AdminBadge className="absolute -right-0.5 -bottom-0.5" />
@@ -31,11 +31,9 @@ export function ProfileCard({ user }: ProfileCardProps) {
           <UserNameWithBadge
             name={user.displayName}
             showAdminBadge={user.isAdmin()}
-            nameClassName="text-sm font-semibold text-zinc-900 dark:text-zinc-100"
+            nameClassName="text-sm font-semibold text-foreground tracking-tight"
           />
-          <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
-            {user.email}
-          </p>
+          <p className="truncate text-xs text-muted">{user.email}</p>
           <div className="mt-1">
             <RoleBadge role={user.role} />
           </div>
@@ -43,19 +41,17 @@ export function ProfileCard({ user }: ProfileCardProps) {
       </div>
 
       {user.bio ? (
-        <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-300">
-          {user.bio}
-        </p>
+        <p className="mt-4 text-sm text-foreground">{user.bio}</p>
       ) : null}
 
-      <dl className="mt-5 space-y-3 border-t border-zinc-100 pt-4 dark:border-zinc-800">
+      <dl className="mt-5 space-y-3 border-t border-border pt-4">
         {user.location?.label || user.location?.city ? (
           <div>
-            <dt className="flex items-center gap-1 text-xs font-medium uppercase tracking-wide text-zinc-400">
+            <dt className="flex items-center gap-1 text-xs font-medium tracking-wide text-muted uppercase">
               <MapPin className="h-3 w-3" aria-hidden />
               Location
             </dt>
-            <dd className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">
+            <dd className="mt-1 text-sm text-foreground">
               {user.location.label ??
                 [user.location.city, user.location.country]
                   .filter(Boolean)
@@ -64,11 +60,11 @@ export function ProfileCard({ user }: ProfileCardProps) {
           </div>
         ) : null}
         <div>
-          <dt className="flex items-center gap-1 text-xs font-medium uppercase tracking-wide text-zinc-400">
+          <dt className="flex items-center gap-1 text-xs font-medium tracking-wide text-muted uppercase">
             <Calendar className="h-3 w-3" aria-hidden />
             Member since
           </dt>
-          <dd className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">
+          <dd className="mt-1 text-sm text-foreground">
             {user.createdAt.toLocaleDateString(undefined, {
               year: "numeric",
               month: "long",

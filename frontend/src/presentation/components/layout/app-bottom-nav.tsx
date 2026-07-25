@@ -73,9 +73,9 @@ export function AppBottomNav() {
             <li key={item.href} className="flex min-w-0 flex-1">
               <Link
                 href={item.href}
-                className={`relative flex w-full min-w-0 flex-col items-center justify-center gap-0.5 px-1 text-[10px] transition-colors ${
+                className={`relative flex w-full min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1 py-1 text-[10px] transition-colors ${
                   isActive
-                    ? "font-semibold text-nav-active"
+                    ? "bg-primary-soft font-semibold text-primary"
                     : "font-normal text-nav-foreground"
                 }`}
                 aria-current={isActive ? "page" : undefined}
@@ -113,12 +113,6 @@ export function AppBottomNav() {
                   ) : null}
                 </span>
                 <span className="max-w-full truncate">{t(item.labelKey)}</span>
-                {isActive ? (
-                  <span
-                    className="absolute inset-x-2 top-0 h-0.5 rounded-full bg-nav-active"
-                    aria-hidden
-                  />
-                ) : null}
               </Link>
             </li>
           );

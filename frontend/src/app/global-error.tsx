@@ -16,8 +16,8 @@ export default function GlobalError({
           display: "grid",
           placeItems: "center",
           fontFamily: "system-ui, sans-serif",
-          background: "#f3f2ef",
-          color: "#191919",
+          background: "#f7f4ef",
+          color: "#14161a",
         }}
       >
         <div style={{ textAlign: "center", padding: 24 }}>
@@ -38,7 +38,7 @@ export default function GlobalError({
           <h1 style={{ fontSize: 20, marginBottom: 8 }}>
             Something went wrong
           </h1>
-          <p style={{ fontSize: 14, color: "#666", marginBottom: 16 }}>
+          <p style={{ fontSize: 14, color: "#6b6f76", marginBottom: 16 }}>
             {error.message || "Unexpected application error"}
           </p>
           <button
@@ -48,7 +48,7 @@ export default function GlobalError({
               border: 0,
               borderRadius: 999,
               padding: "8px 16px",
-              background: "#0a66c2",
+              background: "#2454d8",
               color: "#fff",
               fontWeight: 600,
               cursor: "pointer",

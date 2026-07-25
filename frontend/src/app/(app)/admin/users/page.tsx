@@ -49,27 +49,25 @@ function UsersAdminContent() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+        <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-foreground">
           <Users className="h-7 w-7" aria-hidden />
           Users
         </h1>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
-        <section className="flex flex-col rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900 lg:col-span-3">
-          <div className="space-y-3 border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
+        <section className="flex flex-col rounded-xl border border-border bg-surface shadow-card lg:col-span-3">
+          <div className="space-y-3 border-b border-border px-5 py-4">
             <div>
-              <h2 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                All users
-              </h2>
-              <p className="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">
+              <h2 className="text-sm font-medium text-foreground">All users</h2>
+              <p className="mt-0.5 text-sm text-muted">
                 {meta
                   ? isSearching
                     ? `${meta.total} match${meta.total === 1 ? "" : "es"} for "${debouncedSearch}"`
                     : `${meta.total} user${meta.total === 1 ? "" : "s"} total`
                   : "Loading users…"}
                 {isFetching && !isLoading ? (
-                  <span className="ml-2 text-xs text-zinc-400">Updating…</span>
+                  <span className="ml-2 text-xs text-muted">Updating…</span>
                 ) : null}
               </p>
             </div>
@@ -90,31 +88,29 @@ function UsersAdminContent() {
           {isLoading ? (
             <div className="flex justify-center py-16">
               <Loader2
-                className="h-8 w-8 animate-spin text-violet-700 dark:text-violet-400"
+                className="h-8 w-8 animate-spin text-primary"
                 aria-hidden
               />
             </div>
           ) : error ? (
-            <p className="flex items-center gap-2 px-5 py-8 text-sm text-red-600">
+            <p className="flex items-center gap-2 px-5 py-8 text-sm text-danger">
               <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
               {error instanceof ApiError
                 ? error.message
                 : "Failed to load users"}
             </p>
           ) : users.length > 0 ? (
-            <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">
+            <ul className="divide-y divide-border">
               {users.map((user) => (
                 <li key={user.id}>
                   <button
                     type="button"
                     onClick={() => setSelectedId(user.id)}
-                    className={`flex w-full items-center justify-between px-5 py-3 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800 ${
-                      selectedId === user.id
-                        ? "bg-zinc-50 dark:bg-zinc-800"
-                        : ""
+                    className={`flex w-full items-center justify-between px-5 py-3 text-left transition-colors hover:bg-surface-muted ${
+                      selectedId === user.id ? "bg-surface-muted" : ""
                     }`}
                   >
-                    <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                    <span className="text-sm font-medium text-foreground">
                       {user.email}
                     </span>
                     <RoleBadge role={user.role} />
@@ -123,7 +119,7 @@ function UsersAdminContent() {
               ))}
             </ul>
           ) : (
-            <p className="px-5 py-8 text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="px-5 py-8 text-sm text-muted">
               {isSearching ? "No matching users." : "No users found."}
             </p>
           )}
@@ -137,26 +133,26 @@ function UsersAdminContent() {
           ) : null}
         </section>
 
-        <section className="rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900 lg:col-span-2">
-          <div className="border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
-            <h2 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+        <section className="rounded-xl border border-border bg-surface shadow-card lg:col-span-2">
+          <div className="border-b border-border px-5 py-4">
+            <h2 className="text-sm font-medium text-foreground">
               User details
             </h2>
           </div>
 
           {!selectedId ? (
-            <p className="px-5 py-8 text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="px-5 py-8 text-sm text-muted">
               Select a user to load details.
             </p>
           ) : selectedUser.isLoading ? (
             <div className="flex justify-center py-16">
               <Loader2
-                className="h-6 w-6 animate-spin text-zinc-500"
+                className="h-6 w-6 animate-spin text-muted"
                 aria-hidden
               />
             </div>
           ) : selectedUser.error ? (
-            <p className="flex items-center gap-2 px-5 py-8 text-sm text-red-600">
+            <p className="flex items-center gap-2 px-5 py-8 text-sm text-danger">
               <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
               {selectedUser.error instanceof ApiError
                 ? selectedUser.error.message
@@ -165,26 +161,26 @@ function UsersAdminContent() {
           ) : selectedUser.data ? (
             <dl className="space-y-4 px-5 py-5">
               <div>
-                <dt className="text-xs text-zinc-500">ID</dt>
-                <dd className="mt-1 break-all font-mono text-xs text-zinc-800 dark:text-zinc-200">
+                <dt className="text-xs text-muted">ID</dt>
+                <dd className="mt-1 break-all font-mono text-xs text-foreground">
                   {selectedUser.data.id}
                 </dd>
               </div>
               <div>
-                <dt className="text-xs text-zinc-500">Email</dt>
-                <dd className="mt-1 text-sm text-zinc-900 dark:text-zinc-100">
+                <dt className="text-xs text-muted">Email</dt>
+                <dd className="mt-1 text-sm text-foreground">
                   {selectedUser.data.email}
                 </dd>
               </div>
               <div>
-                <dt className="text-xs text-zinc-500">Role</dt>
+                <dt className="text-xs text-muted">Role</dt>
                 <dd className="mt-1">
                   <RoleBadge role={selectedUser.data.role} />
                 </dd>
               </div>
               <div>
-                <dt className="text-xs text-zinc-500">Created</dt>
-                <dd className="mt-1 text-sm text-zinc-900 dark:text-zinc-100">
+                <dt className="text-xs text-muted">Created</dt>
+                <dd className="mt-1 text-sm text-foreground">
                   {selectedUser.data.createdAt.toLocaleString()}
                 </dd>
               </div>

@@ -7,7 +7,9 @@ type FeedCardProps = {
 
 export function FeedCard({ children, className = "" }: FeedCardProps) {
   return (
-    <section className={`rounded-lg bg-surface shadow-card ${className}`}>
+    <section
+      className={`rounded-xl bg-surface shadow-card transition-shadow ${className}`}
+    >
       {children}
     </section>
   );

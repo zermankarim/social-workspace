@@ -116,7 +116,7 @@ function LanguageFormModal({
                 setSelectedLanguage(null);
               }}
               placeholder={t("searchLanguages")}
-              className="w-full rounded-md border border-border-strong bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
             {selectedLanguage ? (
               <p className="text-sm text-foreground">
@@ -141,7 +141,7 @@ function LanguageFormModal({
                         setSelectedLanguage(language);
                         setQuery(language.displayName(locale));
                       }}
-                      className="w-full rounded-md px-2 py-2 text-left text-sm text-foreground hover:bg-surface-muted"
+                      className="w-full rounded-lg px-2 py-2 text-left text-sm text-foreground hover:bg-surface-muted"
                     >
                       {language.displayName(locale)}
                     </button>

@@ -277,7 +277,7 @@ function EducationFormModal({
                 }
               }}
               onBlur={() => addSkillName(skillInput)}
-              className="flex-1 rounded-md border border-border-strong bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="flex-1 rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
             <Button
               type="button"

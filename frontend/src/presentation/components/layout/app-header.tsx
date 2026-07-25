@@ -7,10 +7,12 @@ import { useTranslations } from "next-intl";
 import { BrandLogo } from "@/presentation/components/brand/brand-logo";
 import { AppNav } from "@/presentation/components/layout/app-nav";
 import { HeaderSearch } from "@/presentation/components/layout/header-search";
+import { StreakFlame } from "@/presentation/components/shared/streak-flame/streak-flame";
 import { Button } from "@/presentation/components/ui/button";
 import { ThemeToggle } from "@/presentation/components/ui/theme-toggle";
 import { useUnreadTotal } from "@/presentation/hooks/use-conversations";
 import { useSignout } from "@/presentation/hooks/use-auth";
+import { useGamificationState } from "@/presentation/hooks/use-gamification";
 import { useAuthStore } from "@/presentation/stores/auth.store";
 
 function getInitials(
@@ -36,11 +38,14 @@ function formatBadgeCount(count: number): string {
 export function AppHeader() {
   const t = useTranslations("common");
   const tMessaging = useTranslations("messaging");
+  const tProfile = useTranslations("profile");
   const pathname = usePathname();
   const user = useAuthStore((s) => s.user);
   const signout = useSignout();
   const unreadQuery = useUnreadTotal(Boolean(user));
   const unreadTotal = unreadQuery.data ?? 0;
+  const gamificationQuery = useGamificationState(Boolean(user));
+  const currentStreak = gamificationQuery.data?.currentStreak ?? 0;
   const messagingActive =
     pathname === "/messaging" || pathname.startsWith("/messaging/");
 
@@ -61,11 +66,10 @@ export function AppHeader() {
         <div className="min-w-0 flex-1 md:hidden">
           <Link
             href="/search"
-            className="flex h-9 items-center gap-2 rounded-md bg-surface-muted px-3 text-sm text-muted"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-muted hover:text-foreground"
             aria-label={t("search")}
           >
-            <Search className="h-4 w-4 shrink-0" aria-hidden />
-            <span className="truncate">{t("search")}</span>
+            <Search className="h-5 w-5 shrink-0" aria-hidden />
           </Link>
         </div>
 
@@ -104,21 +108,31 @@ export function AppHeader() {
             className="flex h-10 w-10 items-center justify-center rounded-md transition-colors hover:bg-surface-muted"
             aria-label={t("profile")}
           >
-            {user.avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={user.avatarUrl}
-                alt=""
-                className="h-7 w-7 rounded-full object-cover"
-              />
-            ) : (
-              <span
-                className="flex h-7 w-7 items-center justify-center rounded-full bg-primary-soft text-[11px] font-semibold text-primary"
-                aria-hidden
-              >
-                {getInitials(user.firstName, user.lastName, user.email)}
-              </span>
-            )}
+            <span className="relative inline-flex h-7 w-7 shrink-0">
+              {user.avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={user.avatarUrl}
+                  alt=""
+                  className="h-7 w-7 rounded-full object-cover"
+                />
+              ) : (
+                <span
+                  className="flex h-7 w-7 items-center justify-center rounded-full bg-primary-soft text-[11px] font-semibold text-primary"
+                  aria-hidden
+                >
+                  {getInitials(user.firstName, user.lastName, user.email)}
+                </span>
+              )}
+              {currentStreak > 0 ? (
+                <StreakFlame
+                  streak={currentStreak}
+                  size="sm"
+                  label={tProfile("streakDays", { count: currentStreak })}
+                  className="absolute -right-1 -bottom-1 drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]"
+                />
+              ) : null}
+            </span>
           </Link>
 
           <Button

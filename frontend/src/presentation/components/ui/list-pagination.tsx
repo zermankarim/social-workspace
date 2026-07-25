@@ -16,8 +16,8 @@ export function ListPagination({
   if (meta.total === 0) return null;
 
   return (
-    <div className="flex flex-col gap-3 border-t border-zinc-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:border-zinc-800">
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+    <div className="flex flex-col gap-3 border-t border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <p className="text-sm text-muted">
         Page {meta.page} of {meta.totalPages} · {meta.total} {itemLabel}
         {meta.total === 1 ? "" : "s"}
       </p>
