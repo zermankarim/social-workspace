@@ -153,6 +153,18 @@ export function RegisterForm() {
         {signup.isPending ? t("creatingAccount") : t("createAccountTitle")}
       </Button>
 
+      <p className="text-center text-xs text-muted">
+        {t("termsAgreementPrefix")}{" "}
+        <Link href="/terms" className="underline hover:text-foreground">
+          {t("termsOfUse")}
+        </Link>{" "}
+        {t("and")}{" "}
+        <Link href="/privacy" className="underline hover:text-foreground">
+          {t("privacyPolicy")}
+        </Link>
+        .
+      </p>
+
       <p className="text-center text-sm text-muted">
         {t("haveAccount")}{" "}
         <Link

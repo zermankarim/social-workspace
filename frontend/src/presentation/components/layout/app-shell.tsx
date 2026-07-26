@@ -6,6 +6,7 @@ import { AppHeader } from "@/presentation/components/layout/app-header";
 
 type AppShellProps = {
   children: React.ReactNode;
+  footer?: React.ReactNode;
 };
 
 function isMessagingConversation(pathname: string): boolean {
@@ -16,7 +17,7 @@ function isMessagingConversation(pathname: string): boolean {
  * Authenticated chrome: sticky header + content + LinkedIn-style bottom tabs
  * on phones/tablets. Bottom tabs hide inside an open conversation for more room.
  */
-export function AppShell({ children }: AppShellProps) {
+export function AppShell({ children, footer }: AppShellProps) {
   const pathname = usePathname();
   const hideBottomNav = isMessagingConversation(pathname);
 
@@ -32,6 +33,7 @@ export function AppShell({ children }: AppShellProps) {
       >
         {children}
       </main>
+      {hideBottomNav ? null : footer}
       {hideBottomNav ? null : <AppBottomNav />}
     </div>
   );

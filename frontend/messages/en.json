@@ -56,7 +56,11 @@
     "resetPasswordTitle": "Choose a new password",
     "resetPasswordInvalidLink": "This reset link is invalid. Request a new one.",
     "resetPasswordSubmit": "Reset password",
-    "newPassword": "New password"
+    "newPassword": "New password",
+    "termsAgreementPrefix": "By creating an account, you agree to the",
+    "termsOfUse": "Terms of Use",
+    "and": "and",
+    "privacyPolicy": "Privacy Policy"
   },
   "feed": {
     "sortNewest": "Sort by: Newest",
@@ -710,5 +714,10 @@
       "experience_5y": "5 Years of Experience",
       "experience_10y": "10 Years of Experience"
     }
+  },
+  "legal": {
+    "termsOfUse": "Terms of Use",
+    "privacyPolicy": "Privacy Policy",
+    "copyright": "This is a non-commercial, open-source pet project. No affiliation with any similarly named product; any resemblance is coincidental."
   }
 }

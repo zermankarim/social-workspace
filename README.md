@@ -187,6 +187,21 @@ When adding a feature:
 3. Frontend layers following the existing pattern
 4. Update `.env.example` if needed — never commit secrets
 
+## Legal
+
+This is a **non-commercial, personal portfolio / learning project**. It is
+not a company, has no business model, and generates no revenue or financial
+benefit of any kind. Any resemblance to existing social networks or
+professional-networking products (feature set, layout, naming) is either
+incidental — common patterns shared across the industry — or non-commercial
+inspiration; it is not affiliated with, endorsed by, or connected to any such
+product. See the in-app [Terms of Use](frontend/src/app/(legal)/terms/page.tsx)
+and [Privacy Policy](frontend/src/app/(legal)/privacy/page.tsx) (served at
+`/terms` and `/privacy`) for the full disclaimers, including why device
+information is collected solely to support end-to-end message encryption.
+
 ## License
 
-Private / pet project.
+Code is licensed under the [MIT License](LICENSE) — Copyright (c) 2026 Karim
+Zerman. Provided "as is", without warranty of any kind; see the LICENSE file
+for the full disclaimer.

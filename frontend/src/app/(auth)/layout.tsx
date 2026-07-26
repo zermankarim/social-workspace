@@ -1,5 +1,6 @@
 import { BrandLogo } from "@/presentation/components/brand/brand-logo";
 import { RequireGuest } from "@/presentation/components/auth/auth-guards";
+import { LegalFooter } from "@/presentation/components/layout/legal-footer";
 import { LocaleSwitcher } from "@/presentation/components/ui/locale-switcher";
 import { ThemeToggle } from "@/presentation/components/ui/theme-toggle";
 import { BRAND } from "@/presentation/config/brand";
@@ -31,6 +32,7 @@ export default function AuthLayout({
           <div className="rounded-xl bg-surface p-6 shadow-card sm:p-8">
             {children}
           </div>
+          <LegalFooter />
         </div>
       </div>
     </RequireGuest>
