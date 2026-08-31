@@ -61,6 +61,7 @@ const SKILLS = [
   'Communication',
 ] as const;
 
+
 const USER_FIXTURES = [
   {
     key: 'review',
